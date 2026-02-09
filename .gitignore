@@ -1,0 +1,20 @@
+# WAV files (too large for git — MP3 versions are tracked instead)
+redacted_club_project/redacted_assets/audio/*.wav
+
+# Paint.NET source files
+*.pdn
+
+# Video placeholder
+redacted_club_project/redacted_assets/video/
+
+# Older builds
+redacted_club_project/older builds/
+
+# OS files
+Thumbs.db
+.DS_Store
+desktop.ini
+nul
+
+# Claude Code local settings
+.claude/
