@@ -485,6 +485,34 @@
     50%{box-shadow:0 0 20px rgba(0,255,65,0.7);border-color:#4f4;}
   }
 
+  /* ═══ POOL.EXE ═══ */
+  #pool-popup{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:660px;
+    background:rgba(0,20,10,0.98);border:2px solid var(--green);
+    box-shadow:0 0 30px rgba(0,255,65,0.5),inset 0 0 20px rgba(0,0,0,0.8);
+    z-index:9994;display:none;font-family:'VT323',monospace;
+  }
+  #pool-popup.show{display:block}
+  #pool-popup .popup-titlebar{background:rgba(0,80,30,0.6);border-bottom:1px solid var(--green);color:var(--green)}
+  #pool-canvas{display:block;width:100%;cursor:crosshair}
+  .pool-hud{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;font-size:13px;color:var(--green-dark)}
+  .pool-turn{color:var(--green);font-size:14px}
+  .pool-pocketed{display:flex;gap:3px;align-items:center}
+  .pool-ball-icon{width:12px;height:12px;border-radius:50%;display:inline-block;border:1px solid rgba(255,255,255,0.3)}
+  .pool-msg{text-align:center;padding:4px;font-size:13px;color:var(--amber);min-height:18px}
+  .pool-game-over{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.9);border:2px solid var(--green);padding:25px 40px;color:var(--green);font-size:22px;text-align:center;display:none;z-index:10}
+  .pool-game-over.show{display:block}
+
+  /* ═══ VIZ.EXE ═══ */
+  #viz-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:620px;background:rgba(0,0,0,0.98);border:2px solid var(--green);box-shadow:0 0 30px rgba(0,255,65,0.4);z-index:9997;display:none}
+  #viz-popup.show{display:block}
+  #viz-popup .popup-titlebar{background:rgba(0,20,10,0.8);border-bottom:1px solid var(--green);color:var(--green)}
+  #viz-canvas{display:block;width:100%;background:#000;cursor:pointer}
+  .viz-controls{display:flex;gap:6px;padding:8px 10px;background:rgba(0,10,5,0.9);border-top:1px solid var(--green-dim)}
+  .viz-controls button{background:rgba(0,255,65,0.08);border:1px solid var(--green-dim);color:var(--green-dim);padding:4px 10px;font-family:'Share Tech Mono',monospace;font-size:11px;cursor:pointer;flex:1;transition:all 0.2s}
+  .viz-controls button:hover{background:rgba(0,255,65,0.15);color:var(--green)}
+  .viz-controls button.active{background:rgba(0,255,65,0.2);color:var(--green);border-color:var(--green);box-shadow:0 0 8px rgba(0,255,65,0.3)}
+
   /* ═══ PLAYER.EXE ═══ */
   #player-popup{
     position:fixed;
@@ -1006,6 +1034,43 @@
   <div id="tron-controls">Use ARROW KEYS or WASD to turn • Press SPACE to start</div>
 </div>
 
+<!-- ═══ POOL.EXE ═══ -->
+<div id="pool-popup">
+  <div class="popup-titlebar">
+    <span>🎱 POOL.EXE</span>
+    <span class="popup-close" onclick="closePool()">✕</span>
+  </div>
+  <div style="position:relative;padding:0 10px 0 10px;">
+    <canvas id="pool-canvas" width="1280" height="680"></canvas>
+    <div class="pool-game-over" id="pool-game-over">
+      <div id="pool-game-over-text">YOU WIN</div>
+      <div style="font-size:14px;margin:10px 0;color:var(--green-dim);" id="pool-game-over-sub"></div>
+      <button onclick="Pool.resetGame()" style="background:var(--green);color:#000;border:none;padding:8px 20px;cursor:pointer;font-family:'VT323',monospace;font-size:14px;">PLAY AGAIN</button>
+    </div>
+  </div>
+  <div class="pool-msg" id="pool-msg">Click and drag from the cue ball to shoot</div>
+  <div class="pool-hud">
+    <div><span>YOU (</span><span id="pool-p1-type">--</span><span>): </span><span class="pool-pocketed" id="pool-p1-pocketed"></span></div>
+    <div class="pool-turn" id="pool-turn">YOUR SHOT</div>
+    <div><span>BOT (</span><span id="pool-p2-type">--</span><span>): </span><span class="pool-pocketed" id="pool-p2-pocketed"></span></div>
+  </div>
+</div>
+
+<!-- ═══ VIZ.EXE ═══ -->
+<div id="viz-popup">
+  <div class="popup-titlebar">
+    <span>🌀 VIZ.EXE</span>
+    <span class="popup-close" onclick="Viz.close()">✕</span>
+  </div>
+  <canvas id="viz-canvas" width="620" height="620"></canvas>
+  <div class="viz-controls">
+    <button class="active" onclick="Viz.setMode(0)">KALEIDO</button>
+    <button onclick="Viz.setMode(1)">TUNNEL</button>
+    <button onclick="Viz.setMode(2)">NEBULA</button>
+    <button onclick="Viz.setMode(3)">BARS</button>
+  </div>
+</div>
+
 <!-- ═══ PINCODE.EXE ═══ -->
 <div id="pincode-popup">
   <div class="popup-titlebar">
@@ -1474,6 +1539,8 @@ const WindowRegistry = {
     'donut-popup':   { name: 'DONUT',   icon: '🍩', command: 'donut',   discovered: false },
     'synth-popup':   { name: 'SYNTH',   icon: '🎹', command: 'synth',   discovered: false },
     'drums-popup':   { name: 'DRUMS',   icon: '🥁', command: 'drums',   discovered: false },
+    'pool-popup':    { name: 'POOL',    icon: '🎱', command: 'pool',    discovered: false },
+    'viz-popup':     { name: 'VIZ',     icon: '🌀', command: 'viz',     discovered: false },
   },
 
   discover(windowId) {
@@ -1749,6 +1816,7 @@ function showHelp(){
   printLine('  stop          — stop playback','dim');printLine('  next / prev   — skip tracks','dim');printLine('  vol [0-100]   — set volume','dim');printLine('  format        — toggle MP3/WAV','dim');
   printLine('','');printLine('── SYSTEM ──','dim');printLine('  whoami        — identity query','dim');printLine('  source        — view hidden notes','dim');printLine('  secrets       — your discoveries','dim');printLine('  ping          — signal test','dim');
   printLine('','');printLine('── AUDIO ──','dim');printLine('  sfx           — sound effects controls','dim');printLine('  synth         — keyboard synthesizer','dim');printLine('  drums         — drum machine','dim');
+  printLine('','');printLine('── GAMES ──','dim');printLine('  pool          — 8-ball pool vs bot','dim');printLine('  snake         — classic snake game','dim');printLine('  tron          — lightcycle arena','dim');printLine('','');printLine('── MEDIA ──','dim');printLine('  viz           — trippy audio visualizer','dim');
   printLine('','');printLine('── DATA ──','dim');printLine('  backup        — export save state to file','dim');printLine('  restore       — import save state from file','dim');printLine('  resetdata     — erase all saved progress','dim');
   printLine('');
 }
@@ -1851,6 +1919,12 @@ let A=0,B=0;const iv=setInterval(()=>{const b=[];const z=[];for(let k=0;k<1760;k
   matrix:()=>{document.getElementById('matrix-popup').classList.add('show');WindowRegistry.discover('matrix-popup');startMatrix();printLine('Opening MATRIX.EXE...','dim')},
   synth:()=>{document.getElementById('synth-popup').classList.add('show');WindowRegistry.discover('synth-popup');initSynth();printLine('Opening SYNTH.EXE...','dim')},
   drums:()=>{document.getElementById('drums-popup').classList.add('show');WindowRegistry.discover('drums-popup');initDrums();printLine('Opening DRUMS.EXE...','dim')},
+  pool:()=>{document.getElementById('pool-popup').classList.add('show');WindowRegistry.discover('pool-popup');Pool.init();printLine('Opening POOL.EXE... Rack \'em up.','dim')},
+  billiards:()=>{COMMANDS.pool()},
+  '8ball':()=>{COMMANDS.pool()},
+  viz:()=>{try{Viz.open()}catch(e){console.error('VIZ error:',e)};printLine('Opening VIZ.EXE... tune in.','dim')},
+  visualizer:()=>{COMMANDS.viz()},
+  trippy:()=>{COMMANDS.viz()},
   status:()=>{printLine('');printLine(`SYS:    ${state.isPlaying?'ACTIVE':'STANDBY'}`,'dim');printLine(`FMT:    ${CONFIG.format.toUpperCase()}`,'dim');printLine(`VOL:    ${Math.round(audio.volume*100)}`,'dim');printLine(`FILES:  ${CONFIG.tracks.filter(t=>t.visible||state.discovered.has(t.id)).length}/${CONFIG.tracks.length}`,'dim');printLine(`ENC:    ${CONFIG.tracks.filter(t=>t.locked&&!state.discovered.has(t.id)).length}`,state.discovered.size<CONFIG.tracks.length?'error':'dim');printLine(`SECRET: ${CONFIG.secrets.codesFound.length}/${CONFIG.secrets.totalCodes}`,'dim');printLine('')},
   cd:()=>printLine('restricted','error'),pwd:()=>printLine('/███/████████/░░░░░░','dim'),
   rm:()=>{printLine('PERMISSION DENIED','error')},
@@ -5087,54 +5161,888 @@ function stopMatrix() {
   }
 }
 
-// ═══ DRAGGABLE POPUPS ═══
-['calc-popup', 'notepad-popup', 'matrix-popup', 'snake-popup', 'tron-popup', 'pincode-popup', 'player-popup', 'gallery-popup', 'scanner-popup', 'radar-popup', 'echoes-popup', 'donut-popup', 'synth-popup', 'drums-popup'].forEach(id => {
-  const popup = document.getElementById(id);
-  if (!popup) return;
-  const titlebar = popup.querySelector('.popup-titlebar');
-  if (!titlebar) return;
-  let isDragging = false, startX = 0, startY = 0, initialLeft = 0, initialTop = 0;
+// ═══ POOL.EXE (8-BALL) ═══
+const Pool = {
+  canvas:null, ctx:null, W:1280, H:680,
+  RAIL:40, POCKET_R:22, BALL_R:11,
+  balls:[], aiming:false, aimEnd:{x:0,y:0},
+  power:0, maxPower:18,
+  turn:1, // 1=player, 2=bot
+  p1Type:null, p2Type:null,
+  p1Pocketed:[], p2Pocketed:[],
+  animating:false, gameOver:false, placingCue:false,
+  botTimer:null,
 
-  titlebar.addEventListener('mousedown', (e) => {
-    if (e.target.classList.contains('popup-close')) return;
-    if (e.target.tagName === 'BUTTON') return;
-    isDragging = true;
-    startX = e.clientX;
-    startY = e.clientY;
-    const rect = popup.getBoundingClientRect();
-    initialLeft = rect.left;
-    initialTop = rect.top;
-    // Clear centering transform so left/top position correctly
-    popup.style.transform = 'none';
-    popup.style.left = initialLeft + 'px';
-    popup.style.top = initialTop + 'px';
-    popup.style.right = 'auto';
-    popup.style.zIndex = 10000;
-    popup.classList.add('dragging');
-  });
-  
-  let animationId;
-  document.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
-    
-    if (animationId) cancelAnimationFrame(animationId);
-    animationId = requestAnimationFrame(() => {
-      popup.style.left = (initialLeft + dx) + 'px';
-      popup.style.top = (initialTop + dy) + 'px';
-      popup.style.right = 'auto';
-    });
-  });
-  
-  document.addEventListener('mouseup', () => {
-    if (isDragging) {
-      isDragging = false;
-      popup.style.zIndex = 9997;
-      popup.classList.remove('dragging');
-      if (animationId) cancelAnimationFrame(animationId);
+  COLORS:[
+    null,'#e8d44d','#1e5aa8','#cc2222','#6b2fa0','#e87020','#1a8a3a','#8b2020',
+    '#111','#e8d44d','#1e5aa8','#cc2222','#6b2fa0','#e87020','#1a8a3a','#8b2020'
+  ],
+  pockets:[],
+
+  init(){
+    this.canvas=document.getElementById('pool-canvas')
+    this.ctx=this.canvas.getContext('2d')
+    this.canvas.width=this.W; this.canvas.height=this.H
+    const R=this.RAIL
+    this.pockets=[
+      {x:R-2,y:R-2},{x:this.W/2,y:R-6},{x:this.W-R+2,y:R-2},
+      {x:R-2,y:this.H-R+2},{x:this.W/2,y:this.H-R+6},{x:this.W-R+2,y:this.H-R+2}
+    ]
+    this.canvas.addEventListener('mousedown',e=>this.onDown(e))
+    document.addEventListener('mousemove',e=>{if(this.aiming)this.onMove(e)})
+    document.addEventListener('mouseup',e=>{if(this.aiming)this.onUp(e)})
+    this.resetGame()
+  },
+
+  resetGame(){
+    this.balls=[]
+    this.p1Type=null;this.p2Type=null
+    this.p1Pocketed=[];this.p2Pocketed=[]
+    this.turn=1;this.gameOver=false;this.animating=false;this.placingCue=false
+    if(this.botTimer)clearTimeout(this.botTimer)
+    document.getElementById('pool-game-over').classList.remove('show')
+    // Cue ball
+    this.balls.push({x:this.W*0.27,y:this.H/2,vx:0,vy:0,num:0,pocketed:false})
+    // Rack in triangle
+    const sx=this.W*0.72, sy=this.H/2, d=this.BALL_R*2.15
+    const order=[1,9,2,10,8,11,3,14,6,15,13,4,12,7,5]
+    let idx=0
+    for(let row=0;row<5;row++){
+      for(let col=0;col<=row;col++){
+        const x=sx+row*d*Math.cos(Math.PI/6)
+        const y=sy+(col-row/2)*d
+        this.balls.push({x,y,vx:0,vy:0,num:order[idx++],pocketed:false})
+      }
     }
-  });
+    this.setMsg('Click and drag from the cue ball to shoot')
+    this.updateHUD()
+    this.draw()
+  },
+
+  mouse(e){
+    const r=this.canvas.getBoundingClientRect()
+    return{x:(e.clientX-r.left)*(this.W/r.width),y:(e.clientY-r.top)*(this.H/r.height)}
+  },
+
+  onDown(e){
+    if(this.gameOver){this.resetGame();return}
+    if(this.animating||this.turn===2)return
+    const p=this.mouse(e), cue=this.balls[0]
+    if(this.placingCue){
+      cue.x=Math.max(this.RAIL+this.BALL_R,Math.min(this.W*0.35,p.x))
+      cue.y=Math.max(this.RAIL+this.BALL_R,Math.min(this.H-this.RAIL-this.BALL_R,p.y))
+      cue.pocketed=false;this.placingCue=false
+      this.setMsg('Your shot')
+      this.draw();return
+    }
+    // Only aim if clicking near cue ball
+    const dx=p.x-cue.x,dy=p.y-cue.y
+    if(Math.sqrt(dx*dx+dy*dy)>80)return
+    this.aiming=true;this.aimEnd=p
+    this.draw()
+  },
+
+  onMove(e){
+    if(!this.aiming)return
+    this.aimEnd=this.mouse(e)
+    const cue=this.balls[0],dx=cue.x-this.aimEnd.x,dy=cue.y-this.aimEnd.y
+    this.power=Math.min(Math.sqrt(dx*dx+dy*dy)/22,this.maxPower)
+    this.draw()
+  },
+
+  onUp(e){
+    if(!this.aiming)return
+    this.aiming=false
+    const cue=this.balls[0]
+    const dx=cue.x-this.aimEnd.x,dy=cue.y-this.aimEnd.y
+    const dist=Math.sqrt(dx*dx+dy*dy)
+    if(dist<10){this.draw();return}
+    const pwr=Math.min(dist/22,this.maxPower)
+    const ang=Math.atan2(dy,dx)
+    cue.vx=Math.cos(ang)*pwr;cue.vy=Math.sin(ang)*pwr
+    this.animating=true
+    this.simulate()
+  },
+
+  shoot(vx,vy){
+    const cue=this.balls[0]
+    cue.vx=vx;cue.vy=vy
+    this.animating=true
+    this.simulate()
+  },
+
+  simulate(){
+    const friction=0.993, R=this.RAIL, BR=this.BALL_R
+    const pocketedThisShot=[]
+    const step=()=>{
+      let moving=false
+      for(const b of this.balls){
+        if(b.pocketed)continue
+        b.x+=b.vx;b.y+=b.vy
+        b.vx*=friction;b.vy*=friction
+        if(Math.abs(b.vx)<0.01&&Math.abs(b.vy)<0.01){b.vx=0;b.vy=0}
+        else moving=true
+        // Rails
+        if(b.x-BR<R){b.x=R+BR;b.vx=Math.abs(b.vx)*0.88}
+        if(b.x+BR>this.W-R){b.x=this.W-R-BR;b.vx=-Math.abs(b.vx)*0.88}
+        if(b.y-BR<R){b.y=R+BR;b.vy=Math.abs(b.vy)*0.88}
+        if(b.y+BR>this.H-R){b.y=this.H-R-BR;b.vy=-Math.abs(b.vy)*0.88}
+        // Pockets
+        for(const p of this.pockets){
+          const px=b.x-p.x,py=b.y-p.y
+          if(Math.sqrt(px*px+py*py)<this.POCKET_R){
+            b.pocketed=true;b.vx=0;b.vy=0
+            if(!pocketedThisShot.includes(b.num))pocketedThisShot.push(b.num)
+            break
+          }
+        }
+      }
+      // Ball-ball collisions
+      for(let i=0;i<this.balls.length;i++){
+        if(this.balls[i].pocketed)continue
+        for(let j=i+1;j<this.balls.length;j++){
+          if(this.balls[j].pocketed)continue
+          const a=this.balls[i],b=this.balls[j]
+          const dx=b.x-a.x,dy=b.y-a.y
+          const dist=Math.sqrt(dx*dx+dy*dy)
+          if(dist<BR*2&&dist>0){
+            const nx=dx/dist,ny=dy/dist
+            const dvx=a.vx-b.vx,dvy=a.vy-b.vy
+            const dvn=dvx*nx+dvy*ny
+            if(dvn>0){
+              a.vx-=dvn*nx;a.vy-=dvn*ny
+              b.vx+=dvn*nx;b.vy+=dvn*ny
+              const overlap=BR*2-dist
+              a.x-=overlap/2*nx;a.y-=overlap/2*ny
+              b.x+=overlap/2*nx;b.y+=overlap/2*ny
+              moving=true
+            }
+          }
+        }
+      }
+      this.draw()
+      if(moving)requestAnimationFrame(step)
+      else{this.animating=false;this.resolveTurn(pocketedThisShot)}
+    }
+    requestAnimationFrame(step)
+  },
+
+  resolveTurn(pocketed){
+    let foul=false, pocketedOwn=false
+    // Cue ball scratch
+    if(pocketed.includes(0)){
+      foul=true
+      this.setMsg(this.turn===1?'SCRATCH! Bot places cue ball.':'BOT SCRATCHED! Click to place cue ball.')
+    }
+    // Assign types on first non-cue, non-8 pocket
+    if(!this.p1Type){
+      const valid=pocketed.filter(n=>n!==0&&n!==8)
+      if(valid.length>0){
+        const first=valid[0], isSolid=first>=1&&first<=7
+        if(this.turn===1){
+          this.p1Type=isSolid?'solid':'stripe'
+          this.p2Type=isSolid?'stripe':'solid'
+        }else{
+          this.p2Type=isSolid?'solid':'stripe'
+          this.p1Type=isSolid?'stripe':'solid'
+        }
+      }
+    }
+    // Sort pocketed
+    for(const num of pocketed){
+      if(num===0||num===8)continue
+      const isSolid=num>=1&&num<=7
+      const ownerType=isSolid?'solid':'stripe'
+      if(this.p1Type===ownerType)this.p1Pocketed.push(num)
+      else this.p2Pocketed.push(num)
+      if((this.turn===1&&this.p1Type===ownerType)||(this.turn===2&&this.p2Type===ownerType))pocketedOwn=true
+    }
+    // 8-ball check
+    if(pocketed.includes(8)){
+      const myPocketed=this.turn===1?this.p1Pocketed:this.p2Pocketed
+      const myType=this.turn===1?this.p1Type:this.p2Type
+      const needed=myType?7:999
+      if(myPocketed.length>=needed&&!foul){
+        this.endGame(this.turn===1)
+      }else{
+        this.endGame(this.turn!==1)
+      }
+      return
+    }
+    // Handle scratch
+    if(foul){
+      this.turn=this.turn===1?2:1
+      if(this.turn===1){
+        this.placingCue=true
+      }else{
+        // Bot places cue ball automatically
+        this.balls[0].pocketed=false
+        this.balls[0].x=this.W*0.27;this.balls[0].y=this.H/2
+        this.placingCue=false
+      }
+    }else if(!pocketedOwn){
+      this.turn=this.turn===1?2:1
+    }
+    this.updateHUD()
+    this.draw()
+    // Check if all of one type pocketed (for 8-ball shot)
+    // Bot's turn
+    if(this.turn===2&&!this.gameOver&&!this.placingCue){
+      this.setMsg('Bot is thinking...')
+      this.botTimer=setTimeout(()=>this.botShoot(),1200)
+    }else if(this.turn===1&&!foul&&!this.gameOver){
+      this.setMsg('Your shot')
+    }
+  },
+
+  endGame(playerWins){
+    this.gameOver=true
+    const txt=document.getElementById('pool-game-over-text')
+    const sub=document.getElementById('pool-game-over-sub')
+    if(playerWins){
+      txt.textContent='YOU WIN!'
+      sub.textContent='All balls pocketed. Nice run.'
+    }else{
+      txt.textContent='BOT WINS'
+      sub.textContent='Better luck next time.'
+    }
+    document.getElementById('pool-game-over').classList.add('show')
+    this.updateHUD()
+    try{playSFX('glitch_error',0.5)}catch(e){}
+  },
+
+  setMsg(t){const el=document.getElementById('pool-msg');if(el)el.textContent=t},
+
+  updateHUD(){
+    const turnEl=document.getElementById('pool-turn')
+    if(turnEl){
+      if(this.gameOver)turnEl.textContent='GAME OVER'
+      else if(this.placingCue)turnEl.textContent='PLACE CUE BALL'
+      else turnEl.textContent=this.turn===1?'YOUR SHOT':'BOT THINKING...'
+    }
+    const t1=document.getElementById('pool-p1-type')
+    const t2=document.getElementById('pool-p2-type')
+    if(t1)t1.textContent=this.p1Type?this.p1Type.toUpperCase():'--'
+    if(t2)t2.textContent=this.p2Type?this.p2Type.toUpperCase():'--'
+    const p1=document.getElementById('pool-p1-pocketed')
+    const p2=document.getElementById('pool-p2-pocketed')
+    if(p1)p1.innerHTML=this.p1Pocketed.map(n=>`<span class="pool-ball-icon" style="background:${this.COLORS[n]}"></span>`).join('')
+    if(p2)p2.innerHTML=this.p2Pocketed.map(n=>`<span class="pool-ball-icon" style="background:${this.COLORS[n]}"></span>`).join('')
+  },
+
+  // ── BOT AI (deliberately imperfect) ──
+  botShoot(){
+    if(this.gameOver)return
+    const cue=this.balls[0]
+    const myType=this.p2Type
+    // Get target balls
+    let targets=this.balls.filter(b=>!b.pocketed&&b.num!==0&&b.num!==8)
+    if(myType){
+      const mine=targets.filter(b=>myType==='solid'?(b.num>=1&&b.num<=7):(b.num>=9&&b.num<=15))
+      if(mine.length>0)targets=mine
+      else{
+        // All pocketed, go for 8
+        const eight=this.balls.find(b=>b.num===8&&!b.pocketed)
+        if(eight)targets=[eight]
+      }
+    }
+    if(targets.length===0){
+      // Desperation: just hit something
+      targets=this.balls.filter(b=>!b.pocketed&&b.num!==0)
+    }
+
+    let bestScore=-Infinity, bestVx=3, bestVy=0
+    for(const ball of targets){
+      for(const pocket of this.pockets){
+        // Angle: ball to pocket
+        const bpx=pocket.x-ball.x, bpy=pocket.y-ball.y
+        const bpd=Math.sqrt(bpx*bpx+bpy*bpy)
+        // Where cue needs to hit ball (opposite side from pocket)
+        const hitX=ball.x-bpx/bpd*(this.BALL_R*2)
+        const hitY=ball.y-bpy/bpd*(this.BALL_R*2)
+        // Cue to hit point
+        const chx=hitX-cue.x, chy=hitY-cue.y
+        const chd=Math.sqrt(chx*chx+chy*chy)
+        if(chd<1)continue
+        // Check if path is relatively clear (simple check)
+        let blocked=false
+        for(const ob of this.balls){
+          if(ob.pocketed||ob.num===0||ob.num===ball.num)continue
+          // Distance from obstacle to line cue→hitPoint
+          const t=Math.max(0,Math.min(1,((ob.x-cue.x)*chx+(ob.y-cue.y)*chy)/(chd*chd)))
+          const cx=cue.x+t*chx,cy=cue.y+t*chy
+          const od=Math.sqrt((ob.x-cx)*(ob.x-cx)+(ob.y-cy)*(ob.y-cy))
+          if(od<this.BALL_R*2.5){blocked=true;break}
+        }
+        // Score this shot
+        let score=0
+        score+=500/bpd // closer ball-to-pocket = better
+        score+=300/chd // closer cue-to-ball = better
+        if(blocked)score*=0.15 // heavily penalize blocked shots
+        // Angle quality: how straight is cue→ball→pocket?
+        const ang1=Math.atan2(chy,chx)
+        const ang2=Math.atan2(bpy,bpx)
+        let angDiff=Math.abs(ang1-ang2)
+        if(angDiff>Math.PI)angDiff=2*Math.PI-angDiff
+        score*=Math.max(0.1,1-angDiff/Math.PI) // straighter = better
+
+        if(score>bestScore){
+          bestScore=score
+          // Calculate velocity
+          const pwr=Math.min(6+chd/80,this.maxPower*0.8)
+          bestVx=(chx/chd)*pwr
+          bestVy=(chy/chd)*pwr
+        }
+      }
+    }
+
+    // 20% chance to pick a worse shot (randomize aim more)
+    if(Math.random()<0.2){
+      const wobble=(Math.random()-0.5)*0.5
+      const cos=Math.cos(wobble),sin=Math.sin(wobble)
+      const nvx=bestVx*cos-bestVy*sin
+      const nvy=bestVx*sin+bestVy*cos
+      bestVx=nvx;bestVy=nvy
+    }
+
+    // Add aim wobble (±3-8 degrees)
+    const wobbleDeg=(3+Math.random()*5)*(Math.random()<0.5?1:-1)
+    const wobbleRad=wobbleDeg*Math.PI/180
+    const wcos=Math.cos(wobbleRad),wsin=Math.sin(wobbleRad)
+    const fvx=bestVx*wcos-bestVy*wsin
+    const fvy=bestVx*wsin+bestVy*wcos
+
+    // Power variance ±15%
+    const pwrMult=0.85+Math.random()*0.3
+
+    this.setMsg('Bot shoots!')
+    this.shoot(fvx*pwrMult,fvy*pwrMult)
+  },
+
+  // ── DRAW ──
+  draw(){
+    const ctx=this.ctx, W=this.W, H=this.H, R=this.RAIL
+    if(!ctx)return
+
+    // Table
+    ctx.fillStyle='#1a6b2a';ctx.fillRect(0,0,W,H)
+    // Felt texture (subtle)
+    ctx.fillStyle='rgba(0,0,0,0.05)'
+    for(let i=0;i<W;i+=4)for(let j=0;j<H;j+=4){if(Math.random()>0.7)ctx.fillRect(i,j,2,2)}
+    // Rails
+    ctx.fillStyle='#4a2f15';ctx.fillRect(0,0,W,R);ctx.fillRect(0,H-R,W,R)
+    ctx.fillRect(0,0,R,H);ctx.fillRect(W-R,0,R,H)
+    // Rail inner edge
+    ctx.strokeStyle='#2a5a1a';ctx.lineWidth=3;ctx.strokeRect(R,R,W-R*2,H-R*2)
+    // Pocket cuts in rail
+    ctx.fillStyle='#1a6b2a'
+    for(const p of this.pockets){
+      ctx.beginPath();ctx.arc(p.x,p.y,this.POCKET_R+6,0,Math.PI*2);ctx.fill()
+    }
+    // Pockets
+    for(const p of this.pockets){
+      ctx.beginPath();ctx.arc(p.x,p.y,this.POCKET_R,0,Math.PI*2)
+      ctx.fillStyle='#0a0a0a';ctx.fill()
+      ctx.strokeStyle='#333';ctx.lineWidth=2;ctx.stroke()
+    }
+    // Head string (quarter line)
+    ctx.beginPath();ctx.setLineDash([6,8])
+    ctx.moveTo(this.W*0.35,R);ctx.lineTo(this.W*0.35,H-R)
+    ctx.strokeStyle='rgba(255,255,255,0.08)';ctx.lineWidth=1;ctx.stroke()
+    ctx.setLineDash([])
+    // Foot spot
+    ctx.beginPath();ctx.arc(this.W*0.72,H/2,3,0,Math.PI*2)
+    ctx.fillStyle='rgba(255,255,255,0.15)';ctx.fill()
+
+    // Balls
+    for(const b of this.balls){
+      if(b.pocketed)continue
+      const x=b.x,y=b.y,br=this.BALL_R
+      ctx.save()
+      if(b.num===0){
+        // Cue ball
+        ctx.beginPath();ctx.arc(x,y,br,0,Math.PI*2)
+        ctx.fillStyle='#f0f0f0';ctx.fill()
+        ctx.strokeStyle='#ddd';ctx.lineWidth=0.5;ctx.stroke()
+        // Sheen
+        ctx.beginPath();ctx.arc(x-3,y-3,3,0,Math.PI*2)
+        ctx.fillStyle='rgba(255,255,255,0.5)';ctx.fill()
+      }else{
+        const isStripe=b.num>=9
+        if(isStripe){
+          ctx.beginPath();ctx.arc(x,y,br,0,Math.PI*2)
+          ctx.fillStyle='#f0f0f0';ctx.fill()
+          // Stripe band
+          ctx.save();ctx.beginPath();ctx.arc(x,y,br,0,Math.PI*2);ctx.clip()
+          ctx.fillStyle=this.COLORS[b.num]
+          ctx.fillRect(x-br,y-br*0.4,br*2,br*0.8)
+          ctx.restore()
+        }else{
+          ctx.beginPath();ctx.arc(x,y,br,0,Math.PI*2)
+          ctx.fillStyle=this.COLORS[b.num];ctx.fill()
+        }
+        // Number dot
+        ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2)
+        ctx.fillStyle='#fff';ctx.fill()
+        ctx.fillStyle='#000';ctx.font='bold 7px sans-serif'
+        ctx.textAlign='center';ctx.textBaseline='middle'
+        ctx.fillText(b.num,x,y+0.5)
+        // Outline
+        ctx.beginPath();ctx.arc(x,y,br,0,Math.PI*2)
+        ctx.strokeStyle='rgba(0,0,0,0.25)';ctx.lineWidth=0.8;ctx.stroke()
+        // Sheen
+        ctx.beginPath();ctx.arc(x-2,y-2,2.5,0,Math.PI*2)
+        ctx.fillStyle='rgba(255,255,255,0.3)';ctx.fill()
+      }
+      ctx.restore()
+    }
+
+    // Aiming line
+    if(this.aiming&&!this.balls[0].pocketed&&this.turn===1){
+      const cue=this.balls[0]
+      const dx=cue.x-this.aimEnd.x,dy=cue.y-this.aimEnd.y
+      const dist=Math.sqrt(dx*dx+dy*dy)
+      if(dist>10){
+        const ang=Math.atan2(dy,dx)
+        // Cue stick
+        ctx.beginPath()
+        ctx.moveTo(this.aimEnd.x,this.aimEnd.y)
+        ctx.lineTo(cue.x-Math.cos(ang)*this.BALL_R,cue.y-Math.sin(ang)*this.BALL_R)
+        ctx.strokeStyle='#8B6914';ctx.lineWidth=4;ctx.stroke()
+        ctx.strokeStyle='#5a4510';ctx.lineWidth=2;ctx.stroke()
+        // Aim line
+        ctx.beginPath();ctx.setLineDash([4,8])
+        ctx.moveTo(cue.x,cue.y)
+        ctx.lineTo(cue.x+Math.cos(ang)*200,cue.y+Math.sin(ang)*200)
+        ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=1;ctx.stroke()
+        ctx.setLineDash([])
+        // Ghost ball (where cue will go)
+        const ghostDist=80
+        ctx.beginPath()
+        ctx.arc(cue.x+Math.cos(ang)*ghostDist,cue.y+Math.sin(ang)*ghostDist,this.BALL_R,0,Math.PI*2)
+        ctx.strokeStyle='rgba(255,255,255,0.12)';ctx.lineWidth=1;ctx.stroke()
+        // Power bar
+        const pct=this.power/this.maxPower
+        const barW=W-R*2-40,barH=10
+        const barX=R+20,barY=H-R+14
+        ctx.fillStyle=pct>0.7?'#ff4040':pct>0.4?'#ffaa00':'#00ff41'
+        ctx.fillRect(barX,barY,barW*pct,barH)
+        ctx.strokeStyle='#555';ctx.lineWidth=1;ctx.strokeRect(barX,barY,barW,barH)
+        ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='9px sans-serif'
+        ctx.textAlign='center';ctx.fillText('POWER',W/2,barY+barH+10)
+      }
+    }
+
+    // Placing cue ball indicator
+    if(this.placingCue&&this.turn===1){
+      const mx=this.W*0.35
+      ctx.fillStyle='rgba(255,255,255,0.03)'
+      ctx.fillRect(R,R,mx-R,H-R*2)
+      ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='14px VT323, monospace'
+      ctx.textAlign='center';ctx.fillText('CLICK TO PLACE CUE BALL',mx/2+R/2,H/2)
+    }
+  }
+}
+
+function closePool(){
+  document.getElementById('pool-popup').classList.remove('show')
+  if(Pool.botTimer)clearTimeout(Pool.botTimer)
+  WindowRegistry.updateIndicators()
+}
+
+// ═══ VIZ.EXE — Trippy Audio Visualizer ═══
+let vizAudioCtx = null, vizAnalyser = null, vizSource = null
+const Viz = {
+  canvas: null, ctx: null,
+  freqData: null, timeData: null, raf: null, mode: 0, time: 0,
+  particles: [], rings: [],
+
+  init() {
+    if (this.canvas) return
+    this.canvas = document.getElementById('viz-canvas')
+    this.ctx = this.canvas.getContext('2d')
+    this.spawnParticles()
+  },
+
+  connectAudio() {
+    if (vizAnalyser) return true
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext
+      vizAudioCtx = new AC()
+      vizAnalyser = vizAudioCtx.createAnalyser()
+      vizAnalyser.fftSize = 2048
+      vizAnalyser.smoothingTimeConstant = 0.8
+      vizSource = vizAudioCtx.createMediaElementSource(audio)
+      vizSource.connect(vizAnalyser)
+      vizAnalyser.connect(vizAudioCtx.destination)
+      this.freqData = new Uint8Array(vizAnalyser.frequencyBinCount)
+      this.timeData = new Uint8Array(vizAnalyser.frequencyBinCount)
+      return true
+    } catch(e) {
+      console.warn('VIZ: Could not connect audio analyser', e)
+      // fallback: create dummy data arrays for idle animation
+      this.freqData = new Uint8Array(1024)
+      this.timeData = new Uint8Array(1024)
+      return false
+    }
+  },
+
+  open() {
+    this.init()
+    this.connectAudio()
+    const popup = document.getElementById('viz-popup')
+    popup.classList.add('show')
+    WindowRegistry.discover('viz-popup')
+    WindowRegistry.updateIndicators()
+    if (vizAudioCtx && vizAudioCtx.state === 'suspended') vizAudioCtx.resume()
+    this.start()
+  },
+
+  close() {
+    document.getElementById('viz-popup').classList.remove('show')
+    this.stop()
+    WindowRegistry.updateIndicators()
+  },
+
+  start() { if (!this.raf) this.loop() },
+  stop() { if (this.raf) { cancelAnimationFrame(this.raf); this.raf = null } },
+
+  setMode(m) {
+    this.mode = m
+    this.rings = []
+    const btns = document.querySelectorAll('.viz-controls button')
+    btns.forEach((b, i) => b.classList.toggle('active', i === m))
+  },
+
+  spawnParticles() {
+    this.particles = []
+    for (let i = 0; i < 250; i++) {
+      const a = Math.random() * Math.PI * 2
+      const r = 40 + Math.random() * 220
+      this.particles.push({
+        angle: a, radius: r, baseRadius: r,
+        speed: 0.002 + Math.random() * 0.006,
+        size: 1 + Math.random() * 2,
+        hue: Math.random() * 360,
+        band: Math.floor(Math.random() * 64)
+      })
+    }
+  },
+
+  getAudio() {
+    if (!vizAnalyser) return false
+    if (vizAudioCtx && vizAudioCtx.state === 'suspended') vizAudioCtx.resume()
+    vizAnalyser.getByteFrequencyData(this.freqData)
+    vizAnalyser.getByteTimeDomainData(this.timeData)
+    let sum = 0
+    for (let i = 0; i < 10; i++) sum += this.freqData[i]
+    this.bass = sum / 10
+    sum = 0
+    for (let i = 0; i < this.freqData.length; i++) sum += this.freqData[i]
+    this.energy = sum / this.freqData.length
+    return this.energy > 2
+  },
+
+  loop() {
+    const hasAudio = this.getAudio()
+    const c = this.ctx, w = this.canvas.width, h = this.canvas.height
+    this.time += 0.016
+
+    if (this.mode === 0) this.drawKaleidoscope(c, w, h, hasAudio)
+    else if (this.mode === 1) this.drawTunnel(c, w, h, hasAudio)
+    else if (this.mode === 2) this.drawNebula(c, w, h, hasAudio)
+    else this.drawBars(c, w, h, hasAudio)
+
+    if (!hasAudio) {
+      c.fillStyle = 'rgba(0,255,65,0.4)'
+      c.font = '14px "Share Tech Mono", monospace'
+      c.textAlign = 'center'
+      c.fillText('▶ PLAY A TRACK', w / 2, h - 20)
+      c.textAlign = 'start'
+    }
+
+    this.raf = requestAnimationFrame(() => this.loop())
+  },
+
+  // ── MODE 0: KALEIDOSCOPE ──
+  drawKaleidoscope(c, w, h, hasAudio) {
+    c.fillStyle = 'rgba(0,0,0,0.06)'
+    c.fillRect(0, 0, w, h)
+    const cx = w / 2, cy = h / 2
+    const segments = 8
+    const sliceAngle = (Math.PI * 2) / segments
+    const bands = 64
+    const hueBase = (this.time * 30) % 360
+
+    c.save()
+    c.translate(cx, cy)
+    c.globalCompositeOperation = 'lighter'
+
+    for (let s = 0; s < segments; s++) {
+      c.save()
+      c.rotate(s * sliceAngle)
+      if (s % 2 === 1) c.scale(1, -1)
+
+      for (let i = 0; i < bands; i++) {
+        const val = hasAudio ? this.freqData[i] : (80 + 30 * Math.sin(this.time * 2 + i * 0.2))
+        const norm = val / 255
+        const r = 20 + norm * 250
+        const angle = (i / bands) * sliceAngle
+        const hue = (hueBase + i * 5) % 360
+
+        c.beginPath()
+        c.moveTo(0, 0)
+        const x = Math.cos(angle) * r
+        const y = Math.sin(angle) * r
+        c.lineTo(x, y)
+        const x2 = Math.cos(angle + sliceAngle / bands) * (r * 0.8)
+        const y2 = Math.sin(angle + sliceAngle / bands) * (r * 0.8)
+        c.lineTo(x2, y2)
+        c.closePath()
+        c.fillStyle = `hsla(${hue},100%,${50 + norm * 30}%,${0.3 + norm * 0.5})`
+        c.fill()
+      }
+      c.restore()
+    }
+
+    // center pulse
+    const bassNorm = hasAudio ? this.bass / 255 : 0.3 + 0.1 * Math.sin(this.time * 3)
+    const pr = 15 + bassNorm * 40
+    const grad = c.createRadialGradient(0, 0, 0, 0, 0, pr)
+    grad.addColorStop(0, `hsla(${hueBase},100%,80%,0.8)`)
+    grad.addColorStop(1, `hsla(${hueBase},100%,50%,0)`)
+    c.beginPath()
+    c.arc(0, 0, pr, 0, Math.PI * 2)
+    c.fillStyle = grad
+    c.fill()
+
+    c.globalCompositeOperation = 'source-over'
+    c.restore()
+  },
+
+  // ── MODE 1: WAVEFORM TUNNEL ──
+  drawTunnel(c, w, h, hasAudio) {
+    c.fillStyle = 'rgba(0,0,0,0.08)'
+    c.fillRect(0, 0, w, h)
+    const cx = w / 2, cy = h / 2
+
+    // shrink existing rings
+    for (let i = this.rings.length - 1; i >= 0; i--) {
+      this.rings[i].scale *= 0.985
+      this.rings[i].alpha *= 0.992
+      if (this.rings[i].scale < 0.02 || this.rings[i].alpha < 0.01) {
+        this.rings.splice(i, 1)
+      }
+    }
+
+    // spawn new ring every 3 frames
+    if (Math.floor(this.time * 60) % 3 === 0) {
+      const pts = []
+      const samples = 128
+      for (let i = 0; i < samples; i++) {
+        const val = hasAudio ? (this.timeData[i * 4] - 128) / 128 : Math.sin(this.time * 4 + i * 0.15) * 0.3
+        pts.push(val)
+      }
+      this.rings.push({ pts, scale: 1, alpha: 1, hue: (this.time * 50) % 360 })
+    }
+
+    c.save()
+    c.translate(cx, cy)
+    c.globalCompositeOperation = 'lighter'
+
+    for (const ring of this.rings) {
+      const samples = ring.pts.length
+      const baseR = 280 * ring.scale
+      c.beginPath()
+      for (let i = 0; i <= samples; i++) {
+        const idx = i % samples
+        const angle = (idx / samples) * Math.PI * 2
+        const displacement = ring.pts[idx] * 60 * ring.scale
+        const r = baseR + displacement
+        const x = Math.cos(angle) * r
+        const y = Math.sin(angle) * r
+        if (i === 0) c.moveTo(x, y)
+        else c.lineTo(x, y)
+      }
+      c.closePath()
+      c.strokeStyle = `hsla(${ring.hue},100%,60%,${ring.alpha * 0.6})`
+      c.lineWidth = 1.5 * ring.scale + 0.5
+      c.stroke()
+    }
+
+    c.globalCompositeOperation = 'source-over'
+    c.restore()
+
+    // keep ring count manageable
+    if (this.rings.length > 80) this.rings.splice(0, this.rings.length - 80)
+  },
+
+  // ── MODE 2: PARTICLE NEBULA ──
+  drawNebula(c, w, h, hasAudio) {
+    c.fillStyle = 'rgba(0,0,0,0.07)'
+    c.fillRect(0, 0, w, h)
+    const cx = w / 2, cy = h / 2
+    const bassNorm = hasAudio ? this.bass / 255 : 0.3
+    const burst = hasAudio && this.bass > 180
+
+    c.save()
+    c.translate(cx, cy)
+    c.globalCompositeOperation = 'lighter'
+
+    // slow global rotation
+    const globalRot = this.time * 0.1
+
+    for (const p of this.particles) {
+      const bandVal = hasAudio ? this.freqData[p.band] / 255 : 0.3 + 0.2 * Math.sin(this.time + p.angle)
+
+      // modulate radius by frequency
+      p.radius = p.baseRadius + bandVal * 80
+      if (burst) p.radius += 30
+
+      // orbit
+      p.angle += p.speed * (1 + bandVal * 2)
+      p.hue = (p.hue + 0.5) % 360
+
+      const a = p.angle + globalRot
+      const x = Math.cos(a) * p.radius
+      const y = Math.sin(a) * p.radius
+      const size = p.size * (0.8 + bandVal * 1.5)
+
+      c.beginPath()
+      c.arc(x, y, size, 0, Math.PI * 2)
+      c.fillStyle = `hsla(${p.hue},100%,${55 + bandVal * 30}%,${0.5 + bandVal * 0.4})`
+      c.fill()
+    }
+
+    // center glow
+    const gr = 30 + bassNorm * 60
+    const grad = c.createRadialGradient(0, 0, 0, 0, 0, gr)
+    grad.addColorStop(0, `hsla(${(this.time * 40) % 360},100%,70%,0.3)`)
+    grad.addColorStop(1, 'transparent')
+    c.beginPath()
+    c.arc(0, 0, gr, 0, Math.PI * 2)
+    c.fillStyle = grad
+    c.fill()
+
+    c.globalCompositeOperation = 'source-over'
+    c.restore()
+  },
+
+  // ── MODE 3: FRACTAL BARS ──
+  drawBars(c, w, h, hasAudio) {
+    c.fillStyle = 'rgba(0,0,0,0.12)'
+    c.fillRect(0, 0, w, h)
+    const cx = w / 2, cy = h / 2
+    const bands = 64
+    const hueBase = (this.time * 25) % 360
+    const rot = this.time * 0.3
+
+    c.save()
+    c.translate(cx, cy)
+    c.rotate(rot)
+    c.globalCompositeOperation = 'lighter'
+
+    for (let i = 0; i < bands; i++) {
+      const val = hasAudio ? this.freqData[i * 2] : (100 + 60 * Math.sin(this.time * 2 + i * 0.3))
+      const norm = val / 255
+      const angle = (i / bands) * Math.PI * 2
+      const barLen = 30 + norm * 200
+      const hue = (hueBase + i * (360 / bands)) % 360
+
+      c.save()
+      c.rotate(angle)
+
+      // main bar
+      c.fillStyle = `hsla(${hue},100%,${50 + norm * 30}%,${0.6 + norm * 0.3})`
+      c.fillRect(60, -2, barLen, 4)
+
+      // recursive branch at tip
+      if (norm > 0.3) {
+        c.save()
+        c.translate(60 + barLen, 0)
+        const branchLen = barLen * 0.4
+        // upper branch
+        c.save()
+        c.rotate(-0.4 - norm * 0.3)
+        c.fillStyle = `hsla(${(hue + 40) % 360},100%,65%,${norm * 0.5})`
+        c.fillRect(0, -1.5, branchLen, 3)
+        c.restore()
+        // lower branch
+        c.save()
+        c.rotate(0.4 + norm * 0.3)
+        c.fillStyle = `hsla(${(hue + 80) % 360},100%,65%,${norm * 0.5})`
+        c.fillRect(0, -1.5, branchLen, 3)
+        c.restore()
+        c.restore()
+      }
+
+      c.restore()
+    }
+
+    // inner mirror ring
+    for (let i = 0; i < bands; i++) {
+      const val = hasAudio ? this.freqData[i * 2] : (100 + 60 * Math.sin(this.time * 2 + i * 0.3))
+      const norm = val / 255
+      const angle = (i / bands) * Math.PI * 2
+      const barLen = norm * 45
+      const hue = (hueBase + i * (360 / bands) + 180) % 360
+
+      c.save()
+      c.rotate(angle)
+      c.fillStyle = `hsla(${hue},100%,60%,${0.3 + norm * 0.3})`
+      c.fillRect(15, -1.5, barLen, 3)
+      c.restore()
+    }
+
+    // center glow
+    const bassNorm = hasAudio ? this.bass / 255 : 0.3
+    c.shadowBlur = 20 + bassNorm * 30
+    c.shadowColor = `hsl(${hueBase},100%,60%)`
+    c.beginPath()
+    c.arc(0, 0, 12 + bassNorm * 8, 0, Math.PI * 2)
+    c.fillStyle = `hsla(${hueBase},100%,70%,0.7)`
+    c.fill()
+    c.shadowBlur = 0
+
+    c.globalCompositeOperation = 'source-over'
+    c.restore()
+  }
+}
+
+// ═══ DRAGGABLE POPUPS ═══
+var _dragPopup = null, _dragSX = 0, _dragSY = 0, _dragIL = 0, _dragIT = 0;
+document.addEventListener('mousedown', function(e) {
+  var tb = e.target;
+  while (tb && !tb.classList.contains('popup-titlebar')) tb = tb.parentElement;
+  if (!tb) return;
+  if (e.target.className && e.target.className.indexOf && e.target.className.indexOf('popup-close') !== -1) return;
+  if (e.target.tagName === 'BUTTON') return;
+  var popup = tb.parentElement;
+  if (!popup || !popup.id) return;
+  e.preventDefault();
+  _dragPopup = popup;
+  _dragSX = e.clientX;
+  _dragSY = e.clientY;
+  var rect = popup.getBoundingClientRect();
+  _dragIL = rect.left;
+  _dragIT = rect.top;
+  popup.style.transform = 'none';
+  popup.style.left = _dragIL + 'px';
+  popup.style.top = _dragIT + 'px';
+  popup.style.right = 'auto';
+  popup.style.zIndex = '10000';
+});
+document.addEventListener('mousemove', function(e) {
+  if (!_dragPopup) return;
+  e.preventDefault();
+  _dragPopup.style.left = (_dragIL + e.clientX - _dragSX) + 'px';
+  _dragPopup.style.top = (_dragIT + e.clientY - _dragSY) + 'px';
+});
+document.addEventListener('mouseup', function() {
+  if (_dragPopup) {
+    _dragPopup.style.zIndex = '9997';
+    _dragPopup = null;
+  }
 });
 
 
