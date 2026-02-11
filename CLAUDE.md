@@ -8,7 +8,7 @@ The player is themed as a cyberpunk/hacker terminal where users discover and unl
 ## Tech Stack
 - **Language**: Vanilla JavaScript (ES6+)
 - **Markup/Styling**: HTML5, CSS3 (all inline in single file)
-- **Audio**: HTML5 Audio API (WAV format, ~570 MB total)
+- **Audio**: HTML5 Audio API (MP3 320kbps for web, WAV originals gitignored)
 - **Graphics**: Canvas API (spectrum visualizer, donut renderer, matrix rain)
 - **Fonts**: Google Fonts CDN (Share Tech Mono, VT323)
 - **Persistence**: localStorage (high scores only)
@@ -21,14 +21,14 @@ RCPlayer/
     redacted_player.html      # Main app (~4900 lines) — THE single source file
     README.txt                 # User guide with spoiler section
     redacted_assets/
-      audio/                   # 7 WAV tracks (~570 MB total)
-        Casino.wav
-        DnS.wav                # Drunk N Stumblin
-        DA.wav                 # Destroy Architecture
-        Could Be 5.wav         # Could Be Worse
-        One Last Drink 2.wav
-        Sundee Arvo.wav
-        GG.wav                 # Hidden/secret track
+      audio/                   # 7 MP3 tracks (320kbps, ~65 MB total; WAV originals gitignored)
+        Casino.mp3
+        DnS.mp3                # Drunk N Stumblin
+        DA.mp3                 # Destroy Architecture
+        Could Be 5.mp3         # Could Be Worse
+        One Last Drink 2.mp3
+        Sundee Arvo.mp3
+        GG.mp3                 # Hidden/secret track
       gallery/                 # 6 unlockable images + 1 PSD source
       sfx/                     # Sound effects (ui/, glitch/, scanner/, ambient/, easter_eggs/)
       images/                  # Empty placeholder
@@ -72,6 +72,20 @@ Simply open `redacted_player.html` in a web browser. All assets load via relativ
 
 ### No build step
 Edit `redacted_player.html` directly. Refresh browser to see changes.
+
+### Git & Deployment
+- **Repo**: `https://github.com/joesfk/redacted-club-player.git`
+- **Live site**: `https://joesfk.github.io/redacted-club-player/redacted_club_project/redacted_player.html`
+- **Hosting**: GitHub Pages, deploys automatically from `master` branch
+- **Audio format**: MP3 (320kbps) for web deployment. WAV originals are gitignored.
+- **Default format in CONFIG**: `mp3` — do not change to `wav` unless user requests it
+
+### Agent workflow (IMPORTANT — follow every session)
+1. **Start of session**: Run `git pull` to get latest changes before making any edits
+2. **After changes**: Commit and push so the live site updates and other machines stay in sync
+3. **New audio files**: If WAV files are added, convert to MP3 at 320kbps using ffmpeg before committing. WAV files are gitignored.
+4. **Commit style**: Short descriptive message, single commit per logical change
+5. **Never force push** unless explicitly asked — the repo may be used from multiple machines
 
 ## Key Constants & Config
 - **Audio path**: `./redacted_assets/audio/`
