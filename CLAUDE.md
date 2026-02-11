@@ -156,6 +156,25 @@ Hidden HTML comments with player hints. **Do not remove.**
 
 ---
 
+## Automations
+
+### Pre-commit Hook (local)
+- Validates HTML tag balance, asset paths, and config defaults before each commit
+- Setup: `git config core.hooksPath .githooks` (one-time per machine)
+- Test manually: `powershell .githooks/validate.ps1`
+- Files: `.githooks/pre-commit` (bash shim) + `.githooks/validate.ps1` (logic)
+
+### GitHub Actions CI
+- Runs on push/PR to master — validates HTML structure, asset existence, config sanity, file size
+- See `.github/workflows/validate.yml`
+- No Node.js needed, runs in seconds on free tier
+
+### Data Persistence & Backup
+- Secrets and discovered tracks auto-persist to localStorage (`rcplayer_secrets`, `rcplayer_discovered`)
+- Terminal commands: `backup` (export JSON), `restore` (import JSON), `resetdata confirm` (wipe all)
+
+---
+
 ## Code Style
 - Mixed semicolon usage (mostly without)
 - Template literals for HTML generation

@@ -1326,6 +1326,7 @@
 
 <!-- ═══ AUDIO & EASTER EGGS ═══ -->
 <audio id="audio-player" preload="auto"></audio>
+<input type="file" id="restore-file-input" accept=".json" style="display:none">
 <div id="jpark-overlay">
   <img src="./redacted_assets/images/GIFs/jurassic-park.gif" alt="Jurassic Park Error">
 </div>
@@ -1568,6 +1569,15 @@ let state={
   radarUnlocked:false,
 };
 
+// Restore persisted progress from localStorage
+try{
+  const ss=JSON.parse(localStorage.getItem('rcplayer_secrets')||'[]')
+  ss.forEach(s=>{if(!CONFIG.secrets.codesFound.includes(s))CONFIG.secrets.codesFound.push(s)})
+  const sd=JSON.parse(localStorage.getItem('rcplayer_discovered')||'[]')
+  sd.forEach(d=>state.discovered.add(d))
+  if(ss.length>0)state.headerRevealed=true
+}catch(e){}
+
 const audio=document.getElementById('audio-player');
 const output=document.getElementById('output');
 const cmdInput=document.getElementById('cmd-input');
@@ -1739,6 +1749,7 @@ function showHelp(){
   printLine('  stop          — stop playback','dim');printLine('  next / prev   — skip tracks','dim');printLine('  vol [0-100]   — set volume','dim');printLine('  format        — toggle MP3/WAV','dim');
   printLine('','');printLine('── SYSTEM ──','dim');printLine('  whoami        — identity query','dim');printLine('  source        — view hidden notes','dim');printLine('  secrets       — your discoveries','dim');printLine('  ping          — signal test','dim');
   printLine('','');printLine('── AUDIO ──','dim');printLine('  sfx           — sound effects controls','dim');printLine('  synth         — keyboard synthesizer','dim');printLine('  drums         — drum machine','dim');
+  printLine('','');printLine('── DATA ──','dim');printLine('  backup        — export save state to file','dim');printLine('  restore       — import save state from file','dim');printLine('  resetdata     — erase all saved progress','dim');
   printLine('');
 }
 
@@ -1862,6 +1873,43 @@ let A=0,B=0;const iv=setInterval(()=>{const b=[];const z=[];for(let k=0;k<1760;k
     else if(sub==='test'){printLine('Playing test sound...','dim');playSFX('ui_click')}
     else{printLine(`Unknown sfx command: ${sub}`,'error')}
   },
+  backup:()=>{
+    const saveData={version:1,player:'RCPlayer',timestamp:new Date().toISOString(),localStorage:{},session:{secrets:[...CONFIG.secrets.codesFound],discovered:[...state.discovered],headerRevealed:state.headerRevealed}}
+    for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('rcplayer_'))saveData.localStorage[k]=localStorage.getItem(k)}
+    const blob=new Blob([JSON.stringify(saveData,null,2)],{type:'application/json'})
+    const url=URL.createObjectURL(blob)
+    const a=document.createElement('a');a.href=url;a.download=`rcplayer-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url)
+    printLine('BACKUP SAVED','dim');printLine(`  Secrets: ${saveData.session.secrets.length}/${CONFIG.secrets.totalCodes}`,'ghost');printLine(`  Tracks: ${saveData.session.discovered.length} unlocked`,'ghost')
+  },
+  restore:()=>{
+    const fi=document.getElementById('restore-file-input')
+    fi.onchange=(e)=>{const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=(ev)=>{try{
+      const data=JSON.parse(ev.target.result)
+      if(!data.version||data.player!=='RCPlayer'){printLine('INVALID BACKUP FILE','error');return}
+      if(data.localStorage)Object.entries(data.localStorage).forEach(([k,v])=>localStorage.setItem(k,v))
+      if(data.session){
+        if(data.session.secrets)data.session.secrets.forEach(s=>{if(!CONFIG.secrets.codesFound.includes(s))CONFIG.secrets.codesFound.push(s)})
+        if(data.session.discovered)data.session.discovered.forEach(d=>state.discovered.add(d))
+        if(data.session.headerRevealed)revealHeader()
+      }
+      localStorage.setItem('rcplayer_secrets',JSON.stringify(CONFIG.secrets.codesFound))
+      localStorage.setItem('rcplayer_discovered',JSON.stringify([...state.discovered]))
+      updateSidebarStatus()
+      if(document.getElementById('player-popup').classList.contains('show'))renderPlayerTracks()
+      printLine('BACKUP RESTORED','warning');printLine(`  Secrets: ${CONFIG.secrets.codesFound.length}/${CONFIG.secrets.totalCodes}`,'ghost');printLine(`  Tracks: ${state.discovered.size} unlocked`,'ghost')
+      playSFX('scanner_lock',0.5)
+    }catch(err){printLine('RESTORE FAILED — invalid file format','error')}};reader.readAsText(file);fi.value=''}
+    fi.click();printLine('Select backup file...','dim')
+  },
+  resetdata:(a)=>{
+    if(a&&a[0]==='confirm'){
+      const keys=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('rcplayer_'))keys.push(k)}
+      keys.forEach(k=>localStorage.removeItem(k))
+      CONFIG.secrets.codesFound.length=0;state.discovered.clear();state.headerRevealed=false
+      updateSidebarStatus()
+      printLine('ALL DATA ERASED','error');playSFX('glitch_corrupt',0.5)
+    }else{printLine('WARNING: This will erase all saved progress.','error');printLine('Type "resetdata confirm" to proceed.','warning')}
+  },
 };
 
 // ═══ FUZZY MATCH ═══
@@ -1905,8 +1953,8 @@ function setVolume(v){audio.volume=v/100}
 function toggleFormat(){CONFIG.format=CONFIG.format==='mp3'?'wav':'mp3';if(state.currentTrack>=0&&state.isPlaying){const ct=audio.currentTime;const t=CONFIG.tracks[state.currentTrack];audio.src=CONFIG.audioPath+(CONFIG.format==='mp3'?t.file_mp3:t.file_wav);audio.currentTime=ct;audio.play()}printLine(`Format: ${CONFIG.format.toUpperCase()}`,'dim')}
 
 // ═══ SECRETS ═══
-function unlockTrack(id){const t=CONFIG.tracks.find(x=>x.id===id);if(!t||state.discovered.has(id)){printLine('already decrypted','dim');return}playSFX('glitch_corrupt',0.5);state.discovered.add(id);addSecret(`UNLOCK_${id}`);printLine('');printLine('DECRYPTION KEY ACCEPTED','warning');setTimeout(()=>{printLine(`  ${id} :: ${t.title}`,'');printLine('')},400);if(document.getElementById('player-popup').classList.contains('show')){renderPlayerTracks()}}
-function addSecret(id){if(!CONFIG.secrets.codesFound.includes(id)){CONFIG.secrets.codesFound.push(id);playSFX('retro_movie',0.4);unlockGalleryImage(id);const c=document.getElementById('conn-status');c.textContent=`■ ${CONFIG.secrets.codesFound.length}`;c.style.color='var(--amber)';setTimeout(()=>{c.style.color='';c.textContent='■'},2000);updateSidebarStatus();if(CONFIG.secrets.codesFound.length===CONFIG.secrets.totalCodes){setTimeout(()=>{playSFX('glitch_heavy',0.4);printLine('');printLine('████████████████████████████████████','error');setTimeout(()=>{printLine('  TRANSMISSION COMPLETE','error');printLine('  ALL SIGNALS RECOVERED','error');printLine('████████████████████████████████████','error');revealHeader();updateSidebarStatus()},500)},800)}}}
+function unlockTrack(id){const t=CONFIG.tracks.find(x=>x.id===id);if(!t||state.discovered.has(id)){printLine('already decrypted','dim');return}playSFX('glitch_corrupt',0.5);state.discovered.add(id);localStorage.setItem('rcplayer_discovered',JSON.stringify([...state.discovered]));addSecret(`UNLOCK_${id}`);printLine('');printLine('DECRYPTION KEY ACCEPTED','warning');setTimeout(()=>{printLine(`  ${id} :: ${t.title}`,'');printLine('')},400);if(document.getElementById('player-popup').classList.contains('show')){renderPlayerTracks()}}
+function addSecret(id){if(!CONFIG.secrets.codesFound.includes(id)){CONFIG.secrets.codesFound.push(id);localStorage.setItem('rcplayer_secrets',JSON.stringify(CONFIG.secrets.codesFound));localStorage.setItem('rcplayer_discovered',JSON.stringify([...state.discovered]));playSFX('retro_movie',0.4);unlockGalleryImage(id);const c=document.getElementById('conn-status');c.textContent=`■ ${CONFIG.secrets.codesFound.length}`;c.style.color='var(--amber)';setTimeout(()=>{c.style.color='';c.textContent='■'},2000);updateSidebarStatus();if(CONFIG.secrets.codesFound.length===CONFIG.secrets.totalCodes){setTimeout(()=>{playSFX('glitch_heavy',0.4);printLine('');printLine('████████████████████████████████████','error');setTimeout(()=>{printLine('  TRANSMISSION COMPLETE','error');printLine('  ALL SIGNALS RECOVERED','error');printLine('████████████████████████████████████','error');revealHeader();updateSidebarStatus()},500)},800)}}}
 
 // ═══ EFFECTS ═══
 

@@ -1,0 +1,4 @@
+#!/bin/sh
+# Pre-commit hook — delegates to PowerShell validation script
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(git rev-parse --show-toplevel)/.githooks/validate.ps1"
+exit $?

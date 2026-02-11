@@ -1,0 +1,72 @@
+name: Validate RCPlayer
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate HTML structure
+        run: |
+          FILE="redacted_club_project/redacted_player.html"
+          if [ ! -f "$FILE" ]; then
+            echo "::error::redacted_player.html not found!"
+            exit 1
+          fi
+          FAIL=0
+          for TAG in html head body style script; do
+            OPEN=$(grep -oi "<${TAG}[> ]" "$FILE" | wc -l)
+            CLOSE=$(grep -oi "</${TAG}>" "$FILE" | wc -l)
+            if [ "$OPEN" -ne "$CLOSE" ]; then
+              echo "::error::Tag mismatch: <${TAG}> opens ${OPEN} times but closes ${CLOSE} times"
+              FAIL=1
+            fi
+          done
+          if [ "$FAIL" -eq 1 ]; then exit 1; fi
+          echo "HTML structure: OK"
+
+      - name: Check asset paths
+        run: |
+          FILE="redacted_club_project/redacted_player.html"
+          BASEDIR="redacted_club_project"
+          FAIL=0
+          grep -oP '\./redacted_assets/[^'"'"'")\s]+' "$FILE" | sort -u | while read -r ASSET; do
+            FULL="$BASEDIR/$ASSET"
+            if [ ! -f "$FULL" ]; then
+              echo "::error::Missing asset: $ASSET"
+              echo "FAIL" >> /tmp/asset_check
+            fi
+          done
+          if [ -f /tmp/asset_check ]; then exit 1; fi
+          for MP3 in "Casino.mp3" "DnS.mp3" "DA.mp3" "Could Be 5.mp3" "One Last Drink 2.mp3" "Sundee Arvo.mp3" "GG.mp3"; do
+            if [ ! -f "$BASEDIR/redacted_assets/audio/$MP3" ]; then
+              echo "::error::Missing audio track: $MP3"
+              FAIL=1
+            fi
+          done
+          if [ "$FAIL" -eq 1 ]; then exit 1; fi
+          echo "Asset paths: OK"
+
+      - name: Check config defaults
+        run: |
+          FILE="redacted_club_project/redacted_player.html"
+          if grep -q "format:'wav'" "$FILE"; then
+            echo "::error::CONFIG.format default is 'wav' — should be 'mp3' for web deployment"
+            exit 1
+          fi
+          echo "Config defaults: OK"
+
+      - name: Check file size
+        run: |
+          FILE="redacted_club_project/redacted_player.html"
+          LINES=$(wc -l < "$FILE")
+          SIZE=$(wc -c < "$FILE")
+          echo "redacted_player.html: $LINES lines, $SIZE bytes"
+          if [ "$LINES" -gt 10000 ]; then
+            echo "::warning::HTML file exceeds 10,000 lines ($LINES). Is this intentional?"
+          fi
