@@ -1,9 +1,9 @@
 # REDACTED CLUB Player (RCPlayer)
 
 ## Project Overview
-A retro terminal-themed interactive music player with ARG (Alternate Reality Game) puzzle mechanics. Built as a single self-contained HTML file using vanilla HTML5, CSS3, and JavaScript — no frameworks, no build system, no external dependencies.
+Single-file retro terminal-themed music player with ARG puzzle mechanics. Everything lives in `redacted_club_project/redacted_player.html` — HTML, CSS, and JavaScript inline. No frameworks, no build system, no external dependencies (except Google Fonts CDN).
 
-The player is themed as a cyberpunk/hacker terminal where users discover and unlock music tracks by solving puzzles, entering codes, and exploring a command-line interface.
+Themed as a cyberpunk hacker terminal where users discover and unlock music tracks by solving puzzles, scanning frequencies, and entering codes.
 
 ## Tech Stack
 - **Language**: Vanilla JavaScript (ES6+)
@@ -11,181 +11,161 @@ The player is themed as a cyberpunk/hacker terminal where users discover and unl
 - **Audio**: HTML5 Audio API (MP3 320kbps for web, WAV originals gitignored)
 - **Graphics**: Canvas API (spectrum visualizer, donut renderer, matrix rain)
 - **Fonts**: Google Fonts CDN (Share Tech Mono, VT323)
-- **Persistence**: localStorage (high scores only)
+- **Persistence**: localStorage (high scores only, `rcplayer_` prefix)
 
 ## Project Structure
 ```
-RCPlayer/
-  CLAUDE.md
+redacted-club-player/
+  CLAUDE.md                    # This file (AI agent instructions)
   redacted_club_project/
-    redacted_player.html      # Main app (~4900 lines) — THE single source file
+    redacted_player.html       # THE app (~5000 lines) — everything is here
     README.txt                 # User guide with spoiler section
     redacted_assets/
       audio/                   # 7 MP3 tracks (320kbps, ~65 MB total; WAV originals gitignored)
-        Casino.mp3
-        DnS.mp3                # Drunk N Stumblin
-        DA.mp3                 # Destroy Architecture
-        Could Be 5.mp3         # Could Be Worse
-        One Last Drink 2.mp3
-        Sundee Arvo.mp3
-        GG.mp3                 # Hidden/secret track
-      gallery/                 # 6 unlockable images + 1 PSD source
+        Casino.mp3, DnS.mp3, DA.mp3, Could Be 5.mp3,
+        One Last Drink 2.mp3, Sundee Arvo.mp3, GG.mp3
+      gallery/                 # 6 unlockable images
       sfx/                     # Sound effects (ui/, glitch/, scanner/, ambient/, easter_eggs/)
-      images/                  # Empty placeholder
-    older builds/              # Previous versions for reference
+      images/                  # Images + GIFs (Jurassic Park easter egg)
 ```
 
-## Architecture (within redacted_player.html)
+---
 
-The entire app lives in one HTML file with three major sections:
+## Git & Deployment
 
-### HTML (~200 lines)
-- Grid-based layout with terminal interface
-- 9 draggable popup windows (PLAYER.EXE, GALLERY.EXE, SNAKE.EXE, etc.)
-- Audio element, canvas elements for visualizations
-
-### CSS (~800 lines)
-- Green terminal aesthetic (#00ff41)
-- CRT scanline/flicker effects
-- Responsive design with mobile fallbacks
-- Draggable window styling
-
-### JavaScript (~2000+ lines)
-Key systems in order of importance:
-
-1. **CONFIG object** — Track metadata, secret codes, asset paths, format toggle (WAV/MP3)
-2. **State management** — `state` object tracks discovered tracks, boot status, playback
-3. **Terminal/Command system** — 50+ commands with input parsing, history, autocomplete (all unlocked from start)
-4. **Audio playback** — Play/pause/seek/volume, track lock/unlock, format switching
-5. **Frequency scanner** — Canvas spectrum visualization, signal detection at 97.7/108.0 MHz
-6. **Popup window manager** — Draggable windows with z-index management, collision detection
-7. **Visual effects** — CRT scanlines, flicker, melt terminal animations, screensaver
-8. **Mini-games** — Snake, Tron, calculator (uses eval()), notepad, donut renderer, matrix rain
-9. **WindowRegistry** — Tracks discovered popup windows, renders sidebar taskbar, toggle via click
-10. **HintEngine** — Idle detection (30s), contextual hints, shown as terminal ghost text
-11. **SFX system** — `playSFX()` with MP3 files in `redacted_assets/sfx/` (ui, glitch, scanner, ambient, easter_eggs)
-
-## Development Workflow
-
-### Running locally
-Simply open `redacted_player.html` in a web browser. All assets load via relative paths.
-
-### No build step
-Edit `redacted_player.html` directly. Refresh browser to see changes.
-
-### Git & Deployment
 - **Repo**: `https://github.com/joesfk/redacted-club-player.git`
 - **Live site**: `https://joesfk.github.io/redacted-club-player/redacted_club_project/redacted_player.html`
 - **Hosting**: GitHub Pages, deploys automatically from `master` branch
-- **Audio format**: MP3 (320kbps) for web deployment. WAV originals are gitignored.
-- **Default format in CONFIG**: `mp3` — do not change to `wav` unless user requests it
+- **Audio format**: MP3 (320kbps) for web. WAV originals are gitignored.
 
 ### Agent workflow (IMPORTANT — follow every session)
 1. **Start of session**: Run `git pull` to get latest changes before making any edits
 2. **After changes**: Commit and push so the live site updates and other machines stay in sync
-3. **New audio files**: If WAV files are added, convert to MP3 at 320kbps using ffmpeg before committing. WAV files are gitignored.
+3. **New audio files**: If WAV files are added, convert to MP3 at 320kbps using ffmpeg before committing
 4. **Commit style**: Short descriptive message, single commit per logical change
 5. **Never force push** unless explicitly asked — the repo may be used from multiple machines
 
-## Key Constants & Config
-- **Audio path**: `./redacted_assets/audio/`
-- **Unlock codes**: SIGNAL, BENEATH, REDACTED, VOID
-- **PIN codes**: 1337, 9775, 1984, 0420
-- **Secret frequencies**:
-  - 97.7 MHz (SIGNAL) - FM, 10kHz BW, Gain 65-75, Band-pass filter, SNR >12dB
-  - 108.0 MHz (BENEATH) - SSB, 5kHz BW, Gain 80-95, Low-pass filter, SNR >8dB
-  - 115.3 MHz (VOID) - Digital, 25kHz BW, Gain 45-60, Notch filter, SNR >6dB
-- **Total secret codes**: 10
-- **Konami Code**: Active (up up down down left right left right B A)
+### Running locally
+Open `redacted_player.html` in a web browser. All assets load via relative paths. No server needed.
 
-## Important Notes
-- The file uses `eval()` in the calculator — intentional for retro feel, not a bug
-- Audio files are large WAVs (~50-130 MB each); total project ~570 MB
-- Gallery includes a `.pdn` (Paint.NET) source file — not served to users
-- Hidden HTML comments at end of file contain ARG hints for players
-- The `older builds/` folder contains previous iterations for reference/rollback
+---
+
+## Code Architecture (redacted_player.html)
+
+All sections use `═══` dividers for navigation. Search for `═══` to jump between sections.
+
+### CSS (~900 lines)
+Green terminal aesthetic (#00ff41), CRT scanline/flicker effects, responsive design, draggable window styling.
+
+CSS variables: `--green` (#00ff41), `--green-dim`, `--green-dark`, `--green-ghost`, `--red`, `--amber`, `--cyan`, `--bg`
+
+### HTML (~460 lines)
+Grid layout with terminal interface, 14 draggable popup windows, audio element, canvas elements.
+
+### JavaScript (~4000 lines)
+Key systems:
+
+1. **CONFIG** — Track metadata (7 tracks), paths, secret codes, format toggle
+2. **SFX system** — `playSFX()`, 13 MP3 effects, caching, `cloneNode()` overlap
+3. **WindowRegistry** — 14 popup windows, discovery state, sidebar taskbar rendering
+4. **HintEngine** — 30s idle detection, contextual hints, no repeats
+5. **Welcome/Boot** — ASCII art logo, POST messages, boot animation
+6. **Terminal** — `printLine()`, `showHelp()`, 50+ commands, fuzzy match, input handling
+7. **Audio** — `playTrack()`, `pauseTrack()`, `stopTrack()`, format switching
+8. **Secrets** — `addSecret()`, `checkAllSecrets()`, 10 total secrets
+9. **Effects** — Melt, matrix melt, screensaver (standalone, no tier/paranoia dependencies)
+10. **Scanner** — `scannerState`, signal detection, radar display, spectrogram, knob controls, signal locking
+11. **Gallery** — Image gallery, unlock states, lightbox
+12. **Player popup** — Track list rendering, UI updates
+13. **PIN code** — 4-digit PIN pad, code validation
+14. **Synth.exe** — Web Audio synth, 2-octave keyboard, ADSR, filter, 16-step sequencer
+15. **Shared Transport** — Unified play/stop/rec/BPM for synth + drums
+16. **Drums.exe** — 8 synthesized drum pads, 16x8 step grid
+17. **Snake/Tron** — Games with localStorage high scores
+18. **Calc/Matrix/Donut** — Mini-apps
+19. **Draggable popups** — Shared drag handler for all 14 windows
+
+### ARG Comments (end of file)
+Hidden HTML comments with player hints. **Do not remove.**
+
+---
+
+## Key Systems
+
+### Popup Window System (14 windows)
+- All popups share `.popup-titlebar` and `.popup-close` classes
+- Toggle via `toggleWindow(id)` or direct `.classList.add/remove('show')`
+- Draggable via shared handler — new popups must be added to the forEach array
+- `WindowRegistry` tracks discovery and renders sidebar taskbar
+- Windows: player, gallery, scanner, radar, echoes, snake, tron, calc, notepad, matrix, donut, pincode, synth, drums
+
+### Shared Transport (Synth + Drums)
+- Single `transport` object: `{ bpm, step, playing, recording, recStep, timer }`
+- One tick loop drives BOTH synth sequencer and drum grid in lockstep
+- BPM change on either popup updates both
+
+### Frequency Scanner (3-window system)
+- **SCANNER.EXE** — Frequency/amplitude knobs, spectrum canvas, ping/lock buttons
+- **RADAR.EXE** — Circular canvas radar with sweep arm, ping waves, echo blips
+- **ECHOES.EXE** — Log showing detected signals with proximity %
+- **3 hidden signals:**
+  - SIGNAL: 97.7 MHz @ amplitude 70 (±1.5 MHz, ±12 amp)
+  - BENEATH: 108.0 MHz @ amplitude 85 (±1.5 MHz, ±12 amp)
+  - VOID: 115.3 MHz @ amplitude 45 (±2.0 MHz, ±15 amp)
+- Flow: adjust knobs → PING → echo proximity shown → LOCK at >90% → `decode [code]` in terminal
+
+### Secrets System (10 total)
+- All commands available from start (no tier gating)
+- `addSecret()` tracks discoveries, updates sidebar counter
+- Finding all secrets triggers "TRANSMISSION COMPLETE" message
+
+---
+
+## Key Constants
+- **Audio path**: `./redacted_assets/audio/`
+- **Unlock codes**: SIGNAL, BENEATH, REDACTED, VOID, OMNISCIENT
+- **PIN codes**: 1337, 9775, 1984, 0420
+- **Konami Code**: up up down down left right left right B A
+
+---
+
+## Adding a New Popup Window (Checklist)
+
+1. **CSS**: Add styles in new `/* ═══ NEWPOPUP.EXE ═══ */` section before `</style>`
+2. **HTML**: Add `<div id="newpopup-popup">` with `.popup-titlebar` and `.popup-close`
+3. **JS — WindowRegistry**: Add entry with `name`, `icon`, `command`, `discovered: false`
+4. **JS — Commands**: Add command handler calling `WindowRegistry.discover()` and toggling popup
+5. **JS — Help**: Add help text line
+6. **JS — Draggable**: Add `'newpopup-popup'` to the forEach array
+
+---
+
+## Gotchas
+
+1. **Single file** — everything in `redacted_player.html`. No imports, no modules, no build.
+2. **`eval()` in calculator** — intentional for retro feel, not a bug.
+3. **Tier/Paranoia/Glitch system fully removed** — no `triggerGlitch()`, no `printCorrupt()`, no `state.tier`, no `state.paranoia`. All commands unlocked from start.
+4. **`setNormState()` fully removed** — was a character system, all calls + stub deleted.
+5. **localStorage keys** use `rcplayer_` prefix: `rcplayer_snakeHighScore`, `rcplayer_tronWins`
+6. **No server needed** — runs from filesystem via relative paths starting with `./`
+7. **Hidden HTML comments** at end of file contain ARG hints. Don't remove.
+8. **Popup drag array** — new popups must be added to the forEach array.
+9. **`stopScanner()`** clears `scannerState.animInterval`. Must be called on scanner close.
+10. **Dev mode** — boot sequence only shows with `?nodev` URL param. Direct file open skips intro.
+11. **Default audio format is MP3** — do not change CONFIG.format to `wav` unless user requests it.
+
+---
 
 ## Code Style
-- No semicolons consistently used (mixed style)
+- Mixed semicolon usage (mostly without)
 - Template literals for HTML generation
-- Event-driven architecture with DOM manipulation
-- Functions are mostly standalone (not class-based)
-- Inline styles mixed with CSS classes
-- Console-style output buffer pattern for terminal display
+- Event-driven with DOM manipulation (no virtual DOM)
+- Functions are standalone (not class-based)
+- CSS variables for theming
 
-## Recent Work / Current Focus
-<!-- Update this section as you work on the project -->
-- Removed server requirements (START_SERVER.ps1) — project now runs directly from HTML file
-- **MAJOR: Sonar ping scanner with analog controls** (2026-02-06)
-  - **Circular radar display** with rotating sweep line and fade trail effects
-  - **Two analog knobs**: Frequency (80-120 MHz) and Amplitude (0-100)
-  - **Sonar ping mechanic**: Click PING to send pulse, echoes show signal proximity
-  - **Echo power system**: Returns show 0-100% power based on how close both parameters are
-  - **Visual feedback**: Expanding ping waves, echo dots on radar, power bars
-  - **Smart hints**: Echo display tells you which parameter to adjust (freq/amp/both)
-  - **Drag-to-rotate knobs**: Click and drag to turn knobs smoothly
-  - **3 signals**: SIGNAL (97.7 MHz @ 70 amp), BENEATH (108.0 @ 85), VOID (115.3 @ 45)
-  - Simplified from complex multi-parameter system to intuitive freq+amp combo
-- **SFX system** (2026-02-06)
-  - 13 MP3 sound effects across 5 categories (ui, glitch, scanner, ambient, easter_eggs)
-  - Wired into: commands, boot, glitches, windows, scanner, easter eggs, snake, PIN pad
-  - `playSFX(name, volume)` with caching and `cloneNode()` for overlapping playback
-- **NORM character removed** (2026-02-07)
-  - Removed all ASCII art, popup, CSS, commands, and dialogue
-  - `setNormState()` left as no-op stub for safety (40+ calls throughout code)
-- **Sidebar taskbar** (2026-02-06)
-  - WindowRegistry tracks 11 popup windows, shows discovered ones in sidebar
-  - Click taskbar entry to toggle window open/closed
-  - Live status: SECRETS: X/10
-- **HintEngine** (2026-02-06)
-  - Idle detection (30s threshold), contextual hints
-  - Shows hints as terminal ghost text
-  - Tracks history to avoid repeats
-- **Old player removed** — inline `#player-bar` eliminated, fully using popup PLAYER.EXE
-- Removed dead code: `addProtocol()`, `syncProtocols()`, `knownProtocols`
-- **Tier/Paranoia/Glitch system removed** (2026-02-11)
-  - Removed tier progression (0-4) — all commands available from start
-  - Removed paranoia system — no more increasing glitch frequency
-  - Removed dynamic glitch effects: `triggerGlitch()`, glitch overlay, random glitches, dead pixels, ambient corruption, RGB split
-  - Removed corruption utilities: `corruptString()`, `scrambleText()`, `partialRedact()`, `printCorrupt()`
-  - Removed corrupted whispers system (atmospheric messages)
-  - Removed reality break easter egg (`reality`/`wake`/`truth` commands)
-  - Removed zoom-out 3D perspective effect
-  - Kept: CRT cosmetics (scanlines, flicker, glow), melt commands, screensaver, secrets system
-  - All `printCorrupt()` calls replaced with `printLine()`
-  - Help shows all commands immediately
-  - HintEngine simplified (no tier-based hints)
-
-## Known Issues & Common Bugs
-<!-- Document recurring problems here -->
-- [No known issues yet — add as they're discovered]
-
-## Quirks & Gotchas
-<!-- Non-obvious behavior to remember -->
-- The file is served directly from filesystem (no server) — all paths are relative
-- Audio files are large WAVs (~570 MB total) — intentional for quality
-- `eval()` in calculator is intentional for retro feel, not a security concern
-- NORM/PIXL-BOY character was fully removed
-- **No tier/paranoia system** — all commands available immediately, no dynamic glitch effects
-- **WindowRegistry**: Windows are "discovered" on first open and persist in sidebar taskbar
-- **SFX path**: `./redacted_assets/sfx/` with subdirs ui/, glitch/, scanner/, ambient/, easter_eggs/
-- HTML comments at end of file contain ARG hints — don't remove them
-- **Scanner system** (sonar ping style):
-  - **Two-parameter detection**: Need BOTH correct frequency AND amplitude to lock signal
-  - **SIGNAL**: 97.7 MHz @ amplitude 70 (±0.5 MHz, ±10 amp tolerance)
-  - **BENEATH**: 108.0 MHz @ amplitude 85 (±0.3 MHz, ±8 amp tolerance)
-  - **VOID**: 115.3 MHz @ amplitude 45 (±0.8 MHz, ±15 amp tolerance)
-  - **Echo power**: 0-100% shows how close you are (>90% = locked)
-  - **Hints**: Echo display tells which knob to adjust
-  - **Knobs**: Drag to rotate - Frequency maps 0-360° to 80-120 MHz, Amplitude to 0-100
-  - **Visual feedback**: Ping waves expand, echoes appear as green dots at signal positions
-
-## Lessons Learned
-<!-- What worked, what didn't -->
-- [Add lessons as you discover them]
+---
 
 ## Troubleshooting
-<!-- Common problems and solutions -->
 - **Audio not loading**: Check relative paths in CONFIG object (`./redacted_assets/audio/`)
 - **Gallery images not showing**: Verify unlock codes are correct in state management
 - **Terminal not responding**: Check event listeners on input element
