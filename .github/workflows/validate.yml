@@ -35,7 +35,7 @@ jobs:
           FILE="redacted_club_project/redacted_player.html"
           BASEDIR="redacted_club_project"
           FAIL=0
-          grep -oP '\./redacted_assets/[^'"'"'")\s]+' "$FILE" | sort -u | while read -r ASSET; do
+          grep -oP '\./redacted_assets/[^'"'"'")\s]+\.\w+' "$FILE" | sort -u | while read -r ASSET; do
             FULL="$BASEDIR/$ASSET"
             if [ ! -f "$FULL" ]; then
               echo "::error::Missing asset: $ASSET"

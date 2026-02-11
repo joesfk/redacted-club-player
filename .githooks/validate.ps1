@@ -28,7 +28,7 @@ if (-not $failed) {
 # --- Check 2: Asset paths ---
 Write-Host "`n[2/3] Asset paths..." -ForegroundColor Yellow
 $assetFail = $false
-$paths = [regex]::Matches($content, '\./redacted_assets/[^''"\)\s]+') | ForEach-Object { $_.Value } | Sort-Object -Unique
+$paths = [regex]::Matches($content, '\./redacted_assets/[^''"\)\s]+\.\w+') | ForEach-Object { $_.Value } | Sort-Object -Unique
 foreach ($p in $paths) {
     $fullPath = Join-Path $assetDir $p
     if (-not (Test-Path $fullPath)) {
