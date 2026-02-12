@@ -41,9 +41,10 @@ redacted-club-player/
 ### Agent workflow (IMPORTANT — follow every session)
 1. **Start of session**: Run `git pull` to get latest changes before making any edits
 2. **After changes**: Commit and push so the live site updates and other machines stay in sync
-3. **New audio files**: If WAV files are added, convert to MP3 at 320kbps using ffmpeg before committing
-4. **Commit style**: Short descriptive message, single commit per logical change
-5. **Never force push** unless explicitly asked — the repo may be used from multiple machines
+3. **Commit ALL changed files** — not just the HTML. Always stage every modified file (HTML, MD, YAML, SFX, images, etc.)
+4. **New audio files**: If WAV files are added, convert to MP3 at 320kbps using ffmpeg before committing
+5. **Commit style**: Short descriptive message, single commit per logical change
+6. **Never force push** unless explicitly asked — the repo may be used from multiple machines
 
 ### Running locally
 Open `redacted_player.html` in a web browser. All assets load via relative paths. No server needed.
