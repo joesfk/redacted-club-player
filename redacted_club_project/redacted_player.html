@@ -154,9 +154,6 @@
   #cmd-input::placeholder{color:rgba(0,255,65,0.35)}
   #input-line:focus-within{border-color:var(--green);box-shadow:0 0 12px rgba(0,255,65,0.2) inset,0 0 8px rgba(0,255,65,0.15)}
 
-  #visualizer{position:absolute;bottom:110px;left:0;right:0;height:30px;display:flex;align-items:flex-end;justify-content:center;gap:1px;opacity:.08;pointer-events:none}
-  .viz-bar{width:2px;background:var(--green);transition:height .1s}
-
   /* ═══ SIDEBAR & TASKBAR ═══ */
   #sidebar{overflow:hidden;opacity:0;display:flex;flex-direction:column;border-left:1px solid var(--green-ghost);padding-left:12px;transition:opacity .4s ease;min-width:0}
   #main-grid.sidebar-open #sidebar{opacity:1;animation:sidebar-reveal .6s ease forwards}
@@ -176,6 +173,16 @@
   #sidebar-status div{padding:2px 0}
   #sidebar-tier{color:var(--green-dark)}
   #sidebar-secrets{color:var(--green-dark)}
+  #sidebar-socials{margin-top:auto;padding-bottom:8px;font-family:'VT323',monospace}
+  .social-link{
+    display:block;padding:6px 8px;margin:3px 0;color:var(--green);text-decoration:none;
+    font-family:'VT323',monospace;font-size:14px;letter-spacing:2px;
+    background:rgba(0,255,65,0.06);border:1px solid var(--green-dark);
+    transition:background .15s,border-color .15s,color .15s,box-shadow .15s;
+  }
+  .social-link:hover{background:rgba(0,255,65,0.18);border-color:var(--green);box-shadow:0 0 8px rgba(0,255,65,0.3)}
+  .social-link::before{content:'[ ';color:var(--green-dim)}
+  .social-link::after{content:' ]';color:var(--green-dim)}
 
   ::selection{background:var(--green);color:#000}
 
@@ -503,23 +510,15 @@
   .pool-game-over{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.9);border:2px solid var(--green);padding:25px 40px;color:var(--green);font-size:22px;text-align:center;display:none;z-index:10}
   .pool-game-over.show{display:block}
 
-  /* ═══ VIZ.EXE ═══ */
-  #viz-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:620px;background:rgba(0,0,0,0.98);border:2px solid var(--green);box-shadow:0 0 30px rgba(0,255,65,0.4);z-index:9997;display:none}
-  #viz-popup.show{display:block}
-  #viz-popup .popup-titlebar{background:rgba(0,20,10,0.8);border-bottom:1px solid var(--green);color:var(--green)}
-  #viz-canvas{display:block;width:100%;background:#000;cursor:pointer}
-  .viz-controls{display:flex;gap:6px;padding:8px 10px;background:rgba(0,10,5,0.9);border-top:1px solid var(--green-dim)}
-  .viz-controls button{background:rgba(0,255,65,0.08);border:1px solid var(--green-dim);color:var(--green-dim);padding:4px 10px;font-family:'Share Tech Mono',monospace;font-size:11px;cursor:pointer;flex:1;transition:all 0.2s}
-  .viz-controls button:hover{background:rgba(0,255,65,0.15);color:var(--green)}
-  .viz-controls button.active{background:rgba(0,255,65,0.2);color:var(--green);border-color:var(--green);box-shadow:0 0 8px rgba(0,255,65,0.3)}
-
   /* ═══ PLAYER.EXE ═══ */
   #player-popup{
     position:fixed;
     left:50%;
     top:50%;
     transform:translate(-50%,-50%);
-    width:380px;
+    width:420px;
+    max-height:85vh;
+    overflow-y:auto;
     background:rgba(0,20,10,0.98);
     border:2px solid var(--green);
     box-shadow:0 0 30px rgba(0,255,65,0.5),inset 0 0 20px rgba(0,0,0,0.8);
@@ -529,6 +528,28 @@
   }
   #player-popup.show{display:block;}
   .player-track-entry:hover{background:rgba(0,255,65,0.15) !important;}
+  .player-controls{display:flex;align-items:center;gap:8px;margin-top:12px}
+  .player-controls button{
+    background:rgba(0,255,65,0.08);border:1px solid var(--green-dark);color:var(--green);
+    padding:10px 14px;cursor:pointer;font-family:'VT323',monospace;font-size:18px;
+    transition:background .15s,border-color .15s;
+  }
+  .player-controls button:hover{background:rgba(0,255,65,0.2);border-color:var(--green)}
+  .player-controls .play-main{
+    flex:1;background:var(--green);color:#000;border:none;font-size:20px;padding:12px 20px;font-weight:bold;
+  }
+  .player-controls .play-main:hover{background:#33ff66}
+  #player-progress-wrap{
+    position:relative;width:100%;height:6px;background:rgba(0,255,65,0.1);
+    border:1px solid var(--green-dark);margin-top:14px;cursor:pointer;
+  }
+  #player-progress-bar{height:100%;background:var(--green);width:0%;transition:width .3s linear}
+  .player-vol-row{display:flex;align-items:center;gap:10px;margin-top:10px}
+  .player-vol-row label{color:var(--green-dark);font-size:13px;min-width:32px}
+  .player-vol-row input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:6px;background:rgba(0,255,65,0.15);border:1px solid var(--green-dark);outline:none;cursor:pointer}
+  .player-vol-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--green);border:none;cursor:pointer}
+  .player-vol-row input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--green);border:none;cursor:pointer}
+  .player-info-row{display:flex;justify-content:space-between;font-size:13px;color:var(--green-dark);margin-top:8px}
   
   /* ═══ SCANNER & RADAR ═══ */
   #scanner-popup{
@@ -934,7 +955,6 @@
           <div class="status"><span id="clock">00:00:00</span> │ <span id="session-id">SES-0000</span> │ <span id="conn-status">■</span></div>
         </div>
         <div id="output"></div>
-        <div id="visualizer"></div>
         <div id="input-line">
           <span id="prompt">$&gt;</span>
           <input type="text" id="cmd-input" autocomplete="off" spellcheck="false" placeholder="Type a command... (try 'help')">
@@ -1056,21 +1076,6 @@
   </div>
 </div>
 
-<!-- ═══ VIZ.EXE ═══ -->
-<div id="viz-popup">
-  <div class="popup-titlebar">
-    <span>🌀 VIZ.EXE</span>
-    <span class="popup-close" onclick="Viz.close()">✕</span>
-  </div>
-  <canvas id="viz-canvas" width="620" height="620"></canvas>
-  <div class="viz-controls">
-    <button class="active" onclick="Viz.setMode(0)">KALEIDO</button>
-    <button onclick="Viz.setMode(1)">TUNNEL</button>
-    <button onclick="Viz.setMode(2)">NEBULA</button>
-    <button onclick="Viz.setMode(3)">BARS</button>
-  </div>
-</div>
-
 <!-- ═══ PINCODE.EXE ═══ -->
 <div id="pincode-popup">
   <div class="popup-titlebar">
@@ -1100,22 +1105,29 @@
 <div id="player-popup">
   <div class="popup-titlebar">
     <span>🎵 PLAYER.EXE</span>
-    <span class="popup-close" onclick="document.getElementById('player-popup').classList.remove('show')">✕</span>
+    <span class="popup-close" onclick="document.getElementById('player-popup').classList.remove('show');stopTrack()">✕</span>
   </div>
   <div style="padding:15px;">
-    <div style="margin-bottom:10px;color:var(--green);font-size:14px;font-weight:bold;">REDACTED CLUB - EP</div>
+    <div style="margin-bottom:12px;color:var(--green);font-size:16px;font-weight:bold;letter-spacing:2px;">REDACTED CLUB - EP</div>
     <div id="player-track-list"></div>
     <div style="margin-top:15px;padding-top:15px;border-top:1px solid var(--green-dark);">
-      <div id="player-now-playing" style="color:var(--green-dark);font-size:12px;margin-bottom:8px;">No track playing</div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <button id="player-prev" style="background:rgba(0,255,65,0.1);border:1px solid var(--green);color:var(--green);padding:5px 10px;cursor:pointer;font-family:'VT323',monospace;">◄◄</button>
-        <button id="player-play" style="background:var(--green);border:none;color:#000;padding:8px 20px;cursor:pointer;font-family:'VT323',monospace;font-size:16px;flex:1;">▶ PLAY</button>
-        <button id="player-next" style="background:rgba(0,255,65,0.1);border:1px solid var(--green);color:var(--green);padding:5px 10px;cursor:pointer;font-family:'VT323',monospace;">►►</button>
+      <div id="player-now-playing" style="color:var(--green);font-size:14px;margin-bottom:6px;">No track playing</div>
+      <div id="player-progress-wrap" onclick="seekTrack(event)">
+        <div id="player-progress-bar"></div>
       </div>
-      <input type="range" id="player-volume" min="0" max="100" value="70" style="margin-top:10px;">
-      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--green-dark);margin-top:5px;">
-        <span>VOL: <span id="player-volume-display">70</span>%</span>
-        <span id="player-time">0:00 / 0:00</span>
+      <div class="player-info-row">
+        <span id="player-time">0:00</span>
+        <span id="player-duration">0:00</span>
+      </div>
+      <div class="player-controls">
+        <button id="player-prev" title="Previous">◄◄</button>
+        <button id="player-play" class="play-main" title="Play/Pause">▶ PLAY</button>
+        <button id="player-next" title="Next">►►</button>
+      </div>
+      <div class="player-vol-row">
+        <label>VOL</label>
+        <input type="range" id="player-volume" min="0" max="100" value="70">
+        <span id="player-volume-display" style="color:var(--green);font-size:13px;min-width:30px;text-align:right;">70%</span>
       </div>
     </div>
   </div>
@@ -1384,6 +1396,14 @@
   <div id="sidebar-status">
     <div id="sidebar-secrets">SECRETS: 0/10</div>
   </div>
+  <div id="sidebar-socials">
+    <div class="sidebar-divider"></div>
+    <div style="font-size:10px;color:var(--green-dark);letter-spacing:1px;margin-bottom:6px;">CONNECT</div>
+    <a href="#" target="_blank" rel="noopener" class="social-link" title="Instagram">IG</a>
+    <a href="#" target="_blank" rel="noopener" class="social-link" title="Spotify">SPOTIFY</a>
+    <a href="#" target="_blank" rel="noopener" class="social-link" title="Bandcamp">BANDCAMP</a>
+    <a href="#" target="_blank" rel="noopener" class="social-link" title="YouTube">YT</a>
+  </div>
 </div>
     </div>
   </div>
@@ -1399,17 +1419,21 @@
 <script>
 const CONFIG={
   artist:'REDACTED CLUB',format:'mp3',audioPath:'./redacted_assets/audio/',
+  defaultVolume:0.7,
+  pinLength:4,
+  colors:{green:'#00ff41',greenDim:'#00aa2a',greenDark:'#00752b',amber:'#ffaa00',red:'#ff0040',cyan:'#00aaff'},
+  storage:{prefix:'rcplayer_',secrets:'rcplayer_secrets',discovered:'rcplayer_discovered',snakeHigh:'rcplayer_snakeHighScore',tronWins:'rcplayer_tronWins'},
   tracks:[
     // Main EP - Always Visible
     {id:'RC-001',title:'CASINO',file_mp3:'Casino.mp3',file_wav:'Casino.wav',visible:true,locked:false},
     {id:'RC-002',title:'DRUNK N STUMBLIN',file_mp3:'DnS.mp3',file_wav:'DnS.wav',visible:true,locked:false},
     {id:'RC-003',title:'DESTROY ARCHITECTURE',file_mp3:'DA.mp3',file_wav:'DA.wav',visible:true,locked:false},
     {id:'RC-004',title:'COULD BE WORSE',file_mp3:'Could Be 5.mp3',file_wav:'Could Be 5.wav',visible:true,locked:false},
-    
+
     // Hidden Bonus Tracks - Unlock with codes
     {id:'RC-005',title:'███ ████ █████',file_mp3:'One Last Drink 2.mp3',file_wav:'One Last Drink 2.wav',visible:false,locked:true,unlockCode:'SIGNAL'},
     {id:'RC-006',title:'██████ ████',file_mp3:'Sundee Arvo.mp3',file_wav:'Sundee Arvo.wav',visible:false,locked:true,unlockCode:'BENEATH'},
-    
+
     // Secret Track - Master Code
     {id:'RC-007',title:'██████ ██',file_mp3:'GG.mp3',file_wav:'GG.wav',visible:false,locked:true,unlockCode:'REDACTED'},
   ],
@@ -1540,7 +1564,6 @@ const WindowRegistry = {
     'synth-popup':   { name: 'SYNTH',   icon: '🎹', command: 'synth',   discovered: false },
     'drums-popup':   { name: 'DRUMS',   icon: '🥁', command: 'drums',   discovered: false },
     'pool-popup':    { name: 'POOL',    icon: '🎱', command: 'pool',    discovered: false },
-    'viz-popup':     { name: 'VIZ',     icon: '🌀', command: 'viz',     discovered: false },
   },
 
   discover(windowId) {
@@ -1638,9 +1661,9 @@ let state={
 
 // Restore persisted progress from localStorage
 try{
-  const ss=JSON.parse(localStorage.getItem('rcplayer_secrets')||'[]')
+  const ss=JSON.parse(localStorage.getItem(CONFIG.storage.secrets)||'[]')
   ss.forEach(s=>{if(!CONFIG.secrets.codesFound.includes(s))CONFIG.secrets.codesFound.push(s)})
-  const sd=JSON.parse(localStorage.getItem('rcplayer_discovered')||'[]')
+  const sd=JSON.parse(localStorage.getItem(CONFIG.storage.discovered)||'[]')
   sd.forEach(d=>state.discovered.add(d))
   if(ss.length>0)state.headerRevealed=true
 }catch(e){}
@@ -1790,7 +1813,7 @@ async function startBoot(){
   renderPlayerTracks();
   toggleWindow('player-popup');
 
-  generateSessionId();startClock();buildVisualizer();cmdInput.focus();
+  generateSessionId();startClock();cmdInput.focus();
 }
 
 // ═══ OUTPUT ═══
@@ -1816,7 +1839,7 @@ function showHelp(){
   printLine('  stop          — stop playback','dim');printLine('  next / prev   — skip tracks','dim');printLine('  vol [0-100]   — set volume','dim');printLine('  format        — toggle MP3/WAV','dim');
   printLine('','');printLine('── SYSTEM ──','dim');printLine('  whoami        — identity query','dim');printLine('  source        — view hidden notes','dim');printLine('  secrets       — your discoveries','dim');printLine('  ping          — signal test','dim');
   printLine('','');printLine('── AUDIO ──','dim');printLine('  sfx           — sound effects controls','dim');printLine('  synth         — keyboard synthesizer','dim');printLine('  drums         — drum machine','dim');
-  printLine('','');printLine('── GAMES ──','dim');printLine('  pool          — 8-ball pool vs bot','dim');printLine('  snake         — classic snake game','dim');printLine('  tron          — lightcycle arena','dim');printLine('','');printLine('── MEDIA ──','dim');printLine('  viz           — trippy audio visualizer','dim');
+  printLine('','');printLine('── GAMES ──','dim');printLine('  pool          — 8-ball pool vs bot','dim');printLine('  snake         — classic snake game','dim');printLine('  tron          — lightcycle arena','dim');
   printLine('','');printLine('── DATA ──','dim');printLine('  backup        — export save state to file','dim');printLine('  restore       — import save state from file','dim');printLine('  resetdata     — erase all saved progress','dim');
   printLine('');
 }
@@ -1837,12 +1860,7 @@ const COMMANDS={
     WindowRegistry.discover('player-popup');
     initPlayerPopup();
     printLine('Opening PLAYER.EXE...','dim');
-    if(!state.playerOpened){
-      state.playerOpened=true;
-      setTimeout(()=>{
-        
-      },800);
-    }
+    state.playerOpened=true;
   },
   play:(a)=>{const n=parseInt(a[0]);if(a[0]&&!isNaN(n))playTrackByIndex(n-1);else if(state.currentTrack>=0)togglePlay();else printLine('Usage: play [number]  (e.g. play 1)','error')},
   pause:()=>togglePlay(),stop:()=>stopTrack(),next:()=>nextTrack(),prev:()=>prevTrack(),
@@ -1922,8 +1940,6 @@ let A=0,B=0;const iv=setInterval(()=>{const b=[];const z=[];for(let k=0;k<1760;k
   pool:()=>{document.getElementById('pool-popup').classList.add('show');WindowRegistry.discover('pool-popup');Pool.init();printLine('Opening POOL.EXE... Rack \'em up.','dim')},
   billiards:()=>{COMMANDS.pool()},
   '8ball':()=>{COMMANDS.pool()},
-  viz:()=>{try{Viz.open()}catch(e){console.error('VIZ error:',e)};printLine('Opening VIZ.EXE... tune in.','dim')},
-  visualizer:()=>{COMMANDS.viz()},
   trippy:()=>{COMMANDS.viz()},
   status:()=>{printLine('');printLine(`SYS:    ${state.isPlaying?'ACTIVE':'STANDBY'}`,'dim');printLine(`FMT:    ${CONFIG.format.toUpperCase()}`,'dim');printLine(`VOL:    ${Math.round(audio.volume*100)}`,'dim');printLine(`FILES:  ${CONFIG.tracks.filter(t=>t.visible||state.discovered.has(t.id)).length}/${CONFIG.tracks.length}`,'dim');printLine(`ENC:    ${CONFIG.tracks.filter(t=>t.locked&&!state.discovered.has(t.id)).length}`,state.discovered.size<CONFIG.tracks.length?'error':'dim');printLine(`SECRET: ${CONFIG.secrets.codesFound.length}/${CONFIG.secrets.totalCodes}`,'dim');printLine('')},
   cd:()=>printLine('restricted','error'),pwd:()=>printLine('/███/████████/░░░░░░','dim'),
@@ -1949,7 +1965,7 @@ let A=0,B=0;const iv=setInterval(()=>{const b=[];const z=[];for(let k=0;k<1760;k
   },
   backup:()=>{
     const saveData={version:1,player:'RCPlayer',timestamp:new Date().toISOString(),localStorage:{},session:{secrets:[...CONFIG.secrets.codesFound],discovered:[...state.discovered],headerRevealed:state.headerRevealed}}
-    for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('rcplayer_'))saveData.localStorage[k]=localStorage.getItem(k)}
+    for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith(CONFIG.storage.prefix))saveData.localStorage[k]=localStorage.getItem(k)}
     const blob=new Blob([JSON.stringify(saveData,null,2)],{type:'application/json'})
     const url=URL.createObjectURL(blob)
     const a=document.createElement('a');a.href=url;a.download=`rcplayer-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url)
@@ -1966,8 +1982,8 @@ let A=0,B=0;const iv=setInterval(()=>{const b=[];const z=[];for(let k=0;k<1760;k
         if(data.session.discovered)data.session.discovered.forEach(d=>state.discovered.add(d))
         if(data.session.headerRevealed)revealHeader()
       }
-      localStorage.setItem('rcplayer_secrets',JSON.stringify(CONFIG.secrets.codesFound))
-      localStorage.setItem('rcplayer_discovered',JSON.stringify([...state.discovered]))
+      localStorage.setItem(CONFIG.storage.secrets,JSON.stringify(CONFIG.secrets.codesFound))
+      localStorage.setItem(CONFIG.storage.discovered,JSON.stringify([...state.discovered]))
       updateSidebarStatus()
       if(document.getElementById('player-popup').classList.contains('show'))renderPlayerTracks()
       printLine('BACKUP RESTORED','warning');printLine(`  Secrets: ${CONFIG.secrets.codesFound.length}/${CONFIG.secrets.totalCodes}`,'ghost');printLine(`  Tracks: ${state.discovered.size} unlocked`,'ghost')
@@ -1977,7 +1993,7 @@ let A=0,B=0;const iv=setInterval(()=>{const b=[];const z=[];for(let k=0;k<1760;k
   },
   resetdata:(a)=>{
     if(a&&a[0]==='confirm'){
-      const keys=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('rcplayer_'))keys.push(k)}
+      const keys=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith(CONFIG.storage.prefix))keys.push(k)}
       keys.forEach(k=>localStorage.removeItem(k))
       CONFIG.secrets.codesFound.length=0;state.discovered.clear();state.headerRevealed=false
       updateSidebarStatus()
@@ -2019,16 +2035,16 @@ function revealHeader(){if(state.headerRevealed)return;state.headerRevealed=true
 // ═══ AUDIO ═══
 function playTrackByIndex(i){if(i<0||i>=CONFIG.tracks.length)return;const t=CONFIG.tracks[i];if(t.locked&&!state.discovered.has(t.id)){playSFX('glitch_error',0.5);printLine('ACCESS DENIED','error');return}state.currentTrack=i;const f=CONFIG.format==='mp3'?t.file_mp3:t.file_wav;audio.src=CONFIG.audioPath+f;audio.play().then(()=>{state.isPlaying=true;updatePlayerUI();printLine(`▶ ${t.id} :: ${t.title}`,'dim')}).catch(()=>printLine(`ERR: ${f} — file not found`,'error'))}
 function togglePlay(){if(state.currentTrack<0)return;if(state.isPlaying){audio.pause();state.isPlaying=false}else{audio.play();state.isPlaying=true}updatePlayerUI()}
-function stopTrack(){audio.pause();audio.currentTime=0;state.isPlaying=false;updatePlayerUI();const np=document.getElementById('player-now-playing');if(np)np.textContent='No track playing'}
+function stopTrack(){audio.pause();audio.currentTime=0;state.isPlaying=false;state.currentTrack=-1;updatePlayerUI();const bar=document.getElementById('player-progress-bar');if(bar)bar.style.width='0%';const te=document.getElementById('player-time');if(te)te.textContent='0:00';const de=document.getElementById('player-duration');if(de)de.textContent='0:00'}
 function nextTrack(){let n=state.currentTrack+1;while(n<CONFIG.tracks.length){const t=CONFIG.tracks[n];if((t.visible||state.discovered.has(t.id))&&(!t.locked||state.discovered.has(t.id)))break;n++}if(n>=CONFIG.tracks.length)n=0;playTrackByIndex(n)}
 function prevTrack(){let p=state.currentTrack-1;while(p>=0){const t=CONFIG.tracks[p];if((t.visible||state.discovered.has(t.id))&&(!t.locked||state.discovered.has(t.id)))break;p--}if(p<0)p=CONFIG.tracks.length-1;playTrackByIndex(p)}
-function seekTrack(e){if(audio.duration){const r=e.target.getBoundingClientRect();audio.currentTime=((e.clientX-r.left)/r.width)*audio.duration}}
+function seekTrack(e){if(audio.duration){const r=(e.currentTarget||e.target).getBoundingClientRect();audio.currentTime=((e.clientX-r.left)/r.width)*audio.duration}}
 function setVolume(v){audio.volume=v/100}
 function toggleFormat(){CONFIG.format=CONFIG.format==='mp3'?'wav':'mp3';if(state.currentTrack>=0&&state.isPlaying){const ct=audio.currentTime;const t=CONFIG.tracks[state.currentTrack];audio.src=CONFIG.audioPath+(CONFIG.format==='mp3'?t.file_mp3:t.file_wav);audio.currentTime=ct;audio.play()}printLine(`Format: ${CONFIG.format.toUpperCase()}`,'dim')}
 
 // ═══ SECRETS ═══
-function unlockTrack(id){const t=CONFIG.tracks.find(x=>x.id===id);if(!t||state.discovered.has(id)){printLine('already decrypted','dim');return}playSFX('glitch_corrupt',0.5);state.discovered.add(id);localStorage.setItem('rcplayer_discovered',JSON.stringify([...state.discovered]));addSecret(`UNLOCK_${id}`);printLine('');printLine('DECRYPTION KEY ACCEPTED','warning');setTimeout(()=>{printLine(`  ${id} :: ${t.title}`,'');printLine('')},400);if(document.getElementById('player-popup').classList.contains('show')){renderPlayerTracks()}}
-function addSecret(id){if(!CONFIG.secrets.codesFound.includes(id)){CONFIG.secrets.codesFound.push(id);localStorage.setItem('rcplayer_secrets',JSON.stringify(CONFIG.secrets.codesFound));localStorage.setItem('rcplayer_discovered',JSON.stringify([...state.discovered]));playSFX('retro_movie',0.4);unlockGalleryImage(id);const c=document.getElementById('conn-status');c.textContent=`■ ${CONFIG.secrets.codesFound.length}`;c.style.color='var(--amber)';setTimeout(()=>{c.style.color='';c.textContent='■'},2000);updateSidebarStatus();if(CONFIG.secrets.codesFound.length===CONFIG.secrets.totalCodes){setTimeout(()=>{playSFX('glitch_heavy',0.4);printLine('');printLine('████████████████████████████████████','error');setTimeout(()=>{printLine('  TRANSMISSION COMPLETE','error');printLine('  ALL SIGNALS RECOVERED','error');printLine('████████████████████████████████████','error');revealHeader();updateSidebarStatus()},500)},800)}}}
+function unlockTrack(id){const t=CONFIG.tracks.find(x=>x.id===id);if(!t||state.discovered.has(id)){printLine('already decrypted','dim');return}playSFX('glitch_corrupt',0.5);state.discovered.add(id);localStorage.setItem(CONFIG.storage.discovered,JSON.stringify([...state.discovered]));addSecret(`UNLOCK_${id}`);printLine('');printLine('DECRYPTION KEY ACCEPTED','warning');setTimeout(()=>{printLine(`  ${id} :: ${t.title}`,'');printLine('')},400);if(document.getElementById('player-popup').classList.contains('show')){renderPlayerTracks()}}
+function addSecret(id){if(!CONFIG.secrets.codesFound.includes(id)){CONFIG.secrets.codesFound.push(id);localStorage.setItem(CONFIG.storage.secrets,JSON.stringify(CONFIG.secrets.codesFound));localStorage.setItem(CONFIG.storage.discovered,JSON.stringify([...state.discovered]));playSFX('retro_movie',0.4);unlockGalleryImage(id);const c=document.getElementById('conn-status');c.textContent=`■ ${CONFIG.secrets.codesFound.length}`;c.style.color='var(--amber)';setTimeout(()=>{c.style.color='';c.textContent='■'},2000);updateSidebarStatus();if(CONFIG.secrets.codesFound.length===CONFIG.secrets.totalCodes){setTimeout(()=>{playSFX('glitch_heavy',0.4);printLine('');printLine('████████████████████████████████████','error');setTimeout(()=>{printLine('  TRANSMISSION COMPLETE','error');printLine('  ALL SIGNALS RECOVERED','error');printLine('████████████████████████████████████','error');revealHeader();updateSidebarStatus()},500)},800)}}}
 
 // ═══ EFFECTS ═══
 
@@ -2388,8 +2404,6 @@ function initScreensaverIdle(){
 }
 
 
-function buildVisualizer(){const v=document.getElementById('visualizer');for(let i=0;i<50;i++){const b=document.createElement('div');b.className='viz-bar';b.style.height='1px';v.appendChild(b)}}
-function animateVisualizer(){document.querySelectorAll('.viz-bar').forEach(b=>{b.style.height=(state.isPlaying?Math.random()*28+1:1)+'px'});requestAnimationFrame(animateVisualizer)}
 
 // ═══ AUDIO EVENTS ═══
 audio.addEventListener('ended',()=>nextTrack());
@@ -2416,10 +2430,10 @@ const KONAMI=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRigh
 document.addEventListener('keydown',(e)=>{if(!state.welcomeDismissed)return;ks.push(e.key);if(ks.length>KONAMI.length)ks.shift();if(ks.join(',')===KONAMI.join(',')){playSFX('retro_movie',0.6);printLine('');printLine('▓▓▓ CHEAT CODE ▓▓▓','error');setTimeout(()=>{printLine('Cheating won\'t help you here.','ghost');printLine('...or will it?','ghost')},500);addSecret('KONAMI');ks=[]}});
 document.addEventListener('dblclick',(e)=>{if(e.target.classList.contains('redact-block')){e.target.classList.add('cracked');addSecret('REDACT_CRACK')}});
 
-audio.volume=.8;
+audio.volume=CONFIG.defaultVolume;
 
 // ═══ INIT ═══
-window.addEventListener('load',()=>{initWelcomeScreen();animateVisualizer()});
+window.addEventListener('load',()=>{initWelcomeScreen()});
 
 
 // ═══ FREQUENCY SCANNER SYSTEM ═══
@@ -2519,10 +2533,10 @@ function tuneToFrequency(freq) {
   if(!signal) return;
 
   playSFX('glitch_heavy',0.4);
-  updateScannerStatus('Locking onto ' + freq.toFixed(1) + ' MHz...', '#ffaa00');
+  updateScannerStatus('Locking onto ' + freq.toFixed(1) + ' MHz...', CONFIG.colors.amber);
 
   setTimeout(() => {
-    updateScannerStatus('█▓▒░ SIGNAL ACQUIRED ░▒▓█', '#00ff41');
+    updateScannerStatus('█▓▒░ SIGNAL ACQUIRED ░▒▓█', CONFIG.colors.green);
     playSFX('scanner_lock',0.6);
     printLine('');
     printLine('FREQUENCY LOCKED: ' + freq.toFixed(1) + ' MHz', 'warning');
@@ -2595,7 +2609,7 @@ function drawRadar() {
     const alpha = 1 - (wave.radius / radius);
     ctx.strokeStyle = `rgba(0,255,65,${alpha * 0.8})`;
     ctx.lineWidth = 2;
-    ctx.shadowColor = '#00ff41';
+    ctx.shadowColor = CONFIG.colors.green;
     ctx.shadowBlur = 10;
     ctx.beginPath();
     ctx.arc(centerX, centerY, wave.radius, 0, Math.PI * 2);
@@ -2612,7 +2626,7 @@ function drawRadar() {
       ctx.beginPath();
       ctx.arc(x, y, 4, 0, Math.PI * 2);
       ctx.fill();
-      ctx.shadowColor = '#00ff41';
+      ctx.shadowColor = CONFIG.colors.green;
       ctx.shadowBlur = 15;
       ctx.fill();
       ctx.shadowBlur = 0;
@@ -2638,7 +2652,7 @@ function drawRadar() {
     const pulseSize = 4 + Math.sin(Date.now() / 200) * 2;
 
     ctx.fillStyle = `rgba(255,${blip.isClose ? 255 : 100},65,${fadeAlpha * 0.8})`;
-    ctx.shadowColor = blip.isClose ? '#ffff41' : '#00ff41';
+    ctx.shadowColor = blip.isClose ? '#ffff41' : CONFIG.colors.green;
     ctx.shadowBlur = 20;
     ctx.beginPath();
     ctx.arc(x, y, pulseSize, 0, Math.PI * 2);
@@ -2744,8 +2758,8 @@ function drawRadar() {
   ctx.stroke();
 
   // Center dot with glow
-  ctx.fillStyle = '#00ff41';
-  ctx.shadowColor = '#00ff41';
+  ctx.fillStyle = CONFIG.colors.green;
+  ctx.shadowColor = CONFIG.colors.green;
   ctx.shadowBlur = 15;
   ctx.beginPath();
   ctx.arc(centerX, centerY, 4, 0, Math.PI * 2);
@@ -2876,15 +2890,15 @@ function drawNoiseVisualization() {
       } else if(proximity > 0.7) {
         // Very close - green to yellow
         signalColor = `rgba(${100 + proximity * 155},255,65,${visibility * 0.9})`;
-        glowColor = '#00ff41';
+        glowColor = CONFIG.colors.green;
       } else if(proximity > 0.45) {
         // Medium - orange
         signalColor = `rgba(255,${100 + proximity * 155},65,${visibility * 0.7})`;
-        glowColor = '#ffaa00';
+        glowColor = CONFIG.colors.amber;
       } else {
         // Far - very dim green (barely visible)
         signalColor = `rgba(0,255,65,${visibility * 0.3})`;
-        glowColor = '#00ff41';
+        glowColor = CONFIG.colors.green;
       }
 
       // Draw signal peak with gradient and analog fuzz
@@ -2931,7 +2945,7 @@ function drawNoiseVisualization() {
 
   // Update clarity text - show LOCKED only if closest signal is locked
   const clarityPercent = Math.round(closestProximity * 100);
-  const clarityColor = closestProximity > 0.7 ? '#00ff41' : closestProximity > 0.4 ? '#ffaa00' : '#ff6666';
+  const clarityColor = closestProximity > 0.7 ? CONFIG.colors.green : closestProximity > 0.4 ? CONFIG.colors.amber : '#ff6666';
 
   // Check if closest signal is a locked one
   const isClosestLocked = closestSignal && scannerState.lockedSignals.some(s =>
@@ -3109,14 +3123,16 @@ function toggleWindow(windowId) {
     return;
   }
 
-  const window = document.getElementById(windowId);
-  if(window.classList.contains('show')) {
-    window.classList.remove('show');
+  const el = document.getElementById(windowId);
+  if(el.classList.contains('show')) {
+    el.classList.remove('show');
     playSFX('ui_click',0.3);
+    if(windowId === 'player-popup') stopTrack();
   } else {
-    window.classList.add('show');
+    el.classList.add('show');
     playSFX('ui_click',0.4);
     WindowRegistry.discover(windowId);
+    if(windowId === 'player-popup') initPlayerPopup();
   }
   WindowRegistry.updateIndicators();
 }
@@ -3206,7 +3222,7 @@ function sendPing() {
         !closest || echo.distance < closest.distance ? echo : closest
       , null);
 
-      updateScannerStatus(`${wave.echoes.length} signal(s) detected`, '#00ff41');
+      updateScannerStatus(`${wave.echoes.length} signal(s) detected`, CONFIG.colors.green);
 
       // Display cursor position info
       const echoContainer = document.getElementById('echoes-container');
@@ -3243,7 +3259,7 @@ function sendPing() {
         .map(echo => {
           const proximityPercent = Math.round(echo.proximity * 100);
           const isLocked = echo.power >= 90;
-          const powerColor = isLocked ? '#00ff41' : (echo.isClose ? '#ffaa00' : '#ff6666');
+          const powerColor = isLocked ? CONFIG.colors.green : (echo.isClose ? CONFIG.colors.amber : '#ff6666');
 
           // Signal name visibility
           const signalName = isLocked ? echo.signal.name : 'UNKNOWN SIGNAL';
@@ -3344,10 +3360,10 @@ function attemptLockSignal() {
   const signal = scannerState.lockableSignal.signal;
 
   playSFX('glitch_heavy',0.4);
-  updateScannerStatus('🔒 LOCKING SIGNAL...', '#ffaa00');
+  updateScannerStatus('🔒 LOCKING SIGNAL...', CONFIG.colors.amber);
 
   setTimeout(() => {
-    updateScannerStatus('█▓▒░ SIGNAL LOCKED ░▒▓█', '#00ff41');
+    updateScannerStatus('█▓▒░ SIGNAL LOCKED ░▒▓█', CONFIG.colors.green);
     playSFX('scanner_lock',0.6);
 
     // Add to locked signals array (if not already locked)
@@ -3584,7 +3600,7 @@ const galleryImages = [
     title: 'BEHIND THE SCENES',
     description: 'Making the music',
     unlockCode: 'KONAMI',
-    url: './redacted_assets/gallery/spacewave.png'  // NOTE: You have spacewave.pdn - convert to PNG/JPG!
+    url: './redacted_assets/gallery/spacewave.png'
   }
 ];
 
@@ -3737,13 +3753,17 @@ function downloadTrack(trackFile, trackTitle) {
   printLine(`Downloading: ${trackTitle}`, 'dim');
 }
 
+function _onAudioPlay(){state.isPlaying=true;updatePlayerUI()}
+function _onAudioPause(){state.isPlaying=false;updatePlayerUI()}
+function _onAudioEnded(){const visibleTracks=CONFIG.tracks.filter(t=>t.visible);if(state.currentTrack<visibleTracks.length-1)playTrackByIndex(state.currentTrack+1)}
+var _playerControlsInit=false
 function setupPlayerControls() {
   const playBtn = document.getElementById('player-play');
   const prevBtn = document.getElementById('player-prev');
   const nextBtn = document.getElementById('player-next');
   const volumeSlider = document.getElementById('player-volume');
   const volumeDisplay = document.getElementById('player-volume-display');
-  
+
   if (playBtn) {
     playBtn.onclick = () => {
       if (state.currentTrack === -1) {
@@ -3755,7 +3775,7 @@ function setupPlayerControls() {
       }
     };
   }
-  
+
   if (prevBtn) {
     prevBtn.onclick = () => {
       if (state.currentTrack > 0) {
@@ -3763,7 +3783,7 @@ function setupPlayerControls() {
       }
     };
   }
-  
+
   if (nextBtn) {
     nextBtn.onclick = () => {
       const visibleTracks = CONFIG.tracks.filter(t => t.visible);
@@ -3772,68 +3792,64 @@ function setupPlayerControls() {
       }
     };
   }
-  
+
   if (volumeSlider) {
     volumeSlider.oninput = (e) => {
       const vol = e.target.value;
       audio.volume = vol / 100;
-      if (volumeDisplay) volumeDisplay.textContent = vol;
+      if (volumeDisplay) volumeDisplay.textContent = vol + '%';
     };
-    audio.volume = 0.7;
+    audio.volume = CONFIG.defaultVolume;
   }
-  
-  audio.removeEventListener('play', updatePlayerUI);
-  audio.removeEventListener('pause', updatePlayerUI);
-  audio.removeEventListener('timeupdate', updatePlayerTime);
-  
-  audio.addEventListener('play', () => {
-    state.isPlaying = true;
-    updatePlayerUI();
-  });
-  audio.addEventListener('pause', () => {
-    state.isPlaying = false;
-    updatePlayerUI();
-  });
-  audio.addEventListener('timeupdate', updatePlayerTime);
-  audio.addEventListener('ended', () => {
-    const visibleTracks = CONFIG.tracks.filter(t => t.visible);
-    if (state.currentTrack < visibleTracks.length - 1) {
-      playTrackByIndex(state.currentTrack + 1);
-    }
-  });
+
+  if(!_playerControlsInit){
+    _playerControlsInit=true
+    audio.addEventListener('play', _onAudioPlay);
+    audio.addEventListener('pause', _onAudioPause);
+    audio.addEventListener('timeupdate', updatePlayerTime);
+    audio.addEventListener('ended', _onAudioEnded);
+  }
 }
 
 function updatePlayerUI() {
   const playBtn = document.getElementById('player-play');
   const nowPlaying = document.getElementById('player-now-playing');
-  
+
   if (playBtn) {
     playBtn.innerHTML = state.isPlaying ? '⏸ PAUSE' : '▶ PLAY';
   }
 
   const fab = document.getElementById('music-fab');
   if (fab) fab.classList.toggle('playing', state.isPlaying);
-  
+
   if (nowPlaying && state.currentTrack >= 0) {
     const track = CONFIG.tracks[state.currentTrack];
-    nowPlaying.textContent = `Now Playing: ${track.title}`;
+    nowPlaying.textContent = `▶ ${track.title}`;
     nowPlaying.style.color = 'var(--green)';
+  } else if (nowPlaying && !state.isPlaying) {
+    nowPlaying.textContent = 'No track playing';
+    nowPlaying.style.color = 'var(--green-dark)';
   }
-  
+
   renderPlayerTracks();
 }
 
+function _formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${sec.toString().padStart(2, '0')}`;
+}
+
 function updatePlayerTime() {
-  const timeDisplay = document.getElementById('player-time');
-  if (timeDisplay && audio.duration) {
-    const current = Math.floor(audio.currentTime);
-    const total = Math.floor(audio.duration);
-    const formatTime = (s) => {
-      const m = Math.floor(s / 60);
-      const sec = s % 60;
-      return `${m}:${sec.toString().padStart(2, '0')}`;
-    };
-    timeDisplay.textContent = `${formatTime(current)} / ${formatTime(total)}`;
+  const timeEl = document.getElementById('player-time');
+  const durEl = document.getElementById('player-duration');
+  const bar = document.getElementById('player-progress-bar');
+  if (audio.duration) {
+    const cur = Math.floor(audio.currentTime);
+    const tot = Math.floor(audio.duration);
+    if (timeEl) timeEl.textContent = _formatTime(cur);
+    if (durEl) durEl.textContent = _formatTime(tot);
+    if (bar) bar.style.width = ((audio.currentTime / audio.duration) * 100) + '%';
   }
 }
 
@@ -3896,7 +3912,7 @@ const pinSecrets = {
 };
 
 function pinPress(num) {
-  if (pinValue.length < 4) {
+  if (pinValue.length < CONFIG.pinLength) {
     pinValue += num;
     playSFX('ui_click',0.3);
     updatePinDisplay();
@@ -3928,7 +3944,7 @@ function updatePinDisplay() {
 }
 
 function pinSubmit() {
-  if (pinValue.length !== 4) return;
+  if (pinValue.length !== CONFIG.pinLength) return;
   
   const display = document.getElementById('pin-display');
   const hint = document.getElementById('pin-hint');
@@ -4624,7 +4640,7 @@ function updateDrumsVol(){
 
 // ═══ SNAKE.EXE ═══
 let snakeGame = null;
-let snakeHighScore = parseInt(localStorage.getItem('rcplayer_snakeHighScore')) || 0;
+let snakeHighScore = parseInt(localStorage.getItem(CONFIG.storage.snakeHigh)) || 0;
 
 function initSnake() {
   document.getElementById('snake-highscore').textContent = snakeHighScore;
@@ -4799,7 +4815,7 @@ function drawSnake() {
   
   // Draw snake
   snakeGame.snake.forEach((segment, index) => {
-    ctx.fillStyle = index === 0 ? '#00ff41' : 'rgba(0,255,65,0.7)';
+    ctx.fillStyle = index === 0 ? CONFIG.colors.green : 'rgba(0,255,65,0.7)';
     ctx.fillRect(segment.x * size + 1, segment.y * size + 1, size - 2, size - 2);
   });
   
@@ -4820,14 +4836,14 @@ function gameOver() {
   // Update high score
   if (snakeGame.score > snakeHighScore) {
     snakeHighScore = snakeGame.score;
-    localStorage.setItem('rcplayer_snakeHighScore', snakeHighScore);
+    localStorage.setItem(CONFIG.storage.snakeHigh, snakeHighScore);
     document.getElementById('snake-highscore').textContent = snakeHighScore;
   }
 }
 
 // ═══ TRON.EXE ═══
 let tronGame = null;
-let tronWins = parseInt(localStorage.getItem('rcplayer_tronWins')) || 0;
+let tronWins = parseInt(localStorage.getItem(CONFIG.storage.tronWins)) || 0;
 
 function initTron() {
   document.getElementById('tron-wins').textContent = tronWins;
@@ -5092,7 +5108,7 @@ function tronGameOver(playerWon, draw) {
   } else if (playerWon) {
     msg = 'End of line.';
     tronWins++;
-    localStorage.setItem('rcplayer_tronWins', tronWins);
+    localStorage.setItem(CONFIG.storage.tronWins, tronWins);
     document.getElementById('tron-wins').textContent = tronWins;
   } else {
     msg = 'DEREZZED';
@@ -5625,7 +5641,7 @@ const Pool = {
         const pct=this.power/this.maxPower
         const barW=W-R*2-40,barH=10
         const barX=R+20,barY=H-R+14
-        ctx.fillStyle=pct>0.7?'#ff4040':pct>0.4?'#ffaa00':'#00ff41'
+        ctx.fillStyle=pct>0.7?'#ff4040':pct>0.4?CONFIG.colors.amber:CONFIG.colors.green
         ctx.fillRect(barX,barY,barW*pct,barH)
         ctx.strokeStyle='#555';ctx.lineWidth=1;ctx.strokeRect(barX,barY,barW,barH)
         ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='9px sans-serif'
@@ -5648,365 +5664,6 @@ function closePool(){
   document.getElementById('pool-popup').classList.remove('show')
   if(Pool.botTimer)clearTimeout(Pool.botTimer)
   WindowRegistry.updateIndicators()
-}
-
-// ═══ VIZ.EXE — Trippy Audio Visualizer ═══
-let vizAudioCtx = null, vizAnalyser = null, vizSource = null
-const Viz = {
-  canvas: null, ctx: null,
-  freqData: null, timeData: null, raf: null, mode: 0, time: 0,
-  particles: [], rings: [],
-
-  init() {
-    if (this.canvas) return
-    this.canvas = document.getElementById('viz-canvas')
-    this.ctx = this.canvas.getContext('2d')
-    this.spawnParticles()
-  },
-
-  connectAudio() {
-    if (vizAnalyser) return true
-    try {
-      const AC = window.AudioContext || window.webkitAudioContext
-      vizAudioCtx = new AC()
-      vizAnalyser = vizAudioCtx.createAnalyser()
-      vizAnalyser.fftSize = 2048
-      vizAnalyser.smoothingTimeConstant = 0.8
-      vizSource = vizAudioCtx.createMediaElementSource(audio)
-      vizSource.connect(vizAnalyser)
-      vizAnalyser.connect(vizAudioCtx.destination)
-      this.freqData = new Uint8Array(vizAnalyser.frequencyBinCount)
-      this.timeData = new Uint8Array(vizAnalyser.frequencyBinCount)
-      return true
-    } catch(e) {
-      console.warn('VIZ: Could not connect audio analyser', e)
-      // fallback: create dummy data arrays for idle animation
-      this.freqData = new Uint8Array(1024)
-      this.timeData = new Uint8Array(1024)
-      return false
-    }
-  },
-
-  open() {
-    this.init()
-    this.connectAudio()
-    const popup = document.getElementById('viz-popup')
-    popup.classList.add('show')
-    WindowRegistry.discover('viz-popup')
-    WindowRegistry.updateIndicators()
-    if (vizAudioCtx && vizAudioCtx.state === 'suspended') vizAudioCtx.resume()
-    this.start()
-  },
-
-  close() {
-    document.getElementById('viz-popup').classList.remove('show')
-    this.stop()
-    WindowRegistry.updateIndicators()
-  },
-
-  start() { if (!this.raf) this.loop() },
-  stop() { if (this.raf) { cancelAnimationFrame(this.raf); this.raf = null } },
-
-  setMode(m) {
-    this.mode = m
-    this.rings = []
-    const btns = document.querySelectorAll('.viz-controls button')
-    btns.forEach((b, i) => b.classList.toggle('active', i === m))
-  },
-
-  spawnParticles() {
-    this.particles = []
-    for (let i = 0; i < 250; i++) {
-      const a = Math.random() * Math.PI * 2
-      const r = 40 + Math.random() * 220
-      this.particles.push({
-        angle: a, radius: r, baseRadius: r,
-        speed: 0.002 + Math.random() * 0.006,
-        size: 1 + Math.random() * 2,
-        hue: Math.random() * 360,
-        band: Math.floor(Math.random() * 64)
-      })
-    }
-  },
-
-  getAudio() {
-    if (!vizAnalyser) return false
-    if (vizAudioCtx && vizAudioCtx.state === 'suspended') vizAudioCtx.resume()
-    vizAnalyser.getByteFrequencyData(this.freqData)
-    vizAnalyser.getByteTimeDomainData(this.timeData)
-    let sum = 0
-    for (let i = 0; i < 10; i++) sum += this.freqData[i]
-    this.bass = sum / 10
-    sum = 0
-    for (let i = 0; i < this.freqData.length; i++) sum += this.freqData[i]
-    this.energy = sum / this.freqData.length
-    return this.energy > 2
-  },
-
-  loop() {
-    const hasAudio = this.getAudio()
-    const c = this.ctx, w = this.canvas.width, h = this.canvas.height
-    this.time += 0.016
-
-    if (this.mode === 0) this.drawKaleidoscope(c, w, h, hasAudio)
-    else if (this.mode === 1) this.drawTunnel(c, w, h, hasAudio)
-    else if (this.mode === 2) this.drawNebula(c, w, h, hasAudio)
-    else this.drawBars(c, w, h, hasAudio)
-
-    if (!hasAudio) {
-      c.fillStyle = 'rgba(0,255,65,0.4)'
-      c.font = '14px "Share Tech Mono", monospace'
-      c.textAlign = 'center'
-      c.fillText('▶ PLAY A TRACK', w / 2, h - 20)
-      c.textAlign = 'start'
-    }
-
-    this.raf = requestAnimationFrame(() => this.loop())
-  },
-
-  // ── MODE 0: KALEIDOSCOPE ──
-  drawKaleidoscope(c, w, h, hasAudio) {
-    c.fillStyle = 'rgba(0,0,0,0.06)'
-    c.fillRect(0, 0, w, h)
-    const cx = w / 2, cy = h / 2
-    const segments = 8
-    const sliceAngle = (Math.PI * 2) / segments
-    const bands = 64
-    const hueBase = (this.time * 30) % 360
-
-    c.save()
-    c.translate(cx, cy)
-    c.globalCompositeOperation = 'lighter'
-
-    for (let s = 0; s < segments; s++) {
-      c.save()
-      c.rotate(s * sliceAngle)
-      if (s % 2 === 1) c.scale(1, -1)
-
-      for (let i = 0; i < bands; i++) {
-        const val = hasAudio ? this.freqData[i] : (80 + 30 * Math.sin(this.time * 2 + i * 0.2))
-        const norm = val / 255
-        const r = 20 + norm * 250
-        const angle = (i / bands) * sliceAngle
-        const hue = (hueBase + i * 5) % 360
-
-        c.beginPath()
-        c.moveTo(0, 0)
-        const x = Math.cos(angle) * r
-        const y = Math.sin(angle) * r
-        c.lineTo(x, y)
-        const x2 = Math.cos(angle + sliceAngle / bands) * (r * 0.8)
-        const y2 = Math.sin(angle + sliceAngle / bands) * (r * 0.8)
-        c.lineTo(x2, y2)
-        c.closePath()
-        c.fillStyle = `hsla(${hue},100%,${50 + norm * 30}%,${0.3 + norm * 0.5})`
-        c.fill()
-      }
-      c.restore()
-    }
-
-    // center pulse
-    const bassNorm = hasAudio ? this.bass / 255 : 0.3 + 0.1 * Math.sin(this.time * 3)
-    const pr = 15 + bassNorm * 40
-    const grad = c.createRadialGradient(0, 0, 0, 0, 0, pr)
-    grad.addColorStop(0, `hsla(${hueBase},100%,80%,0.8)`)
-    grad.addColorStop(1, `hsla(${hueBase},100%,50%,0)`)
-    c.beginPath()
-    c.arc(0, 0, pr, 0, Math.PI * 2)
-    c.fillStyle = grad
-    c.fill()
-
-    c.globalCompositeOperation = 'source-over'
-    c.restore()
-  },
-
-  // ── MODE 1: WAVEFORM TUNNEL ──
-  drawTunnel(c, w, h, hasAudio) {
-    c.fillStyle = 'rgba(0,0,0,0.08)'
-    c.fillRect(0, 0, w, h)
-    const cx = w / 2, cy = h / 2
-
-    // shrink existing rings
-    for (let i = this.rings.length - 1; i >= 0; i--) {
-      this.rings[i].scale *= 0.985
-      this.rings[i].alpha *= 0.992
-      if (this.rings[i].scale < 0.02 || this.rings[i].alpha < 0.01) {
-        this.rings.splice(i, 1)
-      }
-    }
-
-    // spawn new ring every 3 frames
-    if (Math.floor(this.time * 60) % 3 === 0) {
-      const pts = []
-      const samples = 128
-      for (let i = 0; i < samples; i++) {
-        const val = hasAudio ? (this.timeData[i * 4] - 128) / 128 : Math.sin(this.time * 4 + i * 0.15) * 0.3
-        pts.push(val)
-      }
-      this.rings.push({ pts, scale: 1, alpha: 1, hue: (this.time * 50) % 360 })
-    }
-
-    c.save()
-    c.translate(cx, cy)
-    c.globalCompositeOperation = 'lighter'
-
-    for (const ring of this.rings) {
-      const samples = ring.pts.length
-      const baseR = 280 * ring.scale
-      c.beginPath()
-      for (let i = 0; i <= samples; i++) {
-        const idx = i % samples
-        const angle = (idx / samples) * Math.PI * 2
-        const displacement = ring.pts[idx] * 60 * ring.scale
-        const r = baseR + displacement
-        const x = Math.cos(angle) * r
-        const y = Math.sin(angle) * r
-        if (i === 0) c.moveTo(x, y)
-        else c.lineTo(x, y)
-      }
-      c.closePath()
-      c.strokeStyle = `hsla(${ring.hue},100%,60%,${ring.alpha * 0.6})`
-      c.lineWidth = 1.5 * ring.scale + 0.5
-      c.stroke()
-    }
-
-    c.globalCompositeOperation = 'source-over'
-    c.restore()
-
-    // keep ring count manageable
-    if (this.rings.length > 80) this.rings.splice(0, this.rings.length - 80)
-  },
-
-  // ── MODE 2: PARTICLE NEBULA ──
-  drawNebula(c, w, h, hasAudio) {
-    c.fillStyle = 'rgba(0,0,0,0.07)'
-    c.fillRect(0, 0, w, h)
-    const cx = w / 2, cy = h / 2
-    const bassNorm = hasAudio ? this.bass / 255 : 0.3
-    const burst = hasAudio && this.bass > 180
-
-    c.save()
-    c.translate(cx, cy)
-    c.globalCompositeOperation = 'lighter'
-
-    // slow global rotation
-    const globalRot = this.time * 0.1
-
-    for (const p of this.particles) {
-      const bandVal = hasAudio ? this.freqData[p.band] / 255 : 0.3 + 0.2 * Math.sin(this.time + p.angle)
-
-      // modulate radius by frequency
-      p.radius = p.baseRadius + bandVal * 80
-      if (burst) p.radius += 30
-
-      // orbit
-      p.angle += p.speed * (1 + bandVal * 2)
-      p.hue = (p.hue + 0.5) % 360
-
-      const a = p.angle + globalRot
-      const x = Math.cos(a) * p.radius
-      const y = Math.sin(a) * p.radius
-      const size = p.size * (0.8 + bandVal * 1.5)
-
-      c.beginPath()
-      c.arc(x, y, size, 0, Math.PI * 2)
-      c.fillStyle = `hsla(${p.hue},100%,${55 + bandVal * 30}%,${0.5 + bandVal * 0.4})`
-      c.fill()
-    }
-
-    // center glow
-    const gr = 30 + bassNorm * 60
-    const grad = c.createRadialGradient(0, 0, 0, 0, 0, gr)
-    grad.addColorStop(0, `hsla(${(this.time * 40) % 360},100%,70%,0.3)`)
-    grad.addColorStop(1, 'transparent')
-    c.beginPath()
-    c.arc(0, 0, gr, 0, Math.PI * 2)
-    c.fillStyle = grad
-    c.fill()
-
-    c.globalCompositeOperation = 'source-over'
-    c.restore()
-  },
-
-  // ── MODE 3: FRACTAL BARS ──
-  drawBars(c, w, h, hasAudio) {
-    c.fillStyle = 'rgba(0,0,0,0.12)'
-    c.fillRect(0, 0, w, h)
-    const cx = w / 2, cy = h / 2
-    const bands = 64
-    const hueBase = (this.time * 25) % 360
-    const rot = this.time * 0.3
-
-    c.save()
-    c.translate(cx, cy)
-    c.rotate(rot)
-    c.globalCompositeOperation = 'lighter'
-
-    for (let i = 0; i < bands; i++) {
-      const val = hasAudio ? this.freqData[i * 2] : (100 + 60 * Math.sin(this.time * 2 + i * 0.3))
-      const norm = val / 255
-      const angle = (i / bands) * Math.PI * 2
-      const barLen = 30 + norm * 200
-      const hue = (hueBase + i * (360 / bands)) % 360
-
-      c.save()
-      c.rotate(angle)
-
-      // main bar
-      c.fillStyle = `hsla(${hue},100%,${50 + norm * 30}%,${0.6 + norm * 0.3})`
-      c.fillRect(60, -2, barLen, 4)
-
-      // recursive branch at tip
-      if (norm > 0.3) {
-        c.save()
-        c.translate(60 + barLen, 0)
-        const branchLen = barLen * 0.4
-        // upper branch
-        c.save()
-        c.rotate(-0.4 - norm * 0.3)
-        c.fillStyle = `hsla(${(hue + 40) % 360},100%,65%,${norm * 0.5})`
-        c.fillRect(0, -1.5, branchLen, 3)
-        c.restore()
-        // lower branch
-        c.save()
-        c.rotate(0.4 + norm * 0.3)
-        c.fillStyle = `hsla(${(hue + 80) % 360},100%,65%,${norm * 0.5})`
-        c.fillRect(0, -1.5, branchLen, 3)
-        c.restore()
-        c.restore()
-      }
-
-      c.restore()
-    }
-
-    // inner mirror ring
-    for (let i = 0; i < bands; i++) {
-      const val = hasAudio ? this.freqData[i * 2] : (100 + 60 * Math.sin(this.time * 2 + i * 0.3))
-      const norm = val / 255
-      const angle = (i / bands) * Math.PI * 2
-      const barLen = norm * 45
-      const hue = (hueBase + i * (360 / bands) + 180) % 360
-
-      c.save()
-      c.rotate(angle)
-      c.fillStyle = `hsla(${hue},100%,60%,${0.3 + norm * 0.3})`
-      c.fillRect(15, -1.5, barLen, 3)
-      c.restore()
-    }
-
-    // center glow
-    const bassNorm = hasAudio ? this.bass / 255 : 0.3
-    c.shadowBlur = 20 + bassNorm * 30
-    c.shadowColor = `hsl(${hueBase},100%,60%)`
-    c.beginPath()
-    c.arc(0, 0, 12 + bassNorm * 8, 0, Math.PI * 2)
-    c.fillStyle = `hsla(${hueBase},100%,70%,0.7)`
-    c.fill()
-    c.shadowBlur = 0
-
-    c.globalCompositeOperation = 'source-over'
-    c.restore()
-  }
 }
 
 // ═══ DRAGGABLE POPUPS ═══
