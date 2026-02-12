@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; script-src 'self' 'unsafe-inline';">
 <title>░░░░░░░░</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
@@ -5128,6 +5129,7 @@ function calcPress(val) {
 }
 function calcEqual() {
   try {
+    if (!/^[0-9+\-*/().\s]+$/.test(calcValue)) throw new Error('Invalid');
     calcValue = String(eval(calcValue));
     document.getElementById('calc-display').textContent = calcValue;
   } catch(e) {
