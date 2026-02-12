@@ -38,13 +38,20 @@ redacted-club-player/
 - **Hosting**: GitHub Pages, deploys automatically from `master` branch
 - **Audio format**: MP3 (320kbps) for web. WAV originals are gitignored.
 
+### Branches
+- **`master`** — stable/live version. GitHub Pages deploys from here. Only merge tested, working code.
+- **`dev`** — development branch. All new work happens here first.
+- Workflow: work on `dev` → test → merge to `master` when ready
+
 ### Agent workflow (IMPORTANT — follow every session)
-1. **Start of session**: Run `git pull` to get latest changes before making any edits
-2. **After changes**: Commit and push so the live site updates and other machines stay in sync
-3. **Commit ALL changed files** — not just the HTML. Always stage every modified file (HTML, MD, YAML, SFX, images, etc.)
-4. **New audio files**: If WAV files are added, convert to MP3 at 320kbps using ffmpeg before committing
-5. **Commit style**: Short descriptive message, single commit per logical change
-6. **Never force push** unless explicitly asked — the repo may be used from multiple machines
+1. **Start of session**: Run `git pull` on the current branch before making any edits
+2. **Default branch is `dev`** — do all new work on `dev` unless told otherwise
+3. **After changes**: Commit and push so other machines stay in sync
+4. **Commit ALL changed files** — not just the HTML. Always stage every modified file (HTML, MD, YAML, SFX, images, etc.)
+5. **Merging to master**: Only when user says to. Use `git checkout master && git merge dev && git push && git checkout dev`
+6. **New audio files**: If WAV files are added, convert to MP3 at 320kbps using ffmpeg before committing
+7. **Commit style**: Short descriptive message, single commit per logical change
+8. **Never force push** unless explicitly asked — the repo may be used from multiple machines
 
 ### Running locally
 Open `redacted_player.html` in a web browser. All assets load via relative paths. No server needed.
