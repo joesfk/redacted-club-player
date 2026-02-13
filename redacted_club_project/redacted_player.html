@@ -289,6 +289,120 @@
   .calc-btn:hover{background:var(--green);color:#000;}
   .calc-btn:active{background:var(--cyan);color:#000;}
   
+  /* ═══ FILES.EXE ═══ */
+  #files-popup{
+    position:fixed;
+    left:180px;
+    top:90px;
+    width:540px;
+    background:rgba(0,20,10,0.98);
+    border:2px solid var(--green);
+    box-shadow:0 0 30px rgba(0,255,65,0.5),inset 0 0 20px rgba(0,0,0,0.8);
+    z-index:9997;
+    display:none;
+    font-family:'VT323',monospace;
+  }
+  #files-popup.show{display:flex;flex-direction:column;}
+  #files-address-bar{
+    background:#000;
+    border-bottom:1px solid var(--green-dark);
+    padding:4px 8px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:13px;
+  }
+  #files-address-bar .addr-label{color:var(--green-dark);}
+  #files-address-bar .addr-path{
+    color:var(--green);
+    flex:1;
+    background:rgba(0,0,0,0.5);
+    border:1px solid var(--green-dark);
+    padding:2px 6px;
+    font-size:14px;
+  }
+  #files-main{
+    display:flex;
+    min-height:300px;
+    max-height:360px;
+  }
+  #files-tree{
+    width:155px;
+    min-width:155px;
+    border-right:1px solid var(--green-dark);
+    overflow-y:auto;
+    background:rgba(0,0,0,0.3);
+    padding:4px 0;
+  }
+  .tree-item{
+    padding:2px 6px 2px 8px;
+    cursor:pointer;
+    color:var(--green-dim);
+    font-size:13px;
+    white-space:nowrap;
+    display:flex;
+    align-items:center;
+    gap:4px;
+  }
+  .tree-item:hover{background:rgba(0,255,65,0.08);color:var(--green);}
+  .tree-item.active{background:rgba(0,255,65,0.12);color:var(--green);}
+  .tree-sub{padding-left:14px;}
+  .tree-sub .tree-item{padding-left:4px;}
+  .tree-sub .tree-sub .tree-item{padding-left:4px;}
+  #files-panel{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+  #files-col-header{
+    display:flex;
+    align-items:center;
+    padding:0 6px;
+    border-bottom:1px solid var(--green-dark);
+    background:rgba(0,255,65,0.03);
+    font-size:12px;
+    color:var(--green-dim);
+    flex-shrink:0;
+  }
+  #files-col-header span{padding:2px 4px;border-right:1px solid var(--green-dark);}
+  #files-col-header .col-name{flex:1;}
+  #files-col-header .col-size{width:55px;text-align:right;}
+  #files-col-header .col-type{width:70px;}
+  #files-col-header .col-date{width:65px;border-right:none;}
+  #files-list{
+    flex:1;
+    overflow-y:auto;
+    background:#000;
+  }
+  .file-row{
+    display:flex;
+    align-items:center;
+    padding:2px 6px;
+    cursor:pointer;
+    color:var(--green);
+    font-size:14px;
+  }
+  .file-row:hover{background:rgba(0,255,65,0.08);}
+  .file-row.selected{background:var(--green);color:#000;}
+  .file-row .file-icon{width:20px;text-align:center;margin-right:4px;flex-shrink:0;}
+  .file-row .file-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .file-row .file-size{width:55px;text-align:right;color:var(--green-dim);font-size:13px;flex-shrink:0;}
+  .file-row .file-type{width:70px;color:var(--green-dim);font-size:13px;flex-shrink:0;}
+  .file-row .file-date{width:65px;color:var(--green-dim);font-size:13px;flex-shrink:0;}
+  .file-row.locked{color:var(--green-dark);cursor:default;}
+  .file-row.locked:hover{background:transparent;}
+  #files-statusbar{
+    background:rgba(0,255,65,0.03);
+    border-top:1px solid var(--green-dark);
+    padding:3px 8px;
+    font-size:12px;
+    color:var(--green-dark);
+    display:flex;
+    justify-content:space-between;
+    flex-shrink:0;
+  }
+
   /* ═══ NOTEPAD.EXE ═══ */
   #notepad-popup{
     position:fixed;
@@ -305,7 +419,7 @@
   #notepad-popup.show{display:block;}
   #notepad-textarea{
     width:100%;
-    height:200px;
+    height:300px;
     background:#000;
     color:var(--green);
     border:1px solid var(--green-dark);
@@ -316,7 +430,13 @@
     overflow-y:auto;
     white-space:pre-wrap;
     word-wrap:break-word;
+    line-height:1.5;
   }
+  #notepad-textarea .file-heading{color:var(--amber);font-size:16px;margin-bottom:8px;display:block;}
+  #notepad-textarea .file-warn{color:var(--amber);}
+  #notepad-textarea .file-error{color:var(--red);}
+  #notepad-textarea .file-ghost{color:var(--green-dark);font-style:italic;}
+  #notepad-textarea .file-dim{color:var(--green-dim);}
   #notepad-textarea:empty:before{
     content:'Type your notes here...';
     color:var(--green-dark);
@@ -964,6 +1084,34 @@
       </div>
       
 <!-- ═══ CALC.EXE ═══ -->
+<!-- ═══ FILES.EXE ═══ -->
+<div id="files-popup">
+  <div class="popup-titlebar">
+    <span>📂 FILES.EXE</span>
+    <span class="popup-close" onclick="document.getElementById('files-popup').classList.remove('show')">✕</span>
+  </div>
+  <div id="files-address-bar">
+    <span class="addr-label">Address</span>
+    <span class="addr-path" id="files-addr-path">C:\RCPLAYER\</span>
+  </div>
+  <div id="files-main">
+    <div id="files-tree"></div>
+    <div id="files-panel">
+      <div id="files-col-header">
+        <span class="col-name">Name</span>
+        <span class="col-size">Size</span>
+        <span class="col-type">Type</span>
+        <span class="col-date">Modified</span>
+      </div>
+      <div id="files-list"></div>
+    </div>
+  </div>
+  <div id="files-statusbar">
+    <span id="files-status-left">Ready</span>
+    <span id="files-status-right"></span>
+  </div>
+</div>
+
 <div id="calc-popup">
   <div class="popup-titlebar">
     <span>🧮 CALC.EXE</span>
@@ -1424,7 +1572,7 @@ const CONFIG={
   defaultVolume:0.7,
   pinLength:4,
   colors:{green:'#00ff41',greenDim:'#00aa2a',greenDark:'#00752b',amber:'#ffaa00',red:'#ff0040',cyan:'#00aaff'},
-  storage:{prefix:'rcplayer_',secrets:'rcplayer_secrets',discovered:'rcplayer_discovered',snakeHigh:'rcplayer_snakeHighScore',tronWins:'rcplayer_tronWins'},
+  storage:{prefix:'rcplayer_',secrets:'rcplayer_secrets',discovered:'rcplayer_discovered',discoveredCmds:'rcplayer_discoveredCmds',progression:'rcplayer_progression',snakeHigh:'rcplayer_snakeHighScore',tronWins:'rcplayer_tronWins'},
   tracks:[
     // Main EP - Always Visible
     {id:'RC-001',title:'CASINO',file_mp3:'Casino.mp3',file_wav:'Casino.wav',visible:true,locked:false},
@@ -1554,6 +1702,7 @@ const WindowRegistry = {
   windows: {
     // player-popup & gallery-popup removed from registry — use dedicated sidebar buttons
     'scanner-popup': { name: 'SCANNER', icon: '📡', command: 'scan',    discovered: false },
+    'files-popup':   { name: 'FILES',   icon: '📂', command: 'files',   discovered: false },
     'calc-popup':    { name: 'CALC',    icon: '🔢', command: 'calc',    discovered: false },
     'notepad-popup': { name: 'NOTEPAD', icon: '📝', command: 'notepad', discovered: false },
     'snake-popup':   { name: 'SNAKE',   icon: '🐍', command: 'snake',   discovered: false },
@@ -1638,9 +1787,42 @@ const HintEngine = {
   },
 
   getContextualHint() {
-    if (state.discovered.size === 0) return 'try "files" to see what\'s here, or "scan" to find signals...';
-    if (state.discovered.size > 0 && state.discovered.size < 3) return 'more signals are out there...';
-    return 'have you tried all the PIN codes?';
+    const m=state.progression.milestone;const hints=[];
+    if(m===0){
+      hints.push('try "files" to see what\'s on this terminal...');
+      hints.push('there are files here. try "read manifest.log"...');
+      hints.push('type "help" if you\'re lost...');
+    }
+    if(m===1&&!state.discoveredCommands.scanner){
+      hints.push('the system log mentions a signal at 97.7...');
+      hints.push('try "scan" to open the spectrum analyzer...');
+      hints.push('something is broadcasting on 97.7 MHz...');
+    }
+    if(m===1&&state.discoveredCommands.scanner&&state.progression.signalsLocked===0){
+      hints.push('use the frequency knob to dial in 97.7...');
+      hints.push('the PING button will reveal nearby signals...');
+      hints.push('when proximity hits 90%+, try the LOCK button...');
+    }
+    if(m===2){
+      hints.push('108.0 MHz is mentioned in the system log...');
+      hints.push('the access.log file mentions some codes...');
+      hints.push('have you tried the PINCODE system?');
+      hints.push('four digits. think about frequencies.');
+    }
+    if(m===3){
+      hints.push('there might be a signal beyond the normal band...');
+      hints.push('115.3 MHz... does that even exist?');
+      hints.push('read the transmission log carefully...');
+      hints.push('the word is eight letters. it sees everything.');
+    }
+    if(m>=4){
+      hints.push('some gallery images are still locked. secrets unlock them.');
+      hints.push('have you tried all the PIN codes?');
+      hints.push('up up down down left right left right B A');
+      hints.push('some commands aren\'t in the help menu...');
+    }
+    const unseen=hints.filter(h=>!this.history.includes(h));
+    return unseen.length>0?unseen[Math.floor(Math.random()*unseen.length)]:null;
   },
 
   show(text) {
@@ -1659,6 +1841,16 @@ let state={
   headerRevealed:false,welcomeDismissed:false,sidebarOpen:false,
   playerOpened:false,
   radarUnlocked:false,
+  discoveredCommands:{scanner:false,decode:false,pincode:false,gallery:false},
+  progression:{
+    milestone:0,
+    milestones:[],
+    filesRead:[],
+    signalsLocked:0,
+    tracksUnlocked:0,
+    pinsEntered:[],
+    breadcrumbsSeen:[]
+  },
 };
 
 // Restore persisted progress from localStorage
@@ -1667,8 +1859,39 @@ try{
   ss.forEach(s=>{if(!CONFIG.secrets.codesFound.includes(s))CONFIG.secrets.codesFound.push(s)})
   const sd=JSON.parse(localStorage.getItem(CONFIG.storage.discovered)||'[]')
   sd.forEach(d=>state.discovered.add(d))
+  const dc=JSON.parse(localStorage.getItem(CONFIG.storage.discoveredCmds)||'{}')
+  Object.assign(state.discoveredCommands,dc)
   if(ss.length>0)state.headerRevealed=true
+  const sp=JSON.parse(localStorage.getItem(CONFIG.storage.progression)||'null')
+  if(sp)Object.assign(state.progression,sp)
 }catch(e){}
+
+function persistProgression(){
+  localStorage.setItem(CONFIG.storage.progression,JSON.stringify(state.progression))
+}
+
+// Auto-grant milestones for existing players who already have progress
+function recalculateMilestones(){
+  const p=state.progression
+  const secrets=CONFIG.secrets.codesFound
+  if(secrets.some(s=>['LS','CAT_MANIFEST','CAT_SYSLOG','CAT_FREQ'].includes(s))){
+    if(!p.milestones.includes('EXPLORATION'))p.milestones.push('EXPLORATION')
+  }
+  if(secrets.some(s=>s.startsWith('UNLOCK_'))){
+    if(!p.milestones.includes('SIGNAL_DISCOVERY'))p.milestones.push('SIGNAL_DISCOVERY')
+  }
+  const unlocked=secrets.filter(s=>s.startsWith('UNLOCK_')).length
+  if(unlocked>=2||p.pinsEntered.length>=1){
+    if(!p.milestones.includes('DEEP_SCAN'))p.milestones.push('DEEP_SCAN')
+  }
+  if(unlocked>=3){
+    if(!p.milestones.includes('FULL_INTERCEPT'))p.milestones.push('FULL_INTERCEPT')
+  }
+  p.milestone=p.milestones.length
+  p.tracksUnlocked=state.discovered.size
+  persistProgression()
+}
+if(CONFIG.secrets.codesFound.length>0)recalculateMilestones()
 
 const audio=document.getElementById('audio-player');
 const output=document.getElementById('output');
@@ -1677,6 +1900,13 @@ const cmdInput=document.getElementById('cmd-input');
 
 
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+
+function discoverCommandGroup(group){
+  if(state.discoveredCommands[group])return
+  state.discoveredCommands[group]=true
+  localStorage.setItem(CONFIG.storage.discoveredCmds,JSON.stringify(state.discoveredCommands))
+  setTimeout(()=>{printLine('');printLine('[NEW COMMANDS UNLOCKED — type \'help\' to see]','warning');printLine('')},600)
+}
 
 
 
@@ -1718,15 +1948,6 @@ function initWelcomeScreen(){
   
   document.getElementById('welcome-art').textContent = art.join('\n');
 
-  // Dev mode: on by default, use ?nodev to see welcome+boot
-  const devMode = !new URLSearchParams(window.location.search).has('nodev');
-  if(devMode){
-    state.welcomeDismissed=true;
-    document.getElementById('welcome-screen').classList.add('hidden');
-    startBoot();
-    return;
-  }
-
   const dismiss=(e)=>{
     if(state.welcomeDismissed)return;
     if(e.type==='keydown'&&['Tab','Shift','Control','Alt','Meta'].includes(e.key))return;
@@ -1757,26 +1978,20 @@ const bootMsgs=[
 ];
 
 async function startBoot(){
-  const devMode = !new URLSearchParams(window.location.search).has('nodev');
   const bs=document.getElementById('boot-screen'),bt=document.getElementById('boot-text');
 
-  if(devMode){
-    // Skip boot animation entirely
-    bs.classList.add('hidden');
-  } else {
-    bs.classList.add('active');let cur=null;
-    playSFX('ambient_boot',0.5);
-    for(const m of bootMsgs){
-      if(m.append&&cur){cur.textContent+=m.text;await sleep(m.delay)}
-      else{
-        const l=document.createElement('div');l.className='boot-line';l.style.animationDelay='0s';
-        l.style.color=m.cls==='error'?'var(--red)':m.cls==='warning'?'var(--amber)':m.cls==='dim'?'var(--green-dark)':'var(--green)';
-        l.textContent=m.text;bt.appendChild(l);cur=m.append?l:null;await sleep(m.delay);
-      }
+  bs.classList.add('active');let cur=null;
+  playSFX('ambient_boot',0.5);
+  for(const m of bootMsgs){
+    if(m.append&&cur){cur.textContent+=m.text;await sleep(m.delay)}
+    else{
+      const l=document.createElement('div');l.className='boot-line';l.style.animationDelay='0s';
+      l.style.color=m.cls==='error'?'var(--red)':m.cls==='warning'?'var(--amber)':m.cls==='dim'?'var(--green-dark)':'var(--green)';
+      l.textContent=m.text;bt.appendChild(l);cur=m.append?l:null;await sleep(m.delay);
     }
-    await sleep(200);
-    bs.classList.remove('active');bs.classList.add('hidden');await sleep(500);
   }
+  await sleep(200);
+  bs.classList.remove('active');bs.classList.add('hidden');await sleep(500);
   state.bootComplete=true;openSidebar();
   // Start ambient terminal hum loop
   const ambientHum=playSFX('ambient_hum',0.15);
@@ -1824,25 +2039,46 @@ function printSlow(t,c='',d=30){const l=printLine('',c);let i=0;const iv=setInte
 
 // ═══ HELP ═══
 function showHelp(){
+  const m=state.progression.milestones;
   printLine('');
-  printLine('── COMMANDS ──','dim');
+  // Milestone 0: bare minimum
   printLine('  help          — show this message','dim');
-  printLine('  list          — view available tracks','dim');
-  printLine('  status        — system info','dim');
   printLine('  clear         — clear screen','dim');
-  printLine('','');printLine('── FILES ──','dim');
   printLine('  files         — list files in directory','dim');
   printLine('  read [file]   — open a file','dim');
-  printLine('  search [term] — search through files','dim');
-  printLine('','');printLine('── SIGNALS ──','dim');
-  printLine('  scan          — sweep for radio frequencies','dim');printLine('  tune [freq]   — lock onto a frequency','dim');printLine('  decode [key]  — decrypt a locked file','dim');
-  printLine('','');printLine('── PLAYBACK ──','dim');
-  printLine('  player        — show/hide audio controls','dim');printLine('  play [n]      — play a track by number','dim');printLine('  pause         — pause playback','dim');
-  printLine('  stop          — stop playback','dim');printLine('  next / prev   — skip tracks','dim');printLine('  vol [0-100]   — set volume','dim');printLine('  format        — toggle MP3/WAV','dim');
-  printLine('','');printLine('── SYSTEM ──','dim');printLine('  whoami        — identity query','dim');printLine('  source        — view hidden notes','dim');printLine('  secrets       — your discoveries','dim');printLine('  ping          — signal test','dim');
-  printLine('','');printLine('── AUDIO ──','dim');printLine('  sfx           — sound effects controls','dim');printLine('  synth         — keyboard synthesizer','dim');printLine('  drums         — drum machine','dim');
-  printLine('','');printLine('── GAMES ──','dim');printLine('  pool          — 8-ball pool vs bot','dim');printLine('  snake         — classic snake game','dim');printLine('  tron          — lightcycle arena','dim');
-  printLine('','');printLine('── DATA ──','dim');printLine('  backup        — export save state to file','dim');printLine('  restore       — import save state from file','dim');printLine('  resetdata     — erase all saved progress','dim');
+  printLine('  player        — audio controls','dim');
+  printLine('  gallery       — view images','dim');
+  // Milestone 1+: playback, search, games
+  if(m.includes('EXPLORATION')){
+    printLine('','');printLine('── PLAYBACK ──','dim');
+    printLine('  play [n]      — play a track by number','dim');printLine('  pause / stop  — pause or stop playback','dim');
+    printLine('  next / prev   — skip tracks','dim');printLine('  list          — view available tracks','dim');
+    printLine('  search [term] — search through files','dim');
+    printLine('','');printLine('── GAMES ──','dim');printLine('  snake         — classic snake game','dim');printLine('  tron          — lightcycle arena','dim');printLine('  pool          — 8-ball pool vs bot','dim');
+  }
+  // Scanner discovered: signals section
+  if(state.discoveredCommands.scanner){
+    printLine('','');printLine('── SIGNALS ──','dim');
+    printLine('  scan          — sweep for radio frequencies','dim');printLine('  tune [freq]   — lock onto a frequency','dim');printLine('  ping          — signal test','dim');printLine('  echoes        — view signal log','dim');
+    if(state.discoveredCommands.decode){printLine('  decode [key]  — decrypt a locked file','dim')}
+  }
+  // Milestone 2+: pincode
+  if(m.includes('SIGNAL_DISCOVERY')){
+    printLine('','');printLine('── SECURITY ──','dim');
+    printLine('  pincode       — PIN entry interface','dim');
+  }
+  // Milestone 3+: synth, drums
+  if(m.includes('DEEP_SCAN')){
+    printLine('','');printLine('── AUDIO TOOLS ──','dim');
+    printLine('  synth         — keyboard synthesizer','dim');printLine('  drums         — drum machine','dim');
+  }
+  // Milestone 1+: system/data
+  if(m.includes('EXPLORATION')){
+    printLine('','');printLine('── SYSTEM ──','dim');
+    printLine('  status        — system info','dim');printLine('  secrets       — your discoveries','dim');
+    printLine('  sfx           — sound effects controls','dim');
+    printLine('  backup        — export save state','dim');printLine('  restore       — import save state','dim');
+  }
   printLine('');
 }
 
@@ -1868,16 +2104,16 @@ const COMMANDS={
   pause:()=>togglePlay(),stop:()=>stopTrack(),next:()=>nextTrack(),prev:()=>prevTrack(),
   vol:(a)=>{const v=parseInt(a[0]);if(!isNaN(v)&&v>=0&&v<=100){setVolume(v);const ps=document.getElementById('player-volume');if(ps)ps.value=v;const pd=document.getElementById('player-volume-display');if(pd)pd.textContent=v;printLine(`VOL: ${v}`,'dim')}},
   format:()=>toggleFormat(),clear:()=>{output.innerHTML=''},
-  files:()=>{printLine('');printLine('DIRECTORY CONTENTS:','dim');printLine('');printLine('  manifest.log','dim');printLine('  system.log','dim');printLine('  frequencies.log','dim');CONFIG.tracks.forEach(t=>{const v=t.visible||state.discovered.has(t.id);printLine(`  ${v?t['file_'+CONFIG.format]:'██████████.███'}`,v?'dim':'error')});printLine('');addSecret('LS')},
+  files:()=>{openFilesExe();printLine('Opening FILES.EXE...','dim');addSecret('LS');if(!state.progression.filesRead.includes('files')){state.progression.filesRead.push('files');checkProgression()}},
   ls:()=>COMMANDS.files(),
-  read:(a)=>{const f=(a[0]||'').toLowerCase().replace(/^\./, '');if(f==='manifest'||f==='manifest.log'){printLine('');printLine('── MANIFEST ──','dim');setTimeout(()=>{printLine('ORIGIN: R██ACT██ CLUB','');printLine('PROJECT: [CLASSIFIED]','error');printLine(`FILES: ${CONFIG.tracks.length}`,'');printLine('INTEGRITY: COMPROMISED','error');printLine('RELEASE: ██/██/████','dim');printLine('NOTE: not all files are visible','ghost');printLine('')},300);addSecret('CAT_MANIFEST')}else if(f==='system'||f==='syslog'||f==='system.log'){printLine('');printLine('── SYSTEM LOG ──','dim');printLine('System boot ....................... OK','dim');printLine('Audio subsystem .................. LOADED','dim');printLine('WARNING: 2 files encrypted','warning');printLine('Crypto module .................... PARTIAL FAILURE','error');printLine('Signal detected at frequency 97.7','warning');printLine('something ██████ the noise floor','ghost');printLine('');addSecret('CAT_SYSLOG')}else if(f==='freq'||f==='frequencies'||f==='frequencies.log'){printLine('');printSlow('FREQUENCY ANALYSIS:','dim',40);setTimeout(()=>{printLine('  88.1  ──── noise','dim');printLine('  91.4  ──── noise','dim');printLine('  93.2  ──── noise','dim');printLine('  97.7  ──── ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  ← signal here','warning');printLine('  102.3 ──── noise','dim');printLine('  105.6 ──── noise','dim');printLine('  108.0 ──── ░░░ (sub-audible)','ghost');printLine('');printLine('Hint: try "tune 97.7"','dim')},500);addSecret('CAT_FREQ')}else{printLine(`File not found: ${f||'?'}  (try "files" to see what's here)`,'error')}},
+  read:(a)=>{const f=(a[0]||'').toLowerCase().replace(/^\./, '');if(!f){printLine('Usage: read [file]  (or type "files" to browse)','dim');return}const match=FILE_SYSTEM.find(fs=>{const n=fs.name.replace(/\.log$/,'');return fs.name===f||n===f});if(match){const m=state.progression.milestones;if(match.milestone&&!m.includes(match.milestone)){printLine(`File not found: ${f}  (try "files" to see what's here)`,'error');return}openFilesExe();setTimeout(()=>filesOpenFile(match.name),100)}else{printLine(`File not found: ${f}  (try "files" to browse)`,'error')}},
   cat:(a)=>COMMANDS.read(a),
 scan:(a)=>{
     document.getElementById('scanner-popup').classList.add('show');
     WindowRegistry.discover('scanner-popup');
     if(!scannerState.canvas) initScanner();
     printLine('Opening SCANNER.EXE...','dim');
-    
+    discoverCommandGroup('scanner');
   },
   tune:(a)=>{const f=a[0];if(f==='97.7'){tuneToFrequency(97.7)}else if(f==='108.0'||f==='108'){tuneToFrequency(108.0)}else if(f){printLine(`${f} MHz — noise floor only. Try 97.7 or 108.0.`,'dim')}else{printLine('Usage: tune [frequency]  (e.g. tune 97.7)','dim');printLine('Or use the SCANNER to find signals first.','ghost')}},
   decode:(a)=>{const c=a.join(' ').toLowerCase().trim();if(!c){printLine('Usage: decode [key]  (use keys found from tuning)','dim');return}const m=CONFIG.tracks.find(t=>t.unlockCode&&t.unlockCode.toLowerCase()===c);if(m)unlockTrack(m.id);else if(c===CONFIG.secrets.masterCode.toLowerCase())COMMANDS.unlockAll();else{playSFX('glitch_error',0.4);printLine('INVALID KEY','error');setTimeout(()=>printLine('Hint: tune into the frequencies first to find keys.','ghost'),800)}},
@@ -1915,7 +2151,7 @@ scan:(a)=>{
       },500);
     },10000);
   },
-  unlockAll:()=>{playSFX('glitch_heavy',0.4);printLine('');printLine('██████████████████████████████████████','error');setTimeout(()=>{printLine('  MASTER KEY ACCEPTED','error');printLine('  ALL FILES DECRYPTED','error');printLine('██████████████████████████████████████','error');printLine('');CONFIG.tracks.forEach(t=>{if(t.locked&&!state.discovered.has(t.id))state.discovered.add(t.id)});addSecret('MASTER_KEY');revealHeader();updateSidebarStatus()},400)},
+  unlockAll:()=>{playSFX('glitch_heavy',0.4);printLine('');printLine('██████████████████████████████████████','error');setTimeout(()=>{printLine('  MASTER KEY ACCEPTED','error');printLine('  ALL FILES DECRYPTED','error');printLine('██████████████████████████████████████','error');printLine('');CONFIG.tracks.forEach(t=>{if(t.locked&&!state.discovered.has(t.id))state.discovered.add(t.id)});addSecret('MASTER_KEY');revealHeader();updateSidebarStatus();state.progression.tracksUnlocked=state.discovered.size;checkProgression()},400)},
   source:()=>{printLine('');printLine('// you found this','ghost');printLine('// the frequencies hold the keys','ghost');printLine('// 97.7 and 108.0','ghost');printLine('// OMNISCIENT is the word that opens ██████████','error');printLine('');addSecret('SOURCE')},
   whoami:()=>{printLine('');printSlow('QUERY: IDENTITY','dim',40);setTimeout(()=>{printLine('...','dim');setTimeout(()=>{printLine('UNAUTHORIZED','error')},600)},400)},
   secrets:()=>{if(CONFIG.secrets.codesFound.length===0)printLine('Nothing found yet.','dim');else{printLine(`[${CONFIG.secrets.codesFound.length}/${CONFIG.secrets.totalCodes}] discoveries:` ,'dim');CONFIG.secrets.codesFound.forEach(s=>printLine(`  ■ ${s}`,'ghost'))}printLine('')},
@@ -1928,22 +2164,22 @@ scan:(a)=>{
 let A=0,B=0;const iv=setInterval(()=>{const b=[];const z=[];for(let k=0;k<1760;k++){b[k]=k%80===79?'\n':' ';z[k]=0}for(let j=0;j<6.28;j+=0.07){for(let i=0;i<6.28;i+=0.02){const c=Math.sin(i),d=Math.cos(j),e=Math.sin(A),f=Math.sin(j),g=Math.cos(A),h=d+2,D=1/(c*h*e+f*g+5),l=Math.cos(i),m=Math.cos(B),n=Math.sin(B),t=c*h*g-f*e,x=Math.floor(40+30*D*(l*h*m-t*n)),y=Math.floor(12+15*D*(l*h*n+t*m)),o=x+80*y,N=Math.floor(8*((f*e-c*d*g)*m-c*d*e-f*g-l*d*n));if(y<22&&y>=0&&x>=0&&x<79&&D>z[o]){z[o]=D;b[o]='.,-~:;=!*#$@'[N>0?N:0]}}}A+=0.04;B+=0.02;dcontent.innerHTML='<pre style="color:var(--green);line-height:0.8;font-size:8px;letter-spacing:-0.5px;font-family:monospace">'+b.join('')+'</pre>';if(A>12){clearInterval(iv)}},50);printLine('Opening DONUT.EXE...','dim')},
 
   music:()=>{COMMANDS.player()},
-  pincode:()=>{document.getElementById('pincode-popup').classList.add('show');WindowRegistry.discover('pincode-popup');resetPin();printLine('Opening SECURE.EXE...','dim')},
+  pincode:()=>{if(!state.progression.milestones.includes('SIGNAL_DISCOVERY')){playSFX('glitch_error',0.4);printLine('SECURE.EXE — CLEARANCE INSUFFICIENT','error');setTimeout(()=>printLine('Signal analysis required first. Try "scan".','ghost'),600);return}document.getElementById('pincode-popup').classList.add('show');WindowRegistry.discover('pincode-popup');resetPin();printLine('Opening SECURE.EXE...','dim');discoverCommandGroup('pincode')},
   pin:()=>{COMMANDS.pincode()},
   snake:()=>{document.getElementById('snake-popup').classList.add('show');WindowRegistry.discover('snake-popup');initSnake();printLine('Opening SNAKE.EXE...','dim')},
   tron:()=>{document.getElementById('tron-popup').classList.add('show');WindowRegistry.discover('tron-popup');initTron();printLine('Greetings, Program.','dim')},
   sark:()=>{COMMANDS.tron()},
   mcp:()=>{COMMANDS.tron()},
   calc:()=>{document.getElementById('calc-popup').classList.add('show');WindowRegistry.discover('calc-popup');printLine('Opening CALC.EXE...','dim')},
-  notepad:()=>{document.getElementById('notepad-popup').classList.add('show');WindowRegistry.discover('notepad-popup');printLine('Opening NOTEPAD.EXE...','dim')},
+  notepad:()=>{const np=document.getElementById('notepad-popup');const ta=document.getElementById('notepad-textarea');np.querySelector('.popup-titlebar span:first-child').textContent='📝 NOTEPAD.EXE';ta.contentEditable='true';ta.style.cursor='text';if(!ta.dataset.userContent)ta.innerHTML='Type your notes here...';np.classList.add('show');WindowRegistry.discover('notepad-popup');printLine('Opening NOTEPAD.EXE...','dim')},
   matrix:()=>{document.getElementById('matrix-popup').classList.add('show');WindowRegistry.discover('matrix-popup');startMatrix();printLine('Opening MATRIX.EXE...','dim')},
-  synth:()=>{document.getElementById('synth-popup').classList.add('show');WindowRegistry.discover('synth-popup');initSynth();printLine('Opening SYNTH.EXE...','dim')},
-  drums:()=>{document.getElementById('drums-popup').classList.add('show');WindowRegistry.discover('drums-popup');initDrums();printLine('Opening DRUMS.EXE...','dim')},
+  synth:()=>{if(!state.progression.milestones.includes('DEEP_SCAN')){playSFX('glitch_error',0.4);printLine('SYNTH.EXE — MODULE LOCKED','error');setTimeout(()=>printLine('Deeper signal analysis may activate this module.','ghost'),600);return}document.getElementById('synth-popup').classList.add('show');WindowRegistry.discover('synth-popup');initSynth();printLine('Opening SYNTH.EXE...','dim')},
+  drums:()=>{if(!state.progression.milestones.includes('DEEP_SCAN')){playSFX('glitch_error',0.4);printLine('DRUMS.EXE — MODULE LOCKED','error');setTimeout(()=>printLine('Deeper signal analysis may activate this module.','ghost'),600);return}document.getElementById('drums-popup').classList.add('show');WindowRegistry.discover('drums-popup');initDrums();printLine('Opening DRUMS.EXE...','dim')},
   pool:()=>{document.getElementById('pool-popup').classList.add('show');WindowRegistry.discover('pool-popup');Pool.init();printLine('Opening POOL.EXE... Rack \'em up.','dim')},
   billiards:()=>{COMMANDS.pool()},
   '8ball':()=>{COMMANDS.pool()},
   trippy:()=>{COMMANDS.viz()},
-  status:()=>{printLine('');printLine(`SYS:    ${state.isPlaying?'ACTIVE':'STANDBY'}`,'dim');printLine(`FMT:    ${CONFIG.format.toUpperCase()}`,'dim');printLine(`VOL:    ${Math.round(audio.volume*100)}`,'dim');printLine(`FILES:  ${CONFIG.tracks.filter(t=>t.visible||state.discovered.has(t.id)).length}/${CONFIG.tracks.length}`,'dim');printLine(`ENC:    ${CONFIG.tracks.filter(t=>t.locked&&!state.discovered.has(t.id)).length}`,state.discovered.size<CONFIG.tracks.length?'error':'dim');printLine(`SECRET: ${CONFIG.secrets.codesFound.length}/${CONFIG.secrets.totalCodes}`,'dim');printLine('')},
+  status:()=>{const mNames=['BOOT','EXPLORATION','SIGNAL_DISCOVERY','DEEP_SCAN','FULL_INTERCEPT','TRANSMISSION_COMPLETE'];printLine('');printLine(`SYS:    ${state.isPlaying?'ACTIVE':'STANDBY'}`,'dim');printLine(`FMT:    ${CONFIG.format.toUpperCase()}`,'dim');printLine(`VOL:    ${Math.round(audio.volume*100)}`,'dim');printLine(`FILES:  ${CONFIG.tracks.filter(t=>t.visible||state.discovered.has(t.id)).length}/${CONFIG.tracks.length}`,'dim');printLine(`ENC:    ${CONFIG.tracks.filter(t=>t.locked&&!state.discovered.has(t.id)).length}`,state.discovered.size<CONFIG.tracks.length?'error':'dim');printLine(`SECRET: ${CONFIG.secrets.codesFound.length}/${CONFIG.secrets.totalCodes}`,'dim');printLine(`LEVEL:  ${state.progression.milestone}/5 — ${mNames[state.progression.milestone]||'UNKNOWN'}`,'dim');printLine('')},
   cd:()=>printLine('restricted','error'),pwd:()=>printLine('/███/████████/░░░░░░','dim'),
   rm:()=>{printLine('PERMISSION DENIED','error')},
   sudo:()=>{printLine('Nice try.','error')},
@@ -1966,7 +2202,7 @@ let A=0,B=0;const iv=setInterval(()=>{const b=[];const z=[];for(let k=0;k<1760;k
     else{printLine(`Unknown sfx command: ${sub}`,'error')}
   },
   backup:()=>{
-    const saveData={version:1,player:'RCPlayer',timestamp:new Date().toISOString(),localStorage:{},session:{secrets:[...CONFIG.secrets.codesFound],discovered:[...state.discovered],headerRevealed:state.headerRevealed}}
+    const saveData={version:1,player:'RCPlayer',timestamp:new Date().toISOString(),localStorage:{},session:{secrets:[...CONFIG.secrets.codesFound],discovered:[...state.discovered],headerRevealed:state.headerRevealed,discoveredCommands:{...state.discoveredCommands},progression:{...state.progression}}}
     for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith(CONFIG.storage.prefix))saveData.localStorage[k]=localStorage.getItem(k)}
     const blob=new Blob([JSON.stringify(saveData,null,2)],{type:'application/json'})
     const url=URL.createObjectURL(blob)
@@ -1983,9 +2219,13 @@ let A=0,B=0;const iv=setInterval(()=>{const b=[];const z=[];for(let k=0;k<1760;k
         if(data.session.secrets)data.session.secrets.forEach(s=>{if(!CONFIG.secrets.codesFound.includes(s))CONFIG.secrets.codesFound.push(s)})
         if(data.session.discovered)data.session.discovered.forEach(d=>state.discovered.add(d))
         if(data.session.headerRevealed)revealHeader()
+        if(data.session.discoveredCommands)Object.assign(state.discoveredCommands,data.session.discoveredCommands)
+        if(data.session.progression)Object.assign(state.progression,data.session.progression)
       }
       localStorage.setItem(CONFIG.storage.secrets,JSON.stringify(CONFIG.secrets.codesFound))
       localStorage.setItem(CONFIG.storage.discovered,JSON.stringify([...state.discovered]))
+      localStorage.setItem(CONFIG.storage.discoveredCmds,JSON.stringify(state.discoveredCommands))
+      recalculateMilestones()
       updateSidebarStatus()
       if(document.getElementById('player-popup').classList.contains('show'))renderPlayerTracks()
       printLine('BACKUP RESTORED','warning');printLine(`  Secrets: ${CONFIG.secrets.codesFound.length}/${CONFIG.secrets.totalCodes}`,'ghost');printLine(`  Tracks: ${state.discovered.size} unlocked`,'ghost')
@@ -1997,7 +2237,7 @@ let A=0,B=0;const iv=setInterval(()=>{const b=[];const z=[];for(let k=0;k<1760;k
     if(a&&a[0]==='confirm'){
       const keys=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith(CONFIG.storage.prefix))keys.push(k)}
       keys.forEach(k=>localStorage.removeItem(k))
-      CONFIG.secrets.codesFound.length=0;state.discovered.clear();state.headerRevealed=false
+      CONFIG.secrets.codesFound.length=0;state.discovered.clear();state.headerRevealed=false;state.discoveredCommands={scanner:false,decode:false,pincode:false,gallery:false};state.progression={milestone:0,milestones:[],filesRead:[],signalsLocked:0,tracksUnlocked:0,pinsEntered:[],breadcrumbsSeen:[]}
       updateSidebarStatus()
       printLine('ALL DATA ERASED','error');playSFX('glitch_corrupt',0.5)
     }else{printLine('WARNING: This will erase all saved progress.','error');printLine('Type "resetdata confirm" to proceed.','warning')}
@@ -2045,8 +2285,76 @@ function setVolume(v){audio.volume=v/100}
 function toggleFormat(){CONFIG.format=CONFIG.format==='mp3'?'wav':'mp3';if(state.currentTrack>=0&&state.isPlaying){const ct=audio.currentTime;const t=CONFIG.tracks[state.currentTrack];audio.src=CONFIG.audioPath+(CONFIG.format==='mp3'?t.file_mp3:t.file_wav);audio.currentTime=ct;audio.play()}printLine(`Format: ${CONFIG.format.toUpperCase()}`,'dim')}
 
 // ═══ SECRETS ═══
-function unlockTrack(id){const t=CONFIG.tracks.find(x=>x.id===id);if(!t||state.discovered.has(id)){printLine('already decrypted','dim');return}playSFX('glitch_corrupt',0.5);state.discovered.add(id);localStorage.setItem(CONFIG.storage.discovered,JSON.stringify([...state.discovered]));addSecret(`UNLOCK_${id}`);printLine('');printLine('DECRYPTION KEY ACCEPTED','warning');setTimeout(()=>{printLine(`  ${id} :: ${t.title}`,'');printLine('')},400);if(document.getElementById('player-popup').classList.contains('show')){renderPlayerTracks()}}
+function unlockTrack(id){const t=CONFIG.tracks.find(x=>x.id===id);if(!t||state.discovered.has(id)){printLine('already decrypted','dim');return}playSFX('glitch_corrupt',0.5);state.discovered.add(id);localStorage.setItem(CONFIG.storage.discovered,JSON.stringify([...state.discovered]));addSecret(`UNLOCK_${id}`);printLine('');printLine('DECRYPTION KEY ACCEPTED','warning');setTimeout(()=>{printLine(`  ${id} :: ${t.title}`,'');printLine('')},400);if(document.getElementById('player-popup').classList.contains('show')){renderPlayerTracks()}state.progression.tracksUnlocked=state.discovered.size;checkProgression()}
 function addSecret(id){if(!CONFIG.secrets.codesFound.includes(id)){CONFIG.secrets.codesFound.push(id);localStorage.setItem(CONFIG.storage.secrets,JSON.stringify(CONFIG.secrets.codesFound));localStorage.setItem(CONFIG.storage.discovered,JSON.stringify([...state.discovered]));playSFX('retro_movie',0.4);unlockGalleryImage(id);const c=document.getElementById('conn-status');c.textContent=`■ ${CONFIG.secrets.codesFound.length}`;c.style.color='var(--amber)';setTimeout(()=>{c.style.color='';c.textContent='■'},2000);updateSidebarStatus();if(CONFIG.secrets.codesFound.length===CONFIG.secrets.totalCodes){setTimeout(()=>{playSFX('glitch_heavy',0.4);printLine('');printLine('████████████████████████████████████','error');setTimeout(()=>{printLine('  TRANSMISSION COMPLETE','error');printLine('  ALL SIGNALS RECOVERED','error');printLine('████████████████████████████████████','error');revealHeader();updateSidebarStatus()},500)},800)}}}
+
+// ═══ PROGRESSION ═══
+const MILESTONE_REWARDS={
+  EXPLORATION:()=>{
+    setTimeout(()=>{
+      printLine('','');
+      printLine('[ SYSTEM NOTICE ]','warning');
+      printLine('Anomalous RF activity detected on local spectrum.','dim');
+      printLine('SCANNER.EXE is available. Type "scan" to investigate.','ghost');
+    },2000)
+  },
+  SIGNAL_DISCOVERY:()=>{
+    setTimeout(()=>{
+      printLine('','');
+      printLine('[ INTERCEPTED FRAGMENT ]','warning');
+      printLine('...more signals hide in the noise...','ghost');
+      printLine('...and the old access codes still work...','ghost');
+      printLine('Type "pincode" if you find one.','dim');
+    },3000)
+  },
+  DEEP_SCAN:()=>{
+    setTimeout(()=>{
+      printLine('','');
+      printLine('[ DATA CORRUPTION WARNING ]','error');
+      printLine('Encrypted payload integrity degrading.','dim');
+      printLine('Expedite decryption of remaining signals.','dim');
+      printLine('','');
+      printLine('New file detected: transmission.log','ghost');
+    },2000)
+  },
+  FULL_INTERCEPT:()=>{
+    setTimeout(()=>{
+      printLine('','');
+      printLine('████████████████████████████████████████','warning');
+      printLine('  ALL ENCRYPTED PAYLOADS DECRYPTED','warning');
+      printLine('  Bonus gallery content unlocked.','warning');
+      printLine('  But the transmission is not yet complete...','ghost');
+      printLine('████████████████████████████████████████','warning');
+      document.getElementById('bg-env').style.opacity='.3'
+    },1500)
+  }
+}
+
+function advanceMilestone(id){
+  if(state.progression.milestones.includes(id))return
+  state.progression.milestones.push(id)
+  state.progression.milestone=state.progression.milestones.length
+  playSFX('scanner_lock',0.5)
+  if(MILESTONE_REWARDS[id])MILESTONE_REWARDS[id]()
+  persistProgression()
+}
+
+function checkProgression(){
+  const p=state.progression
+  if(!p.milestones.includes('EXPLORATION')&&p.filesRead.length>0){
+    advanceMilestone('EXPLORATION')
+  }
+  if(!p.milestones.includes('SIGNAL_DISCOVERY')&&(p.signalsLocked>=1||p.tracksUnlocked>=1)){
+    advanceMilestone('SIGNAL_DISCOVERY')
+  }
+  if(!p.milestones.includes('DEEP_SCAN')&&(p.signalsLocked>=2||p.pinsEntered.length>=1||p.tracksUnlocked>=2)){
+    advanceMilestone('DEEP_SCAN')
+  }
+  if(!p.milestones.includes('FULL_INTERCEPT')&&p.tracksUnlocked>=3){
+    advanceMilestone('FULL_INTERCEPT')
+  }
+  persistProgression()
+}
 
 // ═══ EFFECTS ═══
 
@@ -3394,6 +3702,7 @@ function attemptLockSignal() {
     updateEchoesDisplay();
 
     // Show lock message (no auto-decode - saved for decoder minigame)
+    discoverCommandGroup('decode');
     setTimeout(() => {
       printLine('');
       printLine('SIGNAL LOCKED: ' + signal.freq + ' MHz', 'warning');
@@ -3401,7 +3710,10 @@ function attemptLockSignal() {
       printLine('Decryption required to extract payload.', 'dim');
       printLine(`Total signals locked: ${scannerState.lockedSignals.length}/${SIGNAL_FREQUENCIES.length}`, 'dim');
       printLine('');
-      
+
+      // Update progression
+      state.progression.signalsLocked=scannerState.lockedSignals.length;
+      checkProgression();
     }, 500);
   }, 1000);
 }
@@ -3685,8 +3997,9 @@ function openLightbox(img) {
 function unlockGalleryImage(code) {
   const img = galleryImages.find(i => i.unlockCode === code);
   if (img) {
+    discoverCommandGroup('gallery');
     setTimeout(() => {
-      
+
       printLine('','');
       printLine(`📷 Gallery image unlocked: ${img.title}`, 'success');
       printLine('','');
@@ -3960,6 +4273,7 @@ function pinSubmit() {
     
     setTimeout(() => {
       pinSecrets[pinValue].action();
+      if(!state.progression.pinsEntered.includes(pinValue)){state.progression.pinsEntered.push(pinValue);checkProgression()}
       document.getElementById('pincode-popup').classList.remove('show');
       resetPin();
     }, 800);
@@ -5667,6 +5981,263 @@ function closePool(){
   document.getElementById('pool-popup').classList.remove('show')
   if(Pool.botTimer)clearTimeout(Pool.botTimer)
   WindowRegistry.updateIndicators()
+}
+
+// ═══ FILES.EXE ═══
+const FILE_SYSTEM=[
+  {name:'manifest.log',icon:'📄',size:'1.2 KB',date:'██/██/██',secret:'CAT_MANIFEST',always:true,
+   content:()=>{
+     let t='<div class="file-heading">── MANIFEST ──</div>\n';
+     t+='ORIGIN:    R██ACT██ CLUB\n';
+     t+='<span class="file-error">PROJECT:   [CLASSIFIED]</span>\n';
+     t+=`FILES:     ${CONFIG.tracks.length} indexed\n`;
+     t+='<span class="file-error">INTEGRITY: COMPROMISED</span>\n';
+     t+='RELEASE:   ██/██/████\n';
+     t+='FORMAT:    320kbps MP3 (WAV originals archived)\n';
+     t+='ENCODER:   LAME 3.100\n\n';
+     t+='<span class="file-dim">── TRACK INDEX ──</span>\n';
+     CONFIG.tracks.forEach((tk,i)=>{
+       const n=String(i+1).padStart(2,'0');
+       const unlocked=tk.visible||state.discovered.has(tk.id);
+       if(unlocked)t+=`  [${n}] ${tk.id} — ${tk.title}\n`;
+       else t+=`  <span class="file-error">[${n}] ${tk.id} — ████████████ [ENCRYPTED]</span>\n`;
+     });
+     t+='\n<span class="file-ghost">NOTE: not all files are visible in standard directory listing</span>\n';
+     t+='<span class="file-ghost">Some payloads require decryption keys obtained via signal intercept</span>';
+     return t;
+   }},
+  {name:'system.log',icon:'📋',size:'2.8 KB',date:'██/██/██',secret:'CAT_SYSLOG',always:true,
+   content:()=>{
+     const m=state.progression.milestones;
+     let t='<div class="file-heading">── SYSTEM LOG ──</div>\n';
+     t+='<span class="file-dim">[BOOT] System boot ......................... OK</span>\n';
+     t+='<span class="file-dim">[BOOT] Audio subsystem ..................... LOADED</span>\n';
+     t+='<span class="file-dim">[BOOT] Network interface ................... OFFLINE</span>\n';
+     t+='<span class="file-dim">[BOOT] Crypto module ....................... PARTIAL FAILURE</span>\n';
+     t+='<span class="file-dim">[BOOT] File integrity check ................ 4/7 PASSED</span>\n\n';
+     t+='<span class="file-warn">[WARN] 3 files encrypted — decryption keys missing</span>\n';
+     t+='<span class="file-warn">[WARN] Signal detected at frequency 97.7 MHz</span>\n';
+     t+='<span class="file-ghost">[????] something ██████ the noise floor</span>\n';
+     t+='<span class="file-ghost">[????] carrier wave ████████ on sub-band</span>\n';
+     if(m.includes('EXPLORATION')){
+       t+='\n<span class="file-warn">[NEW ENTRY]</span>\n';
+       t+='<span class="file-dim">[SCAN] Anomaly detected in spectrum analyzer module</span>\n';
+       t+='<span class="file-dim">[SCAN] SCANNER.EXE attempting to connect.........</span>\n';
+       t+='<span class="file-dim">[SCAN] Authorization: PENDING</span>\n';
+       t+='<span class="file-ghost">[SCAN] Recommendation: run spectrum scan to investigate</span>\n';
+     }
+     if(m.includes('SIGNAL_DISCOVERY')){
+       t+='\n<span class="file-warn">[DECRYPTED ENTRY]</span>\n';
+       t+='<span class="file-dim">[LOCK] Signal intercept confirmed at ███.█ MHz</span>\n';
+       t+='<span class="file-ghost">[LOCK] Secondary carrier detected — frequency 108.0</span>\n';
+       t+='<span class="file-dim">[LOCK] Cross-reference: SECURE.EXE access code database</span>\n';
+       t+='<span class="file-warn">[LOCK] WARNING: additional signals may exist beyond standard band</span>\n';
+     }
+     if(m.includes('DEEP_SCAN')){
+       t+='\n<span class="file-error">[ALERT] Multiple signal locks detected</span>\n';
+       t+='<span class="file-dim">[SYS] Decryption subsystem under heavy load</span>\n';
+       t+='<span class="file-ghost">[SYS] Intercepted transmission fragment cached to transmission.log</span>\n';
+     }
+     return t;
+   }},
+  {name:'frequencies.log',icon:'📊',size:'1.6 KB',date:'██/██/██',secret:'CAT_FREQ',always:true,
+   content:()=>{
+     const m=state.progression.milestones;
+     let t='<div class="file-heading">── FREQUENCY ANALYSIS ──</div>\n';
+     t+='Scan range: 85.0 — 120.0 MHz\n';
+     t+='Noise floor: -40 dBm\n';
+     t+='Scan date: ██/██/████\n\n';
+     t+='<span class="file-dim">  85.0  ──── ░░ background radiation</span>\n';
+     t+='<span class="file-dim">  88.1  ──── ░░ noise</span>\n';
+     t+='<span class="file-dim">  91.4  ──── ░░ noise</span>\n';
+     t+='<span class="file-dim">  93.2  ──── ░░ noise</span>\n';
+     t+='<span class="file-warn">  97.7  ──── ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  ← SIGNAL DETECTED</span>\n';
+     t+='<span class="file-dim">  100.5 ──── ░░ noise</span>\n';
+     t+='<span class="file-dim">  102.3 ──── ░░ noise</span>\n';
+     t+='<span class="file-dim">  105.6 ──── ░░ noise</span>\n';
+     t+='<span class="file-ghost">  108.0 ──── ░░░ (sub-audible carrier?)</span>\n';
+     if(m.includes('SIGNAL_DISCOVERY')){
+       t+='<span class="file-ghost">  115.3 ──── ??? (anomalous — outside normal band)</span>\n';
+     }
+     t+='\n';
+     t+='<span class="file-dim">Peak signal: 97.7 MHz @ amplitude ~70</span>\n';
+     t+='<span class="file-ghost">Hint: use SCANNER.EXE to tune and lock signals</span>\n';
+     if(m.includes('DEEP_SCAN')){
+       t+='\n<span class="file-dim">NOTE: All three frequencies correlate to encrypted audio payloads</span>\n';
+       t+='<span class="file-ghost">Use "decode [key]" to extract. Keys found via signal lock.</span>\n';
+     }
+     return t;
+   }},
+  {name:'access.log',icon:'🔐',size:'0.8 KB',date:'██/██/██',secret:null,milestone:'SIGNAL_DISCOVERY',
+   content:()=>{
+     let t='<div class="file-heading">── ACCESS LOG ──</div>\n';
+     t+='SECURE.EXE authentication system\n';
+     t+='Status: ACTIVE\n\n';
+     t+='<span class="file-dim">Recent authentication attempts:</span>\n\n';
+     t+='  [██:██:██] code 1337 — <span class="file-warn">STATUS: AWAITING INPUT</span>\n';
+     t+='  [██:██:██] code 9775 — <span class="file-warn">STATUS: AWAITING INPUT</span>\n';
+     t+='  [██:██:██] code ████ — <span class="file-error">STATUS: ████████████</span>\n';
+     t+='  [██:██:██] code ████ — <span class="file-error">STATUS: ████████████</span>\n\n';
+     t+='<span class="file-ghost">NOTE: Valid codes unlock archived materials</span>\n';
+     t+='<span class="file-ghost">Two codes visible. Two more are out there.</span>\n';
+     return t;
+   }},
+  {name:'transmission.log',icon:'📡',size:'0.4 KB',date:'??/??/??',secret:null,milestone:'DEEP_SCAN',
+   content:()=>{
+     let t='<div class="file-heading">── TRANSMISSION LOG ──</div>\n';
+     t+='<span class="file-dim">INTERCEPTED DATA FRAGMENT</span>\n';
+     t+='<span class="file-dim">Source: UNKNOWN</span>\n';
+     t+='<span class="file-dim">Encryption: PARTIAL CLEARTEXT</span>\n\n';
+     t+='<span class="file-ghost">  ...the signal was never meant to be found...</span>\n';
+     t+='<span class="file-ghost">  ...three frequencies, three keys, three doors...</span>\n';
+     t+='<span class="file-ghost">  ...but there is a fourth word...</span>\n';
+     t+='<span class="file-ghost">  ...not a frequency, not a number...</span>\n';
+     t+='<span class="file-ghost">  ...eight letters, spoken only once...</span>\n';
+     t+='<span class="file-ghost">  ...the ████████ sees everything...</span>\n\n';
+     t+='<span class="file-dim">FRAGMENT ENDS</span>\n';
+     t+='<span class="file-error">WARNING: Source signal degrading. Data may be lost.</span>\n';
+     return t;
+   }},
+];
+
+function getVisibleFiles(){
+  const m=state.progression.milestones;
+  return FILE_SYSTEM.filter(f=>{
+    if(f.always)return true;
+    if(f.milestone)return m.includes(f.milestone);
+    return false;
+  });
+}
+
+let filesCurrentFolder='root';
+
+function filesRenderTree(){
+  const tree=document.getElementById('files-tree');
+  const enc=CONFIG.tracks.filter(t=>t.locked&&!state.discovered.has(t.id)).length;
+  let html='';
+  html+=`<div class="tree-item${filesCurrentFolder==='root'?' active':''}" onclick="filesNavigate('root')">📁 C:\\RCPLAYER</div>`;
+  html+=`<div class="tree-sub">`;
+  html+=`<div class="tree-item${filesCurrentFolder==='logs'?' active':''}" onclick="filesNavigate('logs')">📁 logs</div>`;
+  html+=`<div class="tree-item${filesCurrentFolder==='audio'?' active':''}" onclick="filesNavigate('audio')">📁 redacted_assets</div>`;
+  html+=`<div class="tree-sub">`;
+  html+=`<div class="tree-item${filesCurrentFolder==='audio'?' active':''}" onclick="filesNavigate('audio')">📁 audio${enc>0?' 🔒':''}</div>`;
+  html+=`</div>`;
+  html+=`</div>`;
+  tree.innerHTML=html;
+}
+
+function filesNavigate(folder){
+  filesCurrentFolder=folder;
+  filesRenderTree();
+  if(folder==='root')filesShowRoot();
+  else if(folder==='logs')filesShowLogs();
+  else if(folder==='audio')filesShowAudio();
+}
+
+function filesShowRoot(){
+  const list=document.getElementById('files-list');
+  document.getElementById('files-addr-path').textContent='C:\\RCPLAYER\\';
+  let html='';
+  html+=`<div class="file-row" ondblclick="filesNavigate('logs')" onclick="filesSelectRow(this)">`;
+  html+=`<span class="file-icon">📁</span>`;
+  html+=`<span class="file-name">logs</span>`;
+  html+=`<span class="file-size"></span>`;
+  html+=`<span class="file-type">Folder</span>`;
+  html+=`<span class="file-date">██/██/██</span>`;
+  html+=`</div>`;
+  html+=`<div class="file-row" ondblclick="filesNavigate('audio')" onclick="filesSelectRow(this)">`;
+  html+=`<span class="file-icon">📁</span>`;
+  html+=`<span class="file-name">redacted_assets</span>`;
+  html+=`<span class="file-size"></span>`;
+  html+=`<span class="file-type">Folder</span>`;
+  html+=`<span class="file-date">██/██/██</span>`;
+  html+=`</div>`;
+  list.innerHTML=html;
+  document.getElementById('files-status-left').textContent='2 object(s)';
+  document.getElementById('files-status-right').textContent='';
+}
+
+function filesShowLogs(){
+  const list=document.getElementById('files-list');
+  document.getElementById('files-addr-path').textContent='C:\\RCPLAYER\\logs\\';
+  const visible=getVisibleFiles();
+  let html='';
+  visible.forEach(f=>{
+    html+=`<div class="file-row" ondblclick="filesOpenFile('${f.name}')" onclick="filesSelectRow(this)">`;
+    html+=`<span class="file-icon">${f.icon}</span>`;
+    html+=`<span class="file-name">${f.name}</span>`;
+    html+=`<span class="file-size">${f.size}</span>`;
+    html+=`<span class="file-type">LOG</span>`;
+    html+=`<span class="file-date">${f.date}</span>`;
+    html+=`</div>`;
+  });
+  list.innerHTML=html;
+  const enc=CONFIG.tracks.filter(t=>t.locked&&!state.discovered.has(t.id)).length;
+  document.getElementById('files-status-left').textContent=`${visible.length} object(s)`;
+  document.getElementById('files-status-right').textContent=enc>0?`${enc} file(s) encrypted`:'';
+}
+
+function filesShowAudio(){
+  const list=document.getElementById('files-list');
+  document.getElementById('files-addr-path').textContent='C:\\RCPLAYER\\redacted_assets\\audio\\';
+  let html='';
+  CONFIG.tracks.forEach((tk,i)=>{
+    const unlocked=tk.visible||state.discovered.has(tk.id);
+    if(unlocked){
+      html+=`<div class="file-row" ondblclick="playTrackByIndex(${i})" onclick="filesSelectRow(this)">`;
+      html+=`<span class="file-icon">🎵</span>`;
+      html+=`<span class="file-name">${tk['file_'+CONFIG.format]}</span>`;
+      html+=`<span class="file-size">~9 MB</span>`;
+      html+=`<span class="file-type">MP3</span>`;
+      html+=`<span class="file-date">320kbps</span>`;
+      html+=`</div>`;
+    }else{
+      html+=`<div class="file-row locked">`;
+      html+=`<span class="file-icon">🔒</span>`;
+      html+=`<span class="file-name">██████████.███</span>`;
+      html+=`<span class="file-size">ENC</span>`;
+      html+=`<span class="file-type">Encrypted</span>`;
+      html+=`<span class="file-date">locked</span>`;
+      html+=`</div>`;
+    }
+  });
+  list.innerHTML=html;
+  document.getElementById('files-status-left').textContent=`${CONFIG.tracks.length} object(s)`;
+  document.getElementById('files-status-right').textContent='';
+}
+
+function filesSelectRow(el){
+  document.querySelectorAll('#files-list .file-row').forEach(r=>r.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function filesShowList(){filesNavigate('logs')}
+
+function filesOpenFile(name){
+  const file=FILE_SYSTEM.find(f=>f.name===name);
+  if(!file)return;
+  playSFX('ui_click',0.3);
+  // Open in NOTEPAD.EXE
+  const notepad=document.getElementById('notepad-popup');
+  const textarea=document.getElementById('notepad-textarea');
+  const titleSpan=notepad.querySelector('.popup-titlebar span:first-child');
+  titleSpan.textContent='📝 NOTEPAD.EXE — '+name;
+  textarea.innerHTML=file.content();
+  textarea.contentEditable='false';
+  textarea.style.cursor='default';
+  notepad.classList.add('show');
+  WindowRegistry.discover('notepad-popup');
+  // Trigger secret + progression
+  if(file.secret)addSecret(file.secret);
+  const fn=name.replace(/\.log$/,'');
+  if(!state.progression.filesRead.includes(fn)){state.progression.filesRead.push(fn);checkProgression()}
+}
+
+function openFilesExe(){
+  document.getElementById('files-popup').classList.add('show');
+  WindowRegistry.discover('files-popup');
+  filesRenderTree();
+  filesShowRoot();
 }
 
 // ═══ DRAGGABLE POPUPS ═══
