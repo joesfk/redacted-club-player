@@ -404,7 +404,7 @@
   }
 
   /* ═══ NOTEPAD.EXE ═══ */
-  #notepad-popup{
+  #notepad-popup,.notepad-instance{
     position:fixed;
     left:300px;
     top:150px;
@@ -416,8 +416,8 @@
     display:none;
     font-family:'VT323',monospace;
   }
-  #notepad-popup.show{display:block;}
-  #notepad-textarea{
+  #notepad-popup.show,.notepad-instance.show{display:block;}
+  #notepad-textarea,.notepad-content{
     width:100%;
     height:300px;
     background:#000;
@@ -432,11 +432,11 @@
     word-wrap:break-word;
     line-height:1.5;
   }
-  #notepad-textarea .file-heading{color:var(--amber);font-size:16px;margin-bottom:8px;display:block;}
-  #notepad-textarea .file-warn{color:var(--amber);}
-  #notepad-textarea .file-error{color:var(--red);}
-  #notepad-textarea .file-ghost{color:var(--green-dark);font-style:italic;}
-  #notepad-textarea .file-dim{color:var(--green-dim);}
+  #notepad-textarea .file-heading,.notepad-content .file-heading{color:var(--amber);font-size:16px;margin-bottom:8px;display:block;}
+  #notepad-textarea .file-warn,.notepad-content .file-warn{color:var(--amber);}
+  #notepad-textarea .file-error,.notepad-content .file-error{color:var(--red);}
+  #notepad-textarea .file-ghost,.notepad-content .file-ghost{color:var(--green-dark);font-style:italic;}
+  #notepad-textarea .file-dim,.notepad-content .file-dim{color:var(--green-dim);}
   #notepad-textarea:empty:before{
     content:'Type your notes here...';
     color:var(--green-dark);
@@ -6231,19 +6231,22 @@ function filesSelectRow(el){
 
 function filesShowList(){filesNavigate('logs')}
 
+let _notepadCounter=0;
 function filesOpenFile(name){
   const file=FILE_SYSTEM.find(f=>f.name===name);
   if(!file)return;
   playSFX('ui_click',0.3);
-  // Open in NOTEPAD.EXE
-  const notepad=document.getElementById('notepad-popup');
-  const textarea=document.getElementById('notepad-textarea');
-  const titleSpan=notepad.querySelector('.popup-titlebar span:first-child');
-  titleSpan.textContent='📝 NOTEPAD.EXE — '+name;
-  textarea.innerHTML=file.content();
-  textarea.contentEditable='false';
-  textarea.style.cursor='default';
-  notepad.classList.add('show');
+  // Spawn a new notepad instance
+  _notepadCounter++;
+  const id='notepad-file-'+_notepadCounter;
+  const offset=20*(_notepadCounter%8);
+  const np=document.createElement('div');
+  np.id=id;
+  np.className='notepad-instance show';
+  np.style.left=(300+offset)+'px';
+  np.style.top=(150+offset)+'px';
+  np.innerHTML=`<div class="popup-titlebar"><span>📝 NOTEPAD.EXE — ${name}</span><span class="popup-close" onclick="document.getElementById('${id}').remove()">✕</span></div><div class="notepad-content">${file.content()}</div>`;
+  document.body.appendChild(np);
   WindowRegistry.discover('notepad-popup');
   // Trigger secret + progression
   if(file.secret)addSecret(file.secret);
