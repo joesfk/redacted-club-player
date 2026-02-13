@@ -719,6 +719,31 @@
     color:var(--green);font-family:'VT323',monospace;font-size:13px;
     padding:3px 6px;outline:none;
   }
+  /* Decode puzzle shared styles */
+  .decode-puzzle{padding:15px;display:none}
+  .decode-puzzle.active{display:block}
+  .decode-puzzle-title{color:var(--amber);font-size:15px;text-align:center;margin-bottom:10px}
+  .decode-puzzle-input{display:flex;gap:6px;margin-top:12px;justify-content:center;align-items:center}
+  .decode-puzzle-input input{background:rgba(0,0,0,0.6);border:1px solid var(--green-dark);color:var(--green);font-family:'VT323',monospace;font-size:16px;padding:5px 10px;outline:none;text-align:center;width:160px;letter-spacing:3px}
+  .decode-puzzle-input input:focus{border-color:var(--green);box-shadow:0 0 8px rgba(0,255,65,0.3)}
+  .decode-puzzle-btn{background:rgba(0,255,65,0.1);border:1px solid var(--green);color:var(--green);padding:5px 14px;font-family:'VT323',monospace;font-size:14px;cursor:pointer}
+  .decode-puzzle-btn:hover{background:rgba(0,255,65,0.2)}
+  .decode-puzzle-status{text-align:center;padding:6px;color:var(--green-dim);font-size:13px;min-height:20px}
+  /* Number station */
+  .station-broadcast{background:rgba(0,0,0,0.6);border:1px solid var(--green-dark);padding:12px;font-size:14px;color:var(--green-dim);line-height:1.8;min-height:120px;margin-bottom:8px}
+  .station-static{color:var(--green-dark);opacity:0.5}
+  .station-number{color:var(--amber);font-size:16px}
+  /* Cipher wheel */
+  .cipher-text{background:rgba(0,0,0,0.6);border:1px solid var(--green-dark);padding:12px;font-size:15px;color:var(--amber);line-height:1.8;text-align:center;letter-spacing:2px;margin-bottom:8px}
+  .cipher-decoded{color:var(--cyan);margin-top:4px}
+  .cipher-wheel{display:flex;align-items:center;justify-content:center;gap:10px;margin:10px 0}
+  .cipher-wheel-btn{background:none;border:1px solid var(--green-dim);color:var(--green);width:30px;height:30px;font-size:18px;cursor:pointer;font-family:'VT323',monospace}
+  .cipher-wheel-btn:hover{border-color:var(--green);background:rgba(0,255,65,0.1)}
+  .cipher-shift{color:var(--green);font-size:14px;min-width:80px;text-align:center}
+  /* Spectrogram */
+  .spectro-info{background:rgba(0,0,0,0.6);border:1px solid var(--green-dark);padding:12px;font-size:13px;color:var(--green-dim);line-height:1.6;margin-bottom:10px}
+  .spectro-download{display:inline-block;background:rgba(0,255,65,0.1);border:1px solid var(--green);color:var(--green);padding:6px 16px;font-family:'VT323',monospace;font-size:14px;cursor:pointer;text-decoration:none;margin:8px 0}
+  .spectro-download:hover{background:rgba(0,255,65,0.2)}
   .decode-override input:focus{border-color:var(--green);}
   @keyframes decode-success{
     0%{box-shadow:0 0 30px rgba(0,255,65,0.3);}
@@ -836,24 +861,10 @@
     border:3px solid var(--red);
     box-shadow:0 0 50px rgba(255,65,65,0.8);
   }
-  #jesus-overlay{
-    position:fixed;
-    top:0;left:0;width:100%;height:100%;
-    background:rgba(0,0,0,0.95);
-    display:none;
-    justify-content:center;
-    align-items:center;
-    z-index:99999;
-    animation:fadeIn 0.3s;
-  }
-  #jesus-overlay.show{display:flex;}
-  #jesus-overlay.fadeout{animation:fadeOut 0.5s;}
-  #jesus-overlay img{
-    max-width:90%;
-    max-height:90%;
-    border:3px solid var(--amber);
-    box-shadow:0 0 50px rgba(255,170,0,0.8);
-  }
+  #jesus-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:210px;background:rgba(0,0,0,0.98);border:2px solid var(--amber);box-shadow:0 0 30px rgba(255,170,0,0.5);z-index:9997;display:none}
+  #jesus-popup.show{display:block}
+  #jesus-popup .popup-titlebar{background:rgba(80,50,0,0.6);border-bottom:1px solid var(--amber);color:var(--amber)}
+  #jesus-popup img{display:block;width:100%;}
   @keyframes fadeIn{
     from{opacity:0;}
     to{opacity:1;}
@@ -1402,15 +1413,9 @@
     <div class="decode-header">
       <button class="decode-back-btn" onclick="decodeShowList()">◄ BACK</button>
       <span id="decode-signal-label" class="signal-label"></span>
-      <span id="decode-match" class="match-pct">0%</span>
+      <span id="decode-match" class="match-pct"></span>
     </div>
-    <div style="color:var(--green-dim);font-size:11px;text-align:center;margin-bottom:6px;">
-      CLICK BARS TO MATCH TARGET PATTERN
-    </div>
-    <div id="decode-waveform" class="decode-waveform"></div>
-    <div class="decode-corruption">
-      <div id="decode-corruption-fill" class="decode-corruption-fill"></div>
-    </div>
+    <div id="decode-puzzle-area"></div>
     <div id="decode-status" class="decode-status"></div>
   </div>
   <div class="decode-override">
@@ -1733,8 +1738,12 @@
 <div id="jpark-overlay">
   <img src="./redacted_assets/images/GIFs/jurassic-park.gif" alt="Jurassic Park Error">
 </div>
-<div id="jesus-overlay">
-  <img src="./redacted_assets/images/GIFs/dancing-jesus.gif" alt="Dancing Jesus">
+<div id="jesus-popup">
+  <div class="popup-titlebar">
+    <span>🕺 JESUS.EXE</span>
+    <span class="popup-close" onclick="document.getElementById('jesus-popup').classList.remove('show')">✕</span>
+  </div>
+  <img src="./redacted_assets/images/GIFs/dancing-jesus.gif" alt="Dancing Jesus" loop>
 </div>
 
 <script>
@@ -2280,7 +2289,7 @@ const COMMANDS={
   format:()=>toggleFormat(),clear:()=>{output.innerHTML=''},
   files:()=>{openFilesExe();printLine('Opening FILES.EXE...','dim');addSecret('LS');if(!state.progression.filesRead.includes('files')){state.progression.filesRead.push('files');checkProgression()}},
   ls:()=>COMMANDS.files(),
-  read:(a)=>{const f=(a[0]||'').toLowerCase().replace(/^\./, '');if(!f){printLine('Usage: read [file]  (or type "files" to browse)','dim');return}const match=FILE_SYSTEM.find(fs=>{const n=fs.name.replace(/\.log$/,'');return fs.name===f||n===f});if(match){const m=state.progression.milestones;if(match.milestone&&!m.includes(match.milestone)){printLine(`File not found: ${f}  (try "files" to see what's here)`,'error');return}openFilesExe();setTimeout(()=>filesOpenFile(match.name),100)}else{printLine(`File not found: ${f}  (try "files" to browse)`,'error')}},
+  read:(a)=>{const f=(a[0]||'').toLowerCase().replace(/^\./, '');if(!f){printLine('Usage: read [file]  (or type "files" to browse)','dim');return}const match=FILE_SYSTEM.find(fs=>{const n=fs.name.replace(/\.log$/,'');return fs.name===f||n===f});if(match){const m=state.progression.milestones;if(match.milestone&&!m.includes(match.milestone)){printLine(`File not found: ${f}  (try "files" to see what's here)`,'error');return}if(match.signalGate&&!scannerState.lockedSignals.some(s=>s.code===match.signalGate)){printLine(`File not found: ${f}  (try "files" to see what's here)`,'error');return}openFilesExe();setTimeout(()=>filesOpenFile(match.name),100)}else{printLine(`File not found: ${f}  (try "files" to browse)`,'error')}},
   cat:(a)=>COMMANDS.read(a),
 scan:(a)=>{
     document.getElementById('scanner-popup').classList.add('show');
@@ -2329,12 +2338,7 @@ scan:(a)=>{
   homer:()=>{
     playSFX('glitch_heavy',0.4);
     printLine('');printLine('D\'OH!','warning');
-    const overlay=document.getElementById('jesus-overlay');
-    overlay.classList.add('show');
-    setTimeout(()=>{
-      overlay.classList.add('fadeout');
-      setTimeout(()=>{overlay.classList.remove('show','fadeout')},500);
-    },8000);
+    document.getElementById('jesus-popup').classList.add('show');
   },
   source:()=>{printLine('');printLine('// you found this','ghost');printLine('// the frequencies hold the keys','ghost');printLine('// 97.7 and 108.0','ghost');printLine('// OMNISCIENT is the word that opens ██████████','error');printLine('');addSecret('SOURCE')},
   whoami:()=>{printLine('');printSlow('QUERY: IDENTITY','dim',40);setTimeout(()=>{printLine('...','dim');setTimeout(()=>{printLine('UNAUTHORIZED','error')},600)},400)},
@@ -4058,23 +4062,7 @@ document.addEventListener('mouseup', () => {
 
 // ═══ DECODE.EXE (Waveform Pattern Matcher) ═══
 
-const DECODE_PATTERNS={
-  SIGNAL:  [1,2,3,4,4,3,2,1,2,3,4,3],
-  BENEATH: [4,1,3,0,4,2,0,3,1,4,2,3],
-  VOID:    [0,4,1,3,0,4,2,1,4,0,3,2]
-}
-
-const decodeState={
-  activeSignal:null,
-  inputLevels:[],
-  targetPattern:[],
-  corruptionTimer:null,
-  corruptionPct:0,
-  solved:false,
-  BAR_COUNT:12,
-  MAX_LEVEL:4,
-  CORRUPTION_DURATION:45000
-}
+const decodeState={activeSignal:null,solved:false,cipherShift:0,stationTimer:null}
 
 function openDecode(){
   if(!state.progression.milestones.includes('SIGNAL_DISCOVERY')){
@@ -4095,16 +4083,16 @@ function closeDecode(){
 }
 
 function decodeCleanup(){
-  if(decodeState.corruptionTimer){clearInterval(decodeState.corruptionTimer);decodeState.corruptionTimer=null}
+  if(decodeState.stationTimer){clearInterval(decodeState.stationTimer);decodeState.stationTimer=null}
   decodeState.activeSignal=null
   decodeState.solved=false
-  decodeState.corruptionPct=0
 }
 
 function decodeShowList(){
   decodeCleanup()
   document.getElementById('decode-list').style.display='block'
   document.getElementById('decode-game').classList.remove('active')
+  document.getElementById('decode-puzzle-area').innerHTML=''
   decodeRenderSignals()
 }
 
@@ -4127,8 +4115,9 @@ function decodeRenderSignals(){
     const statusText=decoded
       ?'<span style="color:var(--cyan);">DECRYPTED ✓</span>'
       :'<span style="color:var(--amber);">ENCRYPTED</span>'
+    const labels={SIGNAL:'NUMBER STATION',BENEATH:'SPECTROGRAM',VOID:'CIPHER'}
     return `<div class="decode-signal-item ${statusClass}" onclick="${decoded?'':`decodeStartGame('${sig.code}')`}">
-      <div><div class="sig-name">${sig.name}</div><div class="sig-freq">${sig.freq} MHz @ AMP ${sig.amplitude}</div></div>
+      <div><div class="sig-name">${sig.name}</div><div class="sig-freq">${sig.freq} MHz — ${labels[sig.code]||'UNKNOWN'}</div></div>
       <div class="sig-status">${statusText}</div>
     </div>`
   }).join('')
@@ -4141,119 +4130,218 @@ function decodeStartGame(code){
   if(!track||state.discovered.has(track.id))return
   playSFX('ui_click',0.4)
   decodeState.activeSignal=signal
-  decodeState.targetPattern=(DECODE_PATTERNS[code]||DECODE_PATTERNS.SIGNAL).slice()
-  decodeState.inputLevels=new Array(decodeState.BAR_COUNT).fill(0)
   decodeState.solved=false
-  decodeState.corruptionPct=0
   document.getElementById('decode-list').style.display='none'
   document.getElementById('decode-game').classList.add('active')
   document.getElementById('decode-signal-label').textContent=`${signal.name} ${signal.freq} MHz`
-  document.getElementById('decode-match').textContent='0%'
-  document.getElementById('decode-match').style.color='var(--green)'
-  document.getElementById('decode-status').textContent='Align the waveform to decrypt the signal.'
-  document.getElementById('decode-status').style.color='var(--green-dim)'
-  decodeRenderBars()
-  decodeStartCorruption()
+  document.getElementById('decode-match').textContent=''
+  document.getElementById('decode-status').textContent=''
+
+  if(code==='SIGNAL') decodeNumberStation()
+  else if(code==='BENEATH') decodeSpectrogram()
+  else if(code==='VOID') decodeCipher()
 }
 
-function decodeRenderBars(){
-  const container=document.getElementById('decode-waveform')
-  const barH=120
-  let html=''
-  for(let i=0;i<decodeState.BAR_COUNT;i++){
-    const targetH=(decodeState.targetPattern[i]/decodeState.MAX_LEVEL)*barH
-    const inputH=(decodeState.inputLevels[i]/decodeState.MAX_LEVEL)*barH
-    const matched=decodeState.inputLevels[i]===decodeState.targetPattern[i]
-    html+=`<div class="decode-bar-col" onclick="decodeClickBar(${i})">
-      <div class="decode-bar-target" style="height:${targetH}px"></div>
-      <div class="decode-bar-input ${matched?'matched':''}" style="height:${Math.max(2,inputH)}px" id="decode-bar-${i}"></div>
+// ── SIGNAL: Number Station (Easy) ──
+function decodeNumberStation(){
+  const area=document.getElementById('decode-puzzle-area')
+  area.innerHTML=`
+    <div class="decode-puzzle-title">📻 INTERCEPTED NUMBER STATION</div>
+    <div class="station-broadcast" id="station-broadcast"></div>
+    <div style="color:var(--green-dim);font-size:11px;text-align:center;margin:6px 0">
+      DECODE THE BROADCAST — enter the 4-digit sequence
+    </div>
+    <div style="color:var(--green-ghost);font-size:11px;text-align:center;margin-bottom:4px">
+      Hint: check station.log in FILES.EXE for the full transcript
+    </div>
+    <div class="decode-puzzle-input">
+      <input type="text" id="station-answer" maxlength="4" placeholder="____" onkeydown="if(event.key==='Enter')stationSubmit()">
+      <button class="decode-puzzle-btn" onclick="stationSubmit()">SUBMIT</button>
     </div>`
-  }
-  container.innerHTML=html
+
+  // Animate broadcast
+  const lines=[
+    {text:'[STATIC] ░░░░░░░░░░░░░░░░░░',cls:'station-static',delay:0},
+    {text:'... receiving transmission ...',cls:'station-static',delay:800},
+    {text:'',cls:'',delay:1400},
+    {text:'ALPHA-SEVEN ...',cls:'station-number',delay:2000},
+    {text:'CHARLIE-THREE ...',cls:'station-number',delay:3200},
+    {text:'FOXTROT-NINE ...',cls:'station-number',delay:4400},
+    {text:'DELTA-FOUR ...',cls:'station-number',delay:5600},
+    {text:'',cls:'',delay:6400},
+    {text:'REPEAT: ░-░-░-░',cls:'station-static',delay:7000},
+    {text:'[STATIC] ░░░ TRANSMISSION ENDS ░░░',cls:'station-static',delay:8200},
+  ]
+  const bc=document.getElementById('station-broadcast')
+  bc.innerHTML='<span class="station-static">TUNING TO 97.7 MHz...</span>'
+  let lineIdx=0
+  decodeState.stationTimer=setInterval(()=>{
+    if(lineIdx>=lines.length){clearInterval(decodeState.stationTimer);decodeState.stationTimer=null;return}
+    const l=lines[lineIdx]
+    const span=document.createElement('div')
+    span.className=l.cls
+    span.textContent=l.text
+    bc.appendChild(span)
+    bc.scrollTop=bc.scrollHeight
+    lineIdx++
+  },1200)
+  setTimeout(()=>{const inp=document.getElementById('station-answer');if(inp)inp.focus()},500)
 }
 
-function decodeClickBar(index){
-  if(decodeState.solved)return
-  playSFX('ui_click',0.2)
-  decodeState.inputLevels[index]=(decodeState.inputLevels[index]+1)%(decodeState.MAX_LEVEL+1)
-  const barH=120
-  const inputH=(decodeState.inputLevels[index]/decodeState.MAX_LEVEL)*barH
-  const matched=decodeState.inputLevels[index]===decodeState.targetPattern[index]
-  const barEl=document.getElementById(`decode-bar-${index}`)
-  if(barEl){
-    barEl.style.height=Math.max(2,inputH)+'px'
-    barEl.className='decode-bar-input'+(matched?' matched':'')
-  }
-  const matchCount=decodeState.inputLevels.filter((v,i)=>v===decodeState.targetPattern[i]).length
-  const matchPct=Math.round((matchCount/decodeState.BAR_COUNT)*100)
-  document.getElementById('decode-match').textContent=matchPct+'%'
-  if(matchPct<50){
-    document.getElementById('decode-status').textContent='Signal pattern divergent. Keep adjusting.'
-    document.getElementById('decode-status').style.color='var(--green-dim)'
-  }else if(matchPct<80){
-    document.getElementById('decode-status').textContent='Pattern converging... getting closer.'
-    document.getElementById('decode-status').style.color='var(--amber)'
-  }else if(matchPct<100){
-    document.getElementById('decode-status').textContent='Near match! Fine-tune remaining bars.'
-    document.getElementById('decode-status').style.color='var(--green)'
-  }
-  if(matchPct===100)decodeSuccess()
-}
-
-function decodeStartCorruption(){
-  const fill=document.getElementById('decode-corruption-fill')
-  fill.style.width='0%'
-  decodeState.corruptionPct=0
-  decodeState.corruptionTimer=setInterval(()=>{
-    if(decodeState.solved){clearInterval(decodeState.corruptionTimer);return}
-    decodeState.corruptionPct+=2
-    fill.style.width=Math.min(100,decodeState.corruptionPct)+'%'
-    if(decodeState.corruptionPct>=100){
-      decodeCorrupt()
-      decodeState.corruptionPct=0
-      fill.style.width='0%'
-    }
-  },900)
-}
-
-function decodeCorrupt(){
-  playSFX('glitch_error',0.3)
-  document.getElementById('decode-status').textContent='⚠ DATA CORRUPTION — pattern shifted!'
-  document.getElementById('decode-status').style.color='var(--red)'
-  const nonMatched=[]
-  for(let i=0;i<decodeState.BAR_COUNT;i++){
-    if(decodeState.inputLevels[i]!==decodeState.targetPattern[i])nonMatched.push(i)
-  }
-  const toScramble=nonMatched.sort(()=>Math.random()-0.5).slice(0,2)
-  toScramble.forEach(idx=>{
-    let newVal
-    do{newVal=Math.floor(Math.random()*(decodeState.MAX_LEVEL+1))}while(newVal===decodeState.targetPattern[idx])
-    decodeState.targetPattern[idx]=newVal
-  })
-  decodeRenderBars()
-  const matchCount=decodeState.inputLevels.filter((v,i)=>v===decodeState.targetPattern[i]).length
-  const matchPct=Math.round((matchCount/decodeState.BAR_COUNT)*100)
-  document.getElementById('decode-match').textContent=matchPct+'%'
-  setTimeout(()=>{
-    if(!decodeState.solved){
-      document.getElementById('decode-status').textContent='Pattern shifted. Re-align corrupted bars.'
+function stationSubmit(){
+  const inp=document.getElementById('station-answer')
+  if(!inp)return
+  const val=inp.value.trim()
+  if(val==='7394'){
+    decodeSuccess()
+  }else{
+    playSFX('glitch_error',0.3)
+    inp.value=''
+    document.getElementById('decode-status').textContent='INCORRECT SEQUENCE. Try again.'
+    document.getElementById('decode-status').style.color='var(--red)'
+    inp.style.borderColor='var(--red)'
+    setTimeout(()=>{
+      inp.style.borderColor='var(--green-dark)'
+      document.getElementById('decode-status').textContent='Hint: read station.log for the full broadcast'
       document.getElementById('decode-status').style.color='var(--green-dim)'
-    }
-  },2000)
+    },2000)
+  }
 }
 
+// ── BENEATH: Spectrogram Download (Medium) ──
+function decodeSpectrogram(){
+  const area=document.getElementById('decode-puzzle-area')
+  area.innerHTML=`
+    <div class="decode-puzzle-title">📊 SUB-AUDIBLE DATA PAYLOAD</div>
+    <div class="spectro-info">
+      An audio sample was extracted from the 108.0 MHz carrier wave.<br><br>
+      Standard playback reveals nothing — just static noise.<br>
+      But the signal carries <span style="color:var(--amber)">embedded visual data</span>.<br><br>
+      <span style="color:var(--green-ghost)">The message is hidden where you cannot HEAR it,<br>but you can SEE it.</span><br><br>
+      Download the sample and analyze its <span style="color:var(--cyan)">spectrogram</span>.
+    </div>
+    <div style="text-align:center">
+      <button class="spectro-download" onclick="generateSpectrogramAudio()">⬇ DOWNLOAD noise_108.wav</button>
+    </div>
+    <div style="color:var(--green-dim);font-size:11px;text-align:center;margin:8px 0">
+      Open the file in a spectrogram viewer (Audacity, etc.)<br>
+      Enter the hidden word below:
+    </div>
+    <div class="decode-puzzle-input">
+      <input type="text" id="spectro-answer" maxlength="20" placeholder="enter word" onkeydown="if(event.key==='Enter')spectroSubmit()">
+      <button class="decode-puzzle-btn" onclick="spectroSubmit()">SUBMIT</button>
+    </div>`
+  setTimeout(()=>{const inp=document.getElementById('spectro-answer');if(inp)inp.focus()},500)
+}
+
+function spectroSubmit(){
+  const inp=document.getElementById('spectro-answer')
+  if(!inp)return
+  const val=inp.value.trim().toUpperCase()
+  if(val==='BENEATH'){
+    decodeSuccess()
+  }else{
+    playSFX('glitch_error',0.3)
+    inp.value=''
+    document.getElementById('decode-status').textContent='WORD NOT RECOGNIZED. Analyze the spectrogram.'
+    document.getElementById('decode-status').style.color='var(--red)'
+    inp.style.borderColor='var(--red)'
+    setTimeout(()=>{
+      inp.style.borderColor='var(--green-dark)'
+      document.getElementById('decode-status').textContent='Hint: the word is visible in the 2-8 kHz frequency range'
+      document.getElementById('decode-status').style.color='var(--green-dim)'
+    },2000)
+  }
+}
+
+// ── VOID: Cipher/Cryptogram (Hard) ──
+function decodeCipher(){
+  decodeState.cipherShift=0
+  const area=document.getElementById('decode-puzzle-area')
+  area.innerHTML=`
+    <div class="decode-puzzle-title">🔐 ENCRYPTED ANOMALY</div>
+    <div class="cipher-text">
+      <div id="cipher-encoded">GUVF VF GUR IBVQ<br>GUR CNFFJBEQ VF: IBVQ</div>
+      <div class="cipher-decoded" id="cipher-decoded" style="margin-top:8px;border-top:1px solid var(--green-dark);padding-top:6px">—</div>
+    </div>
+    <div style="color:var(--green-dim);font-size:11px;text-align:center;margin-bottom:4px">
+      CAESAR CIPHER — rotate the alphabet to decode
+    </div>
+    <div class="cipher-wheel">
+      <button class="cipher-wheel-btn" onclick="cipherRotate(-1)">◄</button>
+      <span class="cipher-shift" id="cipher-shift-label">SHIFT: 0</span>
+      <button class="cipher-wheel-btn" onclick="cipherRotate(1)">►</button>
+    </div>
+    <div style="color:var(--green-ghost);font-size:10px;text-align:center;margin-bottom:8px">
+      Hint: check void_intercept.log — the cipher type is noted there
+    </div>
+    <div class="decode-puzzle-input">
+      <input type="text" id="cipher-answer" maxlength="20" placeholder="password" onkeydown="if(event.key==='Enter')cipherSubmit()">
+      <button class="decode-puzzle-btn" onclick="cipherSubmit()">SUBMIT</button>
+    </div>`
+  cipherUpdatePreview()
+  setTimeout(()=>{const inp=document.getElementById('cipher-answer');if(inp)inp.focus()},500)
+}
+
+function cipherRotate(dir){
+  decodeState.cipherShift=((decodeState.cipherShift+dir)%26+26)%26
+  playSFX('ui_click',0.2)
+  document.getElementById('cipher-shift-label').textContent=`SHIFT: ${decodeState.cipherShift}`
+  cipherUpdatePreview()
+}
+
+function cipherUpdatePreview(){
+  const encoded='GUVF VF GUR IBVQ\nGUR CNFFJBEQ VF: IBVQ'
+  const shift=decodeState.cipherShift
+  const decoded=encoded.split('').map(ch=>{
+    if(ch>='A'&&ch<='Z'){
+      return String.fromCharCode(((ch.charCodeAt(0)-65+shift)%26)+65)
+    }
+    return ch
+  }).join('')
+  const el=document.getElementById('cipher-decoded')
+  if(el)el.innerHTML=decoded.replace(/\n/g,'<br>')
+  // Highlight when correct (shift 13)
+  if(shift===13){
+    if(el)el.style.color='var(--cyan)'
+    document.getElementById('decode-status').textContent='The cipher is cracked! Enter the password.'
+    document.getElementById('decode-status').style.color='var(--cyan)'
+  }else{
+    if(el)el.style.color='var(--green-dim)'
+  }
+}
+
+function cipherSubmit(){
+  const inp=document.getElementById('cipher-answer')
+  if(!inp)return
+  const val=inp.value.trim().toUpperCase()
+  if(val==='VOID'){
+    decodeSuccess()
+  }else{
+    playSFX('glitch_error',0.3)
+    inp.value=''
+    document.getElementById('decode-status').textContent='INCORRECT PASSWORD. Decode the cipher first.'
+    document.getElementById('decode-status').style.color='var(--red)'
+    inp.style.borderColor='var(--red)'
+    setTimeout(()=>{
+      inp.style.borderColor='var(--green-dark)'
+      document.getElementById('decode-status').textContent='Hint: ROT-13 — shift by 13 positions'
+      document.getElementById('decode-status').style.color='var(--green-dim)'
+    },2000)
+  }
+}
+
+// ── Shared decode success ──
 function decodeSuccess(){
   decodeState.solved=true
-  if(decodeState.corruptionTimer){clearInterval(decodeState.corruptionTimer);decodeState.corruptionTimer=null}
   playSFX('scanner_lock',0.6)
   const popup=document.getElementById('decode-popup')
   popup.classList.add('decode-success-flash')
   setTimeout(()=>popup.classList.remove('decode-success-flash'),1000)
-  document.getElementById('decode-match').textContent='100%'
+  document.getElementById('decode-match').textContent='DECRYPTED'
   document.getElementById('decode-match').style.color='var(--cyan)'
   document.getElementById('decode-status').textContent='█▓▒░ DECRYPTION COMPLETE ░▒▓█'
   document.getElementById('decode-status').style.color='var(--cyan)'
-  document.getElementById('decode-corruption-fill').style.width='0%'
   const track=CONFIG.tracks.find(t=>t.unlockCode===decodeState.activeSignal.code)
   if(track){
     setTimeout(()=>{
@@ -4284,6 +4372,106 @@ function decodeOverride(){
 function decodeOpenForSignal(code){
   openDecode()
   setTimeout(()=>decodeStartGame(code),100)
+}
+
+// ── Spectrogram Audio Generator ──
+function generateSpectrogramAudio(){
+  playSFX('ui_click',0.3)
+  const sr=44100, dur=8, len=sr*dur
+  const offCtx=new OfflineAudioContext(1,len,sr)
+
+  // White noise base (quiet)
+  const noiseBuf=offCtx.createBuffer(1,len,sr)
+  const noiseData=noiseBuf.getChannelData(0)
+  for(let i=0;i<len;i++) noiseData[i]=(Math.random()*2-1)*0.05
+
+  const noiseSrc=offCtx.createBufferSource()
+  noiseSrc.buffer=noiseBuf
+  noiseSrc.connect(offCtx.destination)
+  noiseSrc.start(0)
+
+  // Paint "BENEATH" using sine tones at different frequencies
+  // Each letter = ~1s, spread across 2-8 kHz range
+  const word='BENEATH'
+  const letterDur=dur/word.length
+  // Simple 5x7 pixel font for each letter (rows = frequency bands, cols = time slices)
+  const font={
+    B:[[1,1,1,0],[1,0,1,0],[1,1,1,0],[1,0,1,0],[1,1,1,0]],
+    E:[[1,1,1,0],[1,0,0,0],[1,1,0,0],[1,0,0,0],[1,1,1,0]],
+    N:[[1,0,1,0],[1,1,1,0],[1,1,1,0],[1,0,1,0],[1,0,1,0]],
+    A:[[0,1,0,0],[1,0,1,0],[1,1,1,0],[1,0,1,0],[1,0,1,0]],
+    T:[[1,1,1,0],[0,1,0,0],[0,1,0,0],[0,1,0,0],[0,1,0,0]],
+    H:[[1,0,1,0],[1,0,1,0],[1,1,1,0],[1,0,1,0],[1,0,1,0]]
+  }
+  const freqBands=[2000,3000,4000,5500,7000] // 5 frequency rows
+
+  word.split('').forEach((ch,ci)=>{
+    const pattern=font[ch]
+    if(!pattern)return
+    const startTime=ci*letterDur
+    pattern.forEach((row,ri)=>{
+      row.forEach((on,ti)=>{
+        if(!on)return
+        const osc=offCtx.createOscillator()
+        const gain=offCtx.createGain()
+        osc.frequency.value=freqBands[ri]+(ti*150)
+        osc.type='sine'
+        gain.gain.value=0.08
+        osc.connect(gain)
+        gain.connect(offCtx.destination)
+        const t=startTime+ti*(letterDur/4)
+        osc.start(t)
+        osc.stop(t+letterDur/4-0.02)
+      })
+    })
+  })
+
+  offCtx.startRendering().then(buf=>{
+    // Convert to WAV and download
+    const wav=audioBufferToWav(buf)
+    const blob=new Blob([wav],{type:'audio/wav'})
+    const url=URL.createObjectURL(blob)
+    const a=document.createElement('a')
+    a.href=url
+    a.download='noise_108.wav'
+    a.click()
+    URL.revokeObjectURL(url)
+    document.getElementById('decode-status').textContent='Download started. Open in a spectrogram viewer.'
+    document.getElementById('decode-status').style.color='var(--green)'
+  })
+}
+
+function audioBufferToWav(buffer){
+  const numCh=buffer.numberOfChannels
+  const sr=buffer.sampleRate
+  const format=1
+  const bitsPerSample=16
+  const data=buffer.getChannelData(0)
+  const dataLen=data.length*2
+  const headerLen=44
+  const buf=new ArrayBuffer(headerLen+dataLen)
+  const view=new DataView(buf)
+  function writeStr(offset,str){for(let i=0;i<str.length;i++)view.setUint8(offset+i,str.charCodeAt(i))}
+  writeStr(0,'RIFF')
+  view.setUint32(4,36+dataLen,true)
+  writeStr(8,'WAVE')
+  writeStr(12,'fmt ')
+  view.setUint32(16,16,true)
+  view.setUint16(20,format,true)
+  view.setUint16(22,numCh,true)
+  view.setUint32(24,sr,true)
+  view.setUint32(28,sr*numCh*bitsPerSample/8,true)
+  view.setUint16(32,numCh*bitsPerSample/8,true)
+  view.setUint16(34,bitsPerSample,true)
+  writeStr(36,'data')
+  view.setUint32(40,dataLen,true)
+  let offset=44
+  for(let i=0;i<data.length;i++){
+    const s=Math.max(-1,Math.min(1,data[i]))
+    view.setInt16(offset,s<0?s*0x8000:s*0x7FFF,true)
+    offset+=2
+  }
+  return buf
 }
 
 // ═══ GALLERY ═══
@@ -6452,6 +6640,17 @@ const FILE_SYSTEM=[
        t+='<span class="file-dim">[SYS] Decryption subsystem under heavy load</span>\n';
        t+='<span class="file-ghost">[SYS] Intercepted transmission fragment cached to transmission.log</span>\n';
      }
+     if(scannerState.lockedSignals.some(s=>s.code==='SIGNAL')){
+       t+='\n<span class="file-dim">[INTERCEPT] Number station broadcast recorded — see station.log</span>\n';
+     }
+     if(scannerState.lockedSignals.some(s=>s.code==='BENEATH')){
+       t+='\n<span class="file-dim">[INTERCEPT] Sub-audible carrier sampled — see noise_sample.log</span>\n';
+       t+='<span class="file-ghost">[ANALYSIS] Spectral analysis suggests alphabetic pattern in 2-8 kHz range</span>\n';
+     }
+     if(scannerState.lockedSignals.some(s=>s.code==='VOID')){
+       t+='\n<span class="file-error">[ANOMALY] Encrypted payload intercepted — see void_intercept.log</span>\n';
+       t+='<span class="file-ghost">[CRYPTO] Cipher type: ancient substitution. ROT variant suspected.</span>\n';
+     }
      return t;
    }},
   {name:'frequencies.log',icon:'📊',size:'1.6 KB',date:'██/██/██',secret:'CAT_FREQ',always:true,
@@ -6512,6 +6711,62 @@ const FILE_SYSTEM=[
      t+='<span class="file-error">WARNING: Source signal degrading. Data may be lost.</span>\n';
      return t;
    }},
+  {name:'station.log',icon:'📻',size:'0.6 KB',date:'??/??/??',secret:null,signalGate:'SIGNAL',
+   content:()=>{
+     let t='<div class="file-heading">── INTERCEPTED BROADCAST ──</div>\n';
+     t+='<span class="file-dim">SOURCE: 97.7 MHz — NUMBER STATION</span>\n';
+     t+='<span class="file-dim">DURATION: 00:00:42</span>\n';
+     t+='<span class="file-dim">QUALITY: DEGRADED</span>\n\n';
+     t+='<span class="file-ghost">[STATIC] ░░░░░░░░░░░░░░░░░░░░░</span>\n';
+     t+='<span class="file-ghost">... receiving transmission ...</span>\n\n';
+     t+='<span class="file-warn">ALPHA-SEVEN ...</span>\n';
+     t+='<span class="file-warn">CHARLIE-THREE ...</span>\n';
+     t+='<span class="file-warn">FOXTROT-NINE ...</span>\n';
+     t+='<span class="file-warn">DELTA-FOUR ...</span>\n\n';
+     t+='<span class="file-dim">REPEAT: 7-3-9-4</span>\n\n';
+     t+='<span class="file-ghost">[STATIC] ░░░ TRANSMISSION ENDS ░░░</span>\n\n';
+     t+='<span class="file-ghost">NOTE: NATO phonetic alphabet detected</span>\n';
+     t+='<span class="file-ghost">A=ALPHA B=BRAVO C=CHARLIE D=DELTA</span>\n';
+     t+='<span class="file-ghost">F=FOXTROT ... sequence appears numeric</span>\n';
+     t+='<span class="file-dim">Use DECODE.EXE to submit the decoded sequence.</span>\n';
+     return t;
+   }},
+  {name:'noise_sample.log',icon:'📊',size:'1.1 KB',date:'??/??/??',secret:null,signalGate:'BENEATH',
+   content:()=>{
+     let t='<div class="file-heading">── INTERCEPTED CARRIER ──</div>\n';
+     t+='<span class="file-dim">SOURCE: 108.0 MHz — SUB-AUDIBLE TRANSMISSION</span>\n';
+     t+='<span class="file-dim">PAYLOAD TYPE: AUDIO (embedded data)</span>\n\n';
+     t+='<span class="file-ghost">Sub-audible data payload detected in carrier wave.</span>\n';
+     t+='<span class="file-ghost">Audio sample extracted and cached locally.</span>\n\n';
+     t+='<span class="file-warn">⬇ Download available via DECODE.EXE</span>\n\n';
+     t+='<span class="file-dim">── ANALYSIS NOTES ──</span>\n';
+     t+='<span class="file-ghost">• Standard audio playback reveals nothing — just static</span>\n';
+     t+='<span class="file-ghost">• Signal appears to carry embedded data in frequency domain</span>\n';
+     t+='<span class="file-warn">• Recommendation: SPECTRAL ANALYSIS of audio sample</span>\n';
+     t+='<span class="file-ghost">• The message is hidden where you cannot HEAR it,</span>\n';
+     t+='<span class="file-ghost">  but you can SEE it.</span>\n\n';
+     t+='<span class="file-dim">Tools: Audacity (View > Spectrogram), or any FFT viewer</span>\n';
+     t+='<span class="file-dim">Look in the 2-8 kHz range.</span>\n';
+     return t;
+   }},
+  {name:'void_intercept.log',icon:'🕳',size:'0.5 KB',date:'??/??/??',secret:null,signalGate:'VOID',
+   content:()=>{
+     let t='<div class="file-heading">── INTERCEPTED ANOMALY ──</div>\n';
+     t+='<span class="file-error">WARNING: Signal origin UNKNOWN</span>\n';
+     t+='<span class="file-error">Outside normal broadcast band (115.3 MHz)</span>\n\n';
+     t+='<span class="file-dim">── ENCRYPTED PAYLOAD ──</span>\n\n';
+     t+='<span class="file-warn">  GUVF VF GUR IBVQ</span>\n';
+     t+='<span class="file-warn">  GUR CNFFJBEQ VF: IBVQ</span>\n\n';
+     t+='<span class="file-dim">── CIPHER ANALYSIS ──</span>\n';
+     t+='<span class="file-ghost">Encryption type: CAESAR CIPHER (ROT-13)</span>\n';
+     t+='<span class="file-ghost">Method: Shift every letter by 13 positions</span>\n';
+     t+='<span class="file-ghost">A→N  B→O  C→P  D→Q  E→R  F→S  G→T  ...</span>\n';
+     t+='<span class="file-ghost">N→A  O→B  P→C  Q→D  R→E  S→F  T→G  ...</span>\n\n';
+     t+='<span class="file-dim">NOTE: This cipher is ancient. The Romans used it.</span>\n';
+     t+='<span class="file-dim">Apply the shift to read the message above.</span>\n';
+     t+='<span class="file-dim">Then use DECODE.EXE to enter the password.</span>\n';
+     return t;
+   }},
 ];
 
 function getVisibleFiles(){
@@ -6519,6 +6774,7 @@ function getVisibleFiles(){
   return FILE_SYSTEM.filter(f=>{
     if(f.always)return true;
     if(f.milestone)return m.includes(f.milestone);
+    if(f.signalGate)return scannerState.lockedSignals.some(s=>s.code===f.signalGate);
     return false;
   });
 }
