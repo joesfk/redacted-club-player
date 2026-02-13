@@ -614,6 +614,119 @@
     50%{box-shadow:0 0 20px rgba(0,255,65,0.7);border-color:#4f4;}
   }
 
+  /* ═══ DECODE.EXE ═══ */
+  #decode-popup{
+    position:fixed;
+    left:50%;top:50%;
+    transform:translate(-50%,-50%);
+    width:480px;
+    background:rgba(0,20,10,0.98);
+    border:2px solid var(--green);
+    box-shadow:0 0 30px rgba(0,255,65,0.3),inset 0 0 20px rgba(0,0,0,0.8);
+    z-index:9993;
+    display:none;
+    font-family:'VT323',monospace;
+  }
+  #decode-popup.show{display:block;}
+  .decode-signal-list{padding:10px 15px;}
+  .decode-signal-item{
+    padding:8px 10px;margin-bottom:6px;
+    border:1px solid var(--green-dark);
+    background:rgba(0,255,65,0.05);
+    cursor:pointer;
+    display:flex;justify-content:space-between;align-items:center;
+    transition:background 0.2s,border-color 0.2s;
+  }
+  .decode-signal-item:hover{background:rgba(0,255,65,0.12);border-color:var(--green);}
+  .decode-signal-item.completed{border-color:var(--cyan);opacity:0.5;cursor:default;pointer-events:none;}
+  .decode-signal-item .sig-name{color:var(--green);font-size:16px;}
+  .decode-signal-item .sig-freq{color:var(--green-dim);font-size:13px;}
+  .decode-signal-item .sig-status{font-size:12px;}
+  .decode-game{padding:10px 15px;display:none;}
+  .decode-game.active{display:block;}
+  .decode-header{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:10px;padding:6px 0;
+    border-bottom:1px solid var(--green-dark);
+  }
+  .decode-header .signal-label{color:var(--amber);font-size:16px;}
+  .decode-header .match-pct{color:var(--green);font-size:18px;}
+  .decode-back-btn{
+    background:none;border:1px solid var(--green-dark);
+    color:var(--green-dim);padding:3px 8px;cursor:pointer;
+    font-family:'VT323',monospace;font-size:13px;
+  }
+  .decode-back-btn:hover{border-color:var(--green);color:var(--green);}
+  .decode-waveform{
+    display:flex;gap:4px;justify-content:center;
+    align-items:flex-end;height:140px;
+    padding:10px 5px;
+    background:rgba(0,0,0,0.5);
+    border:1px solid var(--green-dark);
+    position:relative;
+  }
+  .decode-bar-col{
+    flex:1;height:100%;display:flex;flex-direction:column;
+    justify-content:flex-end;align-items:center;
+    position:relative;cursor:pointer;
+  }
+  .decode-bar-target{
+    position:absolute;bottom:0;width:100%;
+    background:rgba(0,255,65,0.08);
+    border-top:2px dashed rgba(0,255,65,0.25);
+    transition:height 0.3s;
+    pointer-events:none;
+  }
+  .decode-bar-input{
+    width:100%;
+    background:var(--green);
+    opacity:0.7;
+    transition:height 0.15s ease-out;
+    min-height:2px;
+    box-shadow:0 0 6px rgba(0,255,65,0.4);
+  }
+  .decode-bar-input.matched{
+    opacity:1;
+    background:var(--cyan);
+    box-shadow:0 0 10px rgba(0,170,255,0.6);
+  }
+  .decode-corruption{
+    height:4px;margin:8px 0;
+    background:rgba(255,0,64,0.15);
+    border:1px solid rgba(255,0,64,0.3);
+    position:relative;overflow:hidden;
+  }
+  .decode-corruption-fill{
+    position:absolute;left:0;top:0;bottom:0;
+    width:0%;
+    background:linear-gradient(90deg,var(--red),var(--amber));
+    transition:width 0.5s linear;
+  }
+  .decode-status{
+    text-align:center;padding:6px;
+    color:var(--green-dim);font-size:13px;
+    min-height:22px;
+  }
+  .decode-override{
+    display:flex;align-items:center;gap:6px;
+    padding:6px 15px 12px;
+    border-top:1px solid var(--green-dark);
+    margin-top:6px;
+  }
+  .decode-override label{color:var(--green-dark);font-size:11px;white-space:nowrap;}
+  .decode-override input{
+    flex:1;background:rgba(0,0,0,0.6);border:1px solid var(--green-dark);
+    color:var(--green);font-family:'VT323',monospace;font-size:13px;
+    padding:3px 6px;outline:none;
+  }
+  .decode-override input:focus{border-color:var(--green);}
+  @keyframes decode-success{
+    0%{box-shadow:0 0 30px rgba(0,255,65,0.3);}
+    50%{box-shadow:0 0 60px rgba(0,170,255,0.8),0 0 100px rgba(0,170,255,0.3);}
+    100%{box-shadow:0 0 30px rgba(0,255,65,0.3);}
+  }
+  .decode-success-flash{animation:decode-success 1s ease-out;}
+
   /* ═══ POOL.EXE ═══ */
   #pool-popup{
     position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:660px;
@@ -1251,6 +1364,43 @@
 </div>
 
 
+<!-- ═══ DECODE.EXE ═══ -->
+<div id="decode-popup">
+  <div class="popup-titlebar">
+    <span>🔓 DECODE.EXE</span>
+    <span class="popup-close" onclick="closeDecode()">✕</span>
+  </div>
+  <div id="decode-list" class="decode-signal-list">
+    <div style="color:var(--green-dim);font-size:13px;margin-bottom:8px;border-bottom:1px solid var(--green-dark);padding-bottom:6px;">
+      ENCRYPTED SIGNALS — select to decrypt
+    </div>
+    <div id="decode-signals"></div>
+    <div id="decode-empty" style="color:var(--green-dark);font-size:13px;padding:20px;text-align:center;">
+      No locked signals available.<br>
+      <span style="font-size:11px;">Use SCANNER.EXE to find and lock signals first.</span>
+    </div>
+  </div>
+  <div id="decode-game" class="decode-game">
+    <div class="decode-header">
+      <button class="decode-back-btn" onclick="decodeShowList()">◄ BACK</button>
+      <span id="decode-signal-label" class="signal-label"></span>
+      <span id="decode-match" class="match-pct">0%</span>
+    </div>
+    <div style="color:var(--green-dim);font-size:11px;text-align:center;margin-bottom:6px;">
+      CLICK BARS TO MATCH TARGET PATTERN
+    </div>
+    <div id="decode-waveform" class="decode-waveform"></div>
+    <div class="decode-corruption">
+      <div id="decode-corruption-fill" class="decode-corruption-fill"></div>
+    </div>
+    <div id="decode-status" class="decode-status"></div>
+  </div>
+  <div class="decode-override">
+    <label>OVERRIDE://</label>
+    <input type="text" id="decode-override-input" maxlength="20" placeholder="master key" onkeydown="if(event.key==='Enter')decodeOverride()">
+  </div>
+</div>
+
 <!-- ═══ PLAYER.EXE ═══ -->
 <div id="player-popup">
   <div class="popup-titlebar">
@@ -1702,6 +1852,7 @@ const WindowRegistry = {
   windows: {
     // player-popup & gallery-popup removed from registry — use dedicated sidebar buttons
     'scanner-popup': { name: 'SCANNER', icon: '📡', command: 'scan',    discovered: false },
+    'decode-popup':  { name: 'DECODE',  icon: '🔓', command: 'decode',  discovered: false },
     'files-popup':   { name: 'FILES',   icon: '📂', command: 'files',   discovered: false },
     'calc-popup':    { name: 'CALC',    icon: '🔢', command: 'calc',    discovered: false },
     'notepad-popup': { name: 'NOTEPAD', icon: '📝', command: 'notepad', discovered: false },
@@ -1808,6 +1959,8 @@ const HintEngine = {
       hints.push('the access.log file mentions some codes...');
       hints.push('have you tried the PINCODE system?');
       hints.push('four digits. think about frequencies.');
+      hints.push('try "decode" to open the decryption module...');
+      hints.push('locked signals can be decrypted with DECODE.EXE...');
     }
     if(m===3){
       hints.push('there might be a signal beyond the normal band...');
@@ -2060,7 +2213,7 @@ function showHelp(){
   if(state.discoveredCommands.scanner){
     printLine('','');printLine('── SIGNALS ──','dim');
     printLine('  scan          — sweep for radio frequencies','dim');printLine('  tune [freq]   — lock onto a frequency','dim');printLine('  ping          — signal test','dim');printLine('  echoes        — view signal log','dim');
-    if(state.discoveredCommands.decode){printLine('  decode [key]  — decrypt a locked file','dim')}
+    if(state.discoveredCommands.decode){printLine('  decode        — open DECODE.EXE to decrypt locked signals','dim')}
   }
   // Milestone 2+: pincode
   if(m.includes('SIGNAL_DISCOVERY')){
@@ -2116,8 +2269,8 @@ scan:(a)=>{
     discoverCommandGroup('scanner');
   },
   tune:(a)=>{const f=a[0];if(f==='97.7'){tuneToFrequency(97.7)}else if(f==='108.0'||f==='108'){tuneToFrequency(108.0)}else if(f){printLine(`${f} MHz — noise floor only. Try 97.7 or 108.0.`,'dim')}else{printLine('Usage: tune [frequency]  (e.g. tune 97.7)','dim');printLine('Or use the SCANNER to find signals first.','ghost')}},
-  decode:(a)=>{const c=a.join(' ').toLowerCase().trim();if(!c){printLine('Usage: decode [key]  (use keys found from tuning)','dim');return}const m=CONFIG.tracks.find(t=>t.unlockCode&&t.unlockCode.toLowerCase()===c);if(m)unlockTrack(m.id);else if(c===CONFIG.secrets.masterCode.toLowerCase())COMMANDS.unlockAll();else{playSFX('glitch_error',0.4);printLine('INVALID KEY','error');setTimeout(()=>printLine('Hint: tune into the frequencies first to find keys.','ghost'),800)}},
-  signal:()=>unlockTrack('RC-005'),beneath:()=>unlockTrack('RC-006'),
+  decode:(a)=>{const c=a.join(' ').toLowerCase().trim();if(c===CONFIG.secrets.masterCode.toLowerCase()){COMMANDS.unlockAll();return}if(c){const sig=scannerState.lockedSignals.find(s=>s.code.toLowerCase()===c);if(sig){decodeOpenForSignal(sig.code);return}const m=CONFIG.tracks.find(t=>t.unlockCode&&t.unlockCode.toLowerCase()===c);if(m){printLine('Signal not locked yet. Use SCANNER.EXE to find and lock this frequency.','dim');return}}openDecode()},
+  signal:()=>decodeOpenForSignal('SIGNAL'),beneath:()=>decodeOpenForSignal('BENEATH'),
   redacted:()=>{
     playSFX('glitch_heavy',0.4);
     printLine('');
@@ -3707,7 +3860,7 @@ function attemptLockSignal() {
       printLine('');
       printLine('SIGNAL LOCKED: ' + signal.freq + ' MHz', 'warning');
       printLine('Encrypted data stream captured.', 'dim');
-      printLine('Decryption required to extract payload.', 'dim');
+      printLine('Open DECODE.EXE to decrypt. Type "decode".', 'dim');
       printLine(`Total signals locked: ${scannerState.lockedSignals.length}/${SIGNAL_FREQUENCIES.length}`, 'dim');
       printLine('');
 
@@ -3871,6 +4024,236 @@ document.addEventListener('mouseup', () => {
 
 
 
+
+// ═══ DECODE.EXE (Waveform Pattern Matcher) ═══
+
+const DECODE_PATTERNS={
+  SIGNAL:  [1,2,3,4,4,3,2,1,2,3,4,3],
+  BENEATH: [4,1,3,0,4,2,0,3,1,4,2,3],
+  VOID:    [0,4,1,3,0,4,2,1,4,0,3,2]
+}
+
+const decodeState={
+  activeSignal:null,
+  inputLevels:[],
+  targetPattern:[],
+  corruptionTimer:null,
+  corruptionPct:0,
+  solved:false,
+  BAR_COUNT:12,
+  MAX_LEVEL:4,
+  CORRUPTION_DURATION:45000
+}
+
+function openDecode(){
+  if(!state.progression.milestones.includes('SIGNAL_DISCOVERY')){
+    playSFX('glitch_error',0.4)
+    printLine('DECODE.EXE — CLEARANCE INSUFFICIENT','error')
+    setTimeout(()=>printLine('Signal analysis required first. Try "scan".','ghost'),600)
+    return
+  }
+  document.getElementById('decode-popup').classList.add('show')
+  WindowRegistry.discover('decode-popup')
+  printLine('Opening DECODE.EXE...','dim')
+  decodeShowList()
+}
+
+function closeDecode(){
+  document.getElementById('decode-popup').classList.remove('show')
+  decodeCleanup()
+}
+
+function decodeCleanup(){
+  if(decodeState.corruptionTimer){clearInterval(decodeState.corruptionTimer);decodeState.corruptionTimer=null}
+  decodeState.activeSignal=null
+  decodeState.solved=false
+  decodeState.corruptionPct=0
+}
+
+function decodeShowList(){
+  decodeCleanup()
+  document.getElementById('decode-list').style.display='block'
+  document.getElementById('decode-game').classList.remove('active')
+  decodeRenderSignals()
+}
+
+function decodeRenderSignals(){
+  const container=document.getElementById('decode-signals')
+  const emptyMsg=document.getElementById('decode-empty')
+  const available=scannerState.lockedSignals.filter(sig=>{
+    return CONFIG.tracks.find(t=>t.unlockCode===sig.code)
+  })
+  if(available.length===0){
+    container.innerHTML=''
+    emptyMsg.style.display='block'
+    return
+  }
+  emptyMsg.style.display='none'
+  container.innerHTML=available.map(sig=>{
+    const track=CONFIG.tracks.find(t=>t.unlockCode===sig.code)
+    const decoded=state.discovered.has(track.id)
+    const statusClass=decoded?'completed':''
+    const statusText=decoded
+      ?'<span style="color:var(--cyan);">DECRYPTED ✓</span>'
+      :'<span style="color:var(--amber);">ENCRYPTED</span>'
+    return `<div class="decode-signal-item ${statusClass}" onclick="${decoded?'':`decodeStartGame('${sig.code}')`}">
+      <div><div class="sig-name">${sig.name}</div><div class="sig-freq">${sig.freq} MHz @ AMP ${sig.amplitude}</div></div>
+      <div class="sig-status">${statusText}</div>
+    </div>`
+  }).join('')
+}
+
+function decodeStartGame(code){
+  const signal=SIGNAL_FREQUENCIES.find(s=>s.code===code)
+  if(!signal)return
+  const track=CONFIG.tracks.find(t=>t.unlockCode===code)
+  if(!track||state.discovered.has(track.id))return
+  playSFX('ui_click',0.4)
+  decodeState.activeSignal=signal
+  decodeState.targetPattern=(DECODE_PATTERNS[code]||DECODE_PATTERNS.SIGNAL).slice()
+  decodeState.inputLevels=new Array(decodeState.BAR_COUNT).fill(0)
+  decodeState.solved=false
+  decodeState.corruptionPct=0
+  document.getElementById('decode-list').style.display='none'
+  document.getElementById('decode-game').classList.add('active')
+  document.getElementById('decode-signal-label').textContent=`${signal.name} ${signal.freq} MHz`
+  document.getElementById('decode-match').textContent='0%'
+  document.getElementById('decode-match').style.color='var(--green)'
+  document.getElementById('decode-status').textContent='Align the waveform to decrypt the signal.'
+  document.getElementById('decode-status').style.color='var(--green-dim)'
+  decodeRenderBars()
+  decodeStartCorruption()
+}
+
+function decodeRenderBars(){
+  const container=document.getElementById('decode-waveform')
+  const barH=120
+  let html=''
+  for(let i=0;i<decodeState.BAR_COUNT;i++){
+    const targetH=(decodeState.targetPattern[i]/decodeState.MAX_LEVEL)*barH
+    const inputH=(decodeState.inputLevels[i]/decodeState.MAX_LEVEL)*barH
+    const matched=decodeState.inputLevels[i]===decodeState.targetPattern[i]
+    html+=`<div class="decode-bar-col" onclick="decodeClickBar(${i})">
+      <div class="decode-bar-target" style="height:${targetH}px"></div>
+      <div class="decode-bar-input ${matched?'matched':''}" style="height:${Math.max(2,inputH)}px" id="decode-bar-${i}"></div>
+    </div>`
+  }
+  container.innerHTML=html
+}
+
+function decodeClickBar(index){
+  if(decodeState.solved)return
+  playSFX('ui_click',0.2)
+  decodeState.inputLevels[index]=(decodeState.inputLevels[index]+1)%(decodeState.MAX_LEVEL+1)
+  const barH=120
+  const inputH=(decodeState.inputLevels[index]/decodeState.MAX_LEVEL)*barH
+  const matched=decodeState.inputLevels[index]===decodeState.targetPattern[index]
+  const barEl=document.getElementById(`decode-bar-${index}`)
+  if(barEl){
+    barEl.style.height=Math.max(2,inputH)+'px'
+    barEl.className='decode-bar-input'+(matched?' matched':'')
+  }
+  const matchCount=decodeState.inputLevels.filter((v,i)=>v===decodeState.targetPattern[i]).length
+  const matchPct=Math.round((matchCount/decodeState.BAR_COUNT)*100)
+  document.getElementById('decode-match').textContent=matchPct+'%'
+  if(matchPct<50){
+    document.getElementById('decode-status').textContent='Signal pattern divergent. Keep adjusting.'
+    document.getElementById('decode-status').style.color='var(--green-dim)'
+  }else if(matchPct<80){
+    document.getElementById('decode-status').textContent='Pattern converging... getting closer.'
+    document.getElementById('decode-status').style.color='var(--amber)'
+  }else if(matchPct<100){
+    document.getElementById('decode-status').textContent='Near match! Fine-tune remaining bars.'
+    document.getElementById('decode-status').style.color='var(--green)'
+  }
+  if(matchPct===100)decodeSuccess()
+}
+
+function decodeStartCorruption(){
+  const fill=document.getElementById('decode-corruption-fill')
+  fill.style.width='0%'
+  decodeState.corruptionPct=0
+  decodeState.corruptionTimer=setInterval(()=>{
+    if(decodeState.solved){clearInterval(decodeState.corruptionTimer);return}
+    decodeState.corruptionPct+=2
+    fill.style.width=Math.min(100,decodeState.corruptionPct)+'%'
+    if(decodeState.corruptionPct>=100){
+      decodeCorrupt()
+      decodeState.corruptionPct=0
+      fill.style.width='0%'
+    }
+  },900)
+}
+
+function decodeCorrupt(){
+  playSFX('glitch_error',0.3)
+  document.getElementById('decode-status').textContent='⚠ DATA CORRUPTION — pattern shifted!'
+  document.getElementById('decode-status').style.color='var(--red)'
+  const nonMatched=[]
+  for(let i=0;i<decodeState.BAR_COUNT;i++){
+    if(decodeState.inputLevels[i]!==decodeState.targetPattern[i])nonMatched.push(i)
+  }
+  const toScramble=nonMatched.sort(()=>Math.random()-0.5).slice(0,2)
+  toScramble.forEach(idx=>{
+    let newVal
+    do{newVal=Math.floor(Math.random()*(decodeState.MAX_LEVEL+1))}while(newVal===decodeState.targetPattern[idx])
+    decodeState.targetPattern[idx]=newVal
+  })
+  decodeRenderBars()
+  const matchCount=decodeState.inputLevels.filter((v,i)=>v===decodeState.targetPattern[i]).length
+  const matchPct=Math.round((matchCount/decodeState.BAR_COUNT)*100)
+  document.getElementById('decode-match').textContent=matchPct+'%'
+  setTimeout(()=>{
+    if(!decodeState.solved){
+      document.getElementById('decode-status').textContent='Pattern shifted. Re-align corrupted bars.'
+      document.getElementById('decode-status').style.color='var(--green-dim)'
+    }
+  },2000)
+}
+
+function decodeSuccess(){
+  decodeState.solved=true
+  if(decodeState.corruptionTimer){clearInterval(decodeState.corruptionTimer);decodeState.corruptionTimer=null}
+  playSFX('scanner_lock',0.6)
+  const popup=document.getElementById('decode-popup')
+  popup.classList.add('decode-success-flash')
+  setTimeout(()=>popup.classList.remove('decode-success-flash'),1000)
+  document.getElementById('decode-match').textContent='100%'
+  document.getElementById('decode-match').style.color='var(--cyan)'
+  document.getElementById('decode-status').textContent='█▓▒░ DECRYPTION COMPLETE ░▒▓█'
+  document.getElementById('decode-status').style.color='var(--cyan)'
+  document.getElementById('decode-corruption-fill').style.width='0%'
+  const track=CONFIG.tracks.find(t=>t.unlockCode===decodeState.activeSignal.code)
+  if(track){
+    setTimeout(()=>{
+      unlockTrack(track.id)
+      setTimeout(()=>decodeRenderSignals(),500)
+    },800)
+  }
+  setTimeout(()=>{
+    if(document.getElementById('decode-popup').classList.contains('show'))decodeShowList()
+  },3500)
+}
+
+function decodeOverride(){
+  const input=document.getElementById('decode-override-input')
+  const val=input.value.trim().toUpperCase()
+  input.value=''
+  if(val===CONFIG.secrets.masterCode){
+    playSFX('glitch_heavy',0.4)
+    COMMANDS.unlockAll()
+    closeDecode()
+  }else{
+    playSFX('glitch_error',0.3)
+    input.style.borderColor='var(--red)'
+    setTimeout(()=>{input.style.borderColor='var(--green-dark)'},1000)
+  }
+}
+
+function decodeOpenForSignal(code){
+  openDecode()
+  setTimeout(()=>decodeStartGame(code),100)
+}
 
 // ═══ GALLERY ═══
 const galleryImages = [
@@ -6064,7 +6447,7 @@ const FILE_SYSTEM=[
      t+='<span class="file-ghost">Hint: use SCANNER.EXE to tune and lock signals</span>\n';
      if(m.includes('DEEP_SCAN')){
        t+='\n<span class="file-dim">NOTE: All three frequencies correlate to encrypted audio payloads</span>\n';
-       t+='<span class="file-ghost">Use "decode [key]" to extract. Keys found via signal lock.</span>\n';
+       t+='<span class="file-ghost">Use DECODE.EXE to decrypt. Lock signals first via SCANNER.</span>\n';
      }
      return t;
    }},
@@ -6210,12 +6593,14 @@ function filesShowAudio(){
       html+=`<span class="file-date">320kbps</span>`;
       html+=`</div>`;
     }else{
-      html+=`<div class="file-row locked">`;
+      const isLocked=tk.unlockCode&&scannerState.lockedSignals.find(s=>s.code===tk.unlockCode)
+      const dblAction=isLocked?`ondblclick="decodeOpenForSignal('${tk.unlockCode}')" style="cursor:pointer"`:''
+      html+=`<div class="file-row locked" ${dblAction}>`;
       html+=`<span class="file-icon">🔒</span>`;
-      html+=`<span class="file-name">██████████.███</span>`;
+      html+=`<span class="file-name">${isLocked?'██████████.███ [DECODE]':'██████████.███'}</span>`;
       html+=`<span class="file-size">ENC</span>`;
       html+=`<span class="file-type">Encrypted</span>`;
-      html+=`<span class="file-date">locked</span>`;
+      html+=`<span class="file-date">${isLocked?'ready':'locked'}</span>`;
       html+=`</div>`;
     }
   });
