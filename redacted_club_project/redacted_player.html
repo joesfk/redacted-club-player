@@ -6118,7 +6118,7 @@ function filesRenderTree(){
   html+=`<div class="tree-item${filesCurrentFolder==='root'?' active':''}" onclick="filesNavigate('root')">📁 C:\\RCPLAYER</div>`;
   html+=`<div class="tree-sub">`;
   html+=`<div class="tree-item${filesCurrentFolder==='logs'?' active':''}" onclick="filesNavigate('logs')">📁 logs</div>`;
-  html+=`<div class="tree-item${filesCurrentFolder==='audio'?' active':''}" onclick="filesNavigate('audio')">📁 redacted_assets</div>`;
+  html+=`<div class="tree-item${filesCurrentFolder==='assets'||filesCurrentFolder==='audio'?' active':''}" onclick="filesNavigate('assets')">📁 redacted_assets</div>`;
   html+=`<div class="tree-sub">`;
   html+=`<div class="tree-item${filesCurrentFolder==='audio'?' active':''}" onclick="filesNavigate('audio')">📁 audio${enc>0?' 🔒':''}</div>`;
   html+=`</div>`;
@@ -6131,6 +6131,7 @@ function filesNavigate(folder){
   filesRenderTree();
   if(folder==='root')filesShowRoot();
   else if(folder==='logs')filesShowLogs();
+  else if(folder==='assets')filesShowAssets();
   else if(folder==='audio')filesShowAudio();
 }
 
@@ -6145,7 +6146,7 @@ function filesShowRoot(){
   html+=`<span class="file-type">Folder</span>`;
   html+=`<span class="file-date">██/██/██</span>`;
   html+=`</div>`;
-  html+=`<div class="file-row" ondblclick="filesNavigate('audio')" onclick="filesSelectRow(this)">`;
+  html+=`<div class="file-row" ondblclick="filesNavigate('assets')" onclick="filesSelectRow(this)">`;
   html+=`<span class="file-icon">📁</span>`;
   html+=`<span class="file-name">redacted_assets</span>`;
   html+=`<span class="file-size"></span>`;
@@ -6155,6 +6156,23 @@ function filesShowRoot(){
   list.innerHTML=html;
   document.getElementById('files-status-left').textContent='2 object(s)';
   document.getElementById('files-status-right').textContent='';
+}
+
+function filesShowAssets(){
+  const list=document.getElementById('files-list');
+  document.getElementById('files-addr-path').textContent='C:\\RCPLAYER\\redacted_assets\\';
+  const enc=CONFIG.tracks.filter(t=>t.locked&&!state.discovered.has(t.id)).length;
+  let html='';
+  html+=`<div class="file-row" ondblclick="filesNavigate('audio')" onclick="filesSelectRow(this)">`;
+  html+=`<span class="file-icon">📁</span>`;
+  html+=`<span class="file-name">audio${enc>0?' 🔒':''}</span>`;
+  html+=`<span class="file-size"></span>`;
+  html+=`<span class="file-type">Folder</span>`;
+  html+=`<span class="file-date">██/██/██</span>`;
+  html+=`</div>`;
+  list.innerHTML=html;
+  document.getElementById('files-status-left').textContent='1 object(s)';
+  document.getElementById('files-status-right').textContent=enc>0?`${enc} file(s) encrypted`:'';
 }
 
 function filesShowLogs(){
