@@ -836,6 +836,24 @@
     border:3px solid var(--red);
     box-shadow:0 0 50px rgba(255,65,65,0.8);
   }
+  #jesus-overlay{
+    position:fixed;
+    top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,0.95);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:99999;
+    animation:fadeIn 0.3s;
+  }
+  #jesus-overlay.show{display:flex;}
+  #jesus-overlay.fadeout{animation:fadeOut 0.5s;}
+  #jesus-overlay img{
+    max-width:90%;
+    max-height:90%;
+    border:3px solid var(--amber);
+    box-shadow:0 0 50px rgba(255,170,0,0.8);
+  }
   @keyframes fadeIn{
     from{opacity:0;}
     to{opacity:1;}
@@ -1715,6 +1733,9 @@
 <div id="jpark-overlay">
   <img src="./redacted_assets/images/GIFs/jurassic-park.gif" alt="Jurassic Park Error">
 </div>
+<div id="jesus-overlay">
+  <img src="./redacted_assets/images/GIFs/dancing-jesus.gif" alt="Dancing Jesus">
+</div>
 
 <script>
 const CONFIG={
@@ -2305,6 +2326,16 @@ scan:(a)=>{
     },10000);
   },
   unlockAll:()=>{playSFX('glitch_heavy',0.4);printLine('');printLine('██████████████████████████████████████','error');setTimeout(()=>{printLine('  MASTER KEY ACCEPTED','error');printLine('  ALL FILES DECRYPTED','error');printLine('██████████████████████████████████████','error');printLine('');CONFIG.tracks.forEach(t=>{if(t.locked&&!state.discovered.has(t.id))state.discovered.add(t.id)});addSecret('MASTER_KEY');revealHeader();updateSidebarStatus();state.progression.tracksUnlocked=state.discovered.size;checkProgression()},400)},
+  homer:()=>{
+    playSFX('glitch_heavy',0.4);
+    printLine('');printLine('D\'OH!','warning');
+    const overlay=document.getElementById('jesus-overlay');
+    overlay.classList.add('show');
+    setTimeout(()=>{
+      overlay.classList.add('fadeout');
+      setTimeout(()=>{overlay.classList.remove('show','fadeout')},500);
+    },8000);
+  },
   source:()=>{printLine('');printLine('// you found this','ghost');printLine('// the frequencies hold the keys','ghost');printLine('// 97.7 and 108.0','ghost');printLine('// OMNISCIENT is the word that opens ██████████','error');printLine('');addSecret('SOURCE')},
   whoami:()=>{printLine('');printSlow('QUERY: IDENTITY','dim',40);setTimeout(()=>{printLine('...','dim');setTimeout(()=>{printLine('UNAUTHORIZED','error')},600)},400)},
   secrets:()=>{if(CONFIG.secrets.codesFound.length===0)printLine('Nothing found yet.','dim');else{printLine(`[${CONFIG.secrets.codesFound.length}/${CONFIG.secrets.totalCodes}] discoveries:` ,'dim');CONFIG.secrets.codesFound.forEach(s=>printLine(`  ■ ${s}`,'ghost'))}printLine('')},
