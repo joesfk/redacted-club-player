@@ -18,3 +18,9 @@ nul
 
 # Claude Code local settings
 .claude/
+
+# VS Code workspace (machine-specific)
+.vscode/
+
+# Scratch files
+_ul

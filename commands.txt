@@ -1,0 +1,97 @@
+RCPlayer — Complete Command & Input Reference
+===============================================
+
+TERMINAL COMMANDS
+-----------------
+help              Show help text
+list              List available tracks
+status            System info
+clear / cls       Clear screen
+files / ls        List directory contents
+read [file]       Open a file (manifest.log, system.log, frequencies.log)
+cat [file]        Alias for read
+search [term]     Search through files
+player / music    Open player popup
+play [n]          Play track by number
+pause             Pause playback
+stop              Stop playback
+next              Next track
+prev              Previous track
+vol [0-100]       Set volume
+format            Toggle MP3/WAV
+scan              Open scanner popup
+tune [freq]       Lock onto a frequency (97.7, 108.0)
+decode [key]      Decrypt a locked file (SIGNAL, BENEATH, VOID, etc.)
+ping              Signal test
+signal            Shortcut to unlock RC-005
+beneath           Shortcut to unlock RC-006
+redacted          Easter egg (Jurassic Park)
+pincode / pin     Open PIN pad popup
+gallery / photos  Open gallery popup
+snake             Snake game
+tron              Tron lightcycle game
+pool              8-ball pool game
+calc              Calculator
+notepad           Notepad
+matrix            Matrix rain
+donut             Spinning donut
+synth             Keyboard synthesizer
+drums             Drum machine
+sfx [on/off/vol/test]  Sound effects controls
+whoami            Identity query
+source            View hidden notes
+secrets           Show your discoveries
+backup            Export save state to JSON
+restore           Import save state from JSON
+resetdata [confirm]  Erase all saved progress
+
+NON-TERMINAL INPUTS
+-------------------
+PIN codes:        1337, 9775, 1984, 0420 (entered on PIN pad popup)
+Konami code:      up up down down left right left right B A (keyboard anywhere)
+Scanner knobs:    Frequency/amplitude dials (scanner popup)
+PING button:      Scanner popup
+LOCK button:      Scanner popup
+Ghost text click: Clickable ghost text in boot terminal output
+Sidebar icons:    Right panel taskbar
+FAB button:       Bottom-right floating button (opens player)
+
+READABLE FILES
+--------------
+manifest.log      Awards secret: CAT_MANIFEST
+system.log        Awards secret: CAT_SYSLOG
+frequencies.log   Awards secret: CAT_FREQ
+
+SCANNER SIGNALS
+---------------
+SIGNAL            97.7 MHz @ amplitude 70 (tolerance: +/-1.5 MHz, +/-12 amp)
+BENEATH           108.0 MHz @ amplitude 85 (tolerance: +/-1.5 MHz, +/-12 amp)
+VOID              115.3 MHz @ amplitude 45 (tolerance: +/-2.0 MHz, +/-15 amp)
+
+UNLOCK CODES (for decode command)
+---------------------------------
+SIGNAL
+BENEATH
+REDACTED
+VOID
+OMNISCIENT (master code — unlocks all)
+
+PIN CODES
+---------
+1337
+9775
+1984
+0420
+
+ALL 10 SECRETS
+--------------
+1. LS              (type "files" or "ls")
+2. CAT_MANIFEST    (read manifest.log)
+3. CAT_SYSLOG     (read system.log)
+4. CAT_FREQ       (read frequencies.log)
+5. GHOST_CLICK    (click ghost text after boot)
+6. UNLOCK_RC-005  (decode SIGNAL)
+7. UNLOCK_RC-006  (decode BENEATH)
+8. UNLOCK_RC-007  (decode VOID)
+9. KONAMI         (enter Konami code)
+10. PIN_*         (enter correct PIN codes)
