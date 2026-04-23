@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RC ADMIN — Content Manager</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323:wght@400&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --green:#00ff41;--green-dim:#00aa2a;--green-dark:#00752b;--green-ghost:rgba(0,255,65,0.08);
+    --amber:#ffaa00;--red:#ff0040;--cyan:#00aaff;--bg:#0d0d0d;
+  }
+  body{background:var(--bg);color:var(--green);font-family:'Share Tech Mono',monospace;min-height:100vh;padding:24px;}
+  h1{font-family:'VT323',monospace;font-size:36px;letter-spacing:6px;text-shadow:0 0 12px var(--green);margin-bottom:4px;}
+  .subtitle{color:var(--green-dim);font-size:13px;letter-spacing:3px;margin-bottom:32px;}
+
+  #setup{border:1px solid var(--green-dark);padding:24px;margin-bottom:28px;background:var(--green-ghost);}
+  #setup p{color:var(--green-dim);font-size:13px;margin-bottom:16px;line-height:1.7;}
+  button{
+    background:rgba(0,255,65,0.1);border:1px solid var(--green);color:var(--green);
+    font-family:'Share Tech Mono',monospace;font-size:14px;padding:10px 20px;
+    cursor:pointer;letter-spacing:2px;transition:background 0.1s;
+  }
+  button:hover{background:rgba(0,255,65,0.2);}
+  button:disabled{opacity:0.35;cursor:not-allowed;}
+  #folder-status{margin-top:12px;font-size:13px;color:var(--amber);}
+  #folder-status.ok{color:var(--green);}
+
+  #drop-area{display:none;}
+  #drop-area.active{display:block;}
+
+  .zones{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:28px;}
+  .zone{
+    flex:1;min-width:200px;border:2px dashed var(--green-dark);padding:32px 20px;
+    text-align:center;cursor:copy;transition:border-color 0.1s,background 0.1s;
+    display:flex;flex-direction:column;align-items:center;gap:10px;
+  }
+  .zone.drag-over{border-color:var(--green);background:rgba(0,255,65,0.08);box-shadow:0 0 16px rgba(0,255,65,0.2);}
+  .zone-icon{font-size:40px;}
+  .zone-label{font-size:20px;letter-spacing:4px;color:var(--green);}
+  .zone-sub{font-size:11px;color:var(--green-dark);letter-spacing:1px;}
+
+  #log{
+    border:1px solid var(--green-dark);padding:16px;
+    font-size:13px;line-height:1.9;min-height:200px;max-height:400px;overflow-y:auto;
+    background:#000;
+  }
+  .log-ok{color:var(--green);}
+  .log-info{color:var(--green-dim);}
+  .log-warn{color:var(--amber);}
+  .log-err{color:var(--red);}
+
+  #actions{margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;}
+  a.btn{
+    background:rgba(0,255,65,0.1);border:1px solid var(--green);color:var(--green);
+    font-family:'Share Tech Mono',monospace;font-size:13px;padding:8px 16px;
+    text-decoration:none;letter-spacing:2px;
+  }
+  a.btn:hover{background:rgba(0,255,65,0.2);}
+  .sep{border-top:1px solid var(--green-dark);margin:24px 0;}
+</style>
+</head>
+<body>
+
+<h1>// RC ADMIN //</h1>
+<p class="subtitle">CONTENT MANAGER — REDACTED CLUB PLAYER</p>
+
+<div id="setup">
+  <p>
+    This tool writes files directly into the project and patches <code>redacted_player.html</code>.<br>
+    You need to select the <strong>redacted-club-player</strong> root folder once — Chrome will remember it.<br>
+    After importing, commit and push to deploy to GitHub Pages.
+  </p>
+  <button id="pick-folder">SELECT PROJECT FOLDER</button>
+  <div id="folder-status">No folder selected.</div>
+</div>
+
+<div id="drop-area">
+  <div class="zones">
+    <div class="zone" id="zone-audio" data-type="audio">
+      <div class="zone-icon">♫</div>
+      <div class="zone-label">AUDIO</div>
+      <div class="zone-sub">MP3 · WAV · OGG · FLAC</div>
+    </div>
+    <div class="zone" id="zone-image" data-type="image">
+      <div class="zone-icon">▣</div>
+      <div class="zone-label">IMAGES</div>
+      <div class="zone-sub">JPG · PNG · GIF · WEBP</div>
+    </div>
+    <div class="zone" id="zone-video" data-type="video">
+      <div class="zone-icon">▶</div>
+      <div class="zone-label">VIDEO</div>
+      <div class="zone-sub">MP4 · WEBM · MOV</div>
+    </div>
+  </div>
+
+  <div id="log"><span class="log-info">// Ready. Drop files onto a zone above.</span></div>
+
+  <div id="actions">
+    <a class="btn" id="open-player" href="#" target="_blank">OPEN PLAYER</a>
+    <button id="clear-log">CLEAR LOG</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+const AUDIO_EXT = ['mp3','wav','ogg','flac','m4a','aac'];
+const IMAGE_EXT = ['jpg','jpeg','png','gif','webp','bmp'];
+const VIDEO_EXT = ['mp4','webm','mov','avi','mkv'];
+
+const PLAYER_PATH = ['redacted_club_project','redacted_player.html'];
+const AUDIO_PATH  = ['redacted_club_project','redacted_assets','audio'];
+const IMAGE_PATH  = ['redacted_club_project','redacted_assets','gallery'];
+const VIDEO_PATHS = {
+  backgrounds: ['redacted_club_project','redacted_assets','video','backgrounds'],
+  easter_eggs:  ['redacted_club_project','redacted_assets','video','easter_eggs'],
+};
+
+let rootHandle = null;
+
+function ext(name){ return name.split('.').pop().toLowerCase(); }
+function typeFor(file){
+  const e = ext(file.name);
+  if(AUDIO_EXT.includes(e)) return 'audio';
+  if(IMAGE_EXT.includes(e)) return 'image';
+  if(VIDEO_EXT.includes(e)) return 'video';
+  return null;
+}
+
+// ── Logging ──────────────────────────────────────────────────────
+const logEl = document.getElementById('log');
+function log(msg, cls='log-info'){
+  const line = document.createElement('div');
+  line.className = cls;
+  line.textContent = msg;
+  logEl.appendChild(line);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+document.getElementById('clear-log').onclick = () => { logEl.innerHTML = ''; };
+
+// ── Folder picker ─────────────────────────────────────────────────
+document.getElementById('pick-folder').onclick = async () => {
+  try {
+    rootHandle = await window.showDirectoryPicker({ mode:'readwrite', id:'rc-player-root' });
+    const statusEl = document.getElementById('folder-status');
+    statusEl.textContent = `✓ Selected: ${rootHandle.name}`;
+    statusEl.className = 'ok';
+    document.getElementById('drop-area').classList.add('active');
+    document.getElementById('open-player').href =
+      `${location.href.replace('admin.html','redacted_club_project/redacted_player.html')}`;
+    log(`// Folder set: ${rootHandle.name}`, 'log-ok');
+  } catch(e) {
+    if(e.name !== 'AbortError') log(`ERR: ${e.message}`, 'log-err');
+  }
+};
+
+// ── Get nested dir handle (create if missing) ─────────────────────
+async function getDirHandle(pathParts){
+  let h = rootHandle;
+  for(const part of pathParts){
+    h = await h.getDirectoryHandle(part, { create:true });
+  }
+  return h;
+}
+
+// ── Write a file to a directory handle ───────────────────────────
+async function writeFile(dirHandle, filename, file){
+  const fh = await dirHandle.getFileHandle(filename, { create:true });
+  const w  = await fh.createWritable();
+  await w.write(file);
+  await w.close();
+}
+
+// ── Read player HTML ──────────────────────────────────────────────
+async function readPlayerHTML(){
+  let h = rootHandle;
+  for(const p of PLAYER_PATH.slice(0,-1)) h = await h.getDirectoryHandle(p);
+  const fh = await h.getFileHandle(PLAYER_PATH[PLAYER_PATH.length-1]);
+  const f  = await fh.getFile();
+  return f.text();
+}
+
+async function writePlayerHTML(html){
+  let h = rootHandle;
+  for(const p of PLAYER_PATH.slice(0,-1)) h = await h.getDirectoryHandle(p);
+  const fh = await h.getFileHandle(PLAYER_PATH[PLAYER_PATH.length-1], { create:false });
+  const w  = await fh.createWritable();
+  await w.write(html);
+  await w.close();
+}
+
+// ── Patch CONFIG.tracks in HTML ───────────────────────────────────
+function patchTracks(html, entry){
+  // Find last track entry before the closing ],
+  const marker = `secrets:{codesFound`;
+  const idx = html.indexOf(marker);
+  if(idx === -1) return null;
+  // Find the ], that closes tracks array — search backwards from marker
+  const tracksClose = html.lastIndexOf('],', idx);
+  if(tracksClose === -1) return null;
+  const insertAt = tracksClose;
+  const line = `\n    ${entry},`;
+  return html.slice(0, insertAt) + line + html.slice(insertAt);
+}
+
+// ── Patch galleryImages in HTML ───────────────────────────────────
+function patchGallery(html, entry){
+  // Find the closing ]; of galleryImages array
+  const arrayStart = html.indexOf('const galleryImages = [');
+  if(arrayStart === -1) return null;
+  const arrayClose = html.indexOf('\n];', arrayStart);
+  if(arrayClose === -1) return null;
+  const line = `\n  ${entry},`;
+  return html.slice(0, arrayClose) + line + html.slice(arrayClose);
+}
+
+// ── Count existing tracks/images to generate IDs ─────────────────
+function countTracks(html){
+  return (html.match(/id:'RC-\d+'/g) || []).length;
+}
+function countImages(html){
+  return (html.match(/id:\s*'img_\d+'/g) || []).length;
+}
+
+// ── Import handlers ───────────────────────────────────────────────
+async function importAudio(file){
+  log(`  Copying ${file.name} → audio/...`);
+  const dir = await getDirHandle(AUDIO_PATH);
+  await writeFile(dir, file.name, file);
+  log(`  ✓ File saved.`, 'log-ok');
+
+  log(`  Patching redacted_player.html...`);
+  let html = await readPlayerHTML();
+  const n = countTracks(html) + 1;
+  const id = 'RC-' + String(n).padStart(3,'0');
+  const title = file.name.replace(/\.[^.]+$/,'').toUpperCase();
+  const baseName = file.name.replace(/\.[^.]+$/,'');
+  const e = ext(file.name);
+  const mp3File = e === 'mp3' ? file.name : `${baseName}.mp3`;
+  const wavFile = e === 'wav' ? file.name : `${baseName}.wav`;
+
+  const entry = `{id:'${id}',title:'${title}',file_mp3:'${mp3File}',file_wav:'${wavFile}',visible:true,locked:false}`;
+  const patched = patchTracks(html, entry);
+  if(!patched){ log(`  ERR: Could not patch tracks — check HTML structure.`,'log-err'); return; }
+  await writePlayerHTML(patched);
+  log(`  ✓ Track added: ${id} — ${title}`, 'log-ok');
+  if(e !== 'mp3') log(`  WARN: Drop the MP3 version too (or convert ${file.name} with ffmpeg).`, 'log-warn');
+  log(`  → Commit & push to go live.`, 'log-info');
+}
+
+async function importImage(file){
+  log(`  Copying ${file.name} → gallery/...`);
+  const dir = await getDirHandle(IMAGE_PATH);
+  await writeFile(dir, file.name, file);
+  log(`  ✓ File saved.`, 'log-ok');
+
+  log(`  Patching redacted_player.html...`);
+  let html = await readPlayerHTML();
+  const n = countImages(html) + 1;
+  const id = 'img_' + String(n).padStart(2,'0');
+  const title = file.name.replace(/\.[^.]+$/,'').toUpperCase().replace(/[_-]/g,' ');
+  const entry = `{\n    id: '${id}',\n    title: '${title}',\n    description: '',\n    unlockCode: null,\n    url: './redacted_assets/gallery/${file.name}'\n  }`;
+  const patched = patchGallery(html, entry);
+  if(!patched){ log(`  ERR: Could not patch gallery — check HTML structure.`,'log-err'); return; }
+  await writePlayerHTML(patched);
+  log(`  ✓ Image added: ${id} — ${title}`, 'log-ok');
+  log(`  → Commit & push to go live.`, 'log-info');
+}
+
+async function importVideo(file, subdir='backgrounds'){
+  const pathParts = VIDEO_PATHS[subdir] || VIDEO_PATHS.backgrounds;
+  log(`  Copying ${file.name} → video/${subdir}/...`);
+  const dir = await getDirHandle(pathParts);
+  await writeFile(dir, file.name, file);
+  log(`  ✓ File saved to video/${subdir}/${file.name}`, 'log-ok');
+  log(`  Note: wire it into the player manually (video popup or background).`, 'log-info');
+  log(`  → Commit & push to go live.`, 'log-info');
+}
+
+// ── Drag & drop ───────────────────────────────────────────────────
+const zones = document.querySelectorAll('.zone');
+let activeZone = null;
+let dragDepth = 0;
+
+document.addEventListener('dragenter', e => { e.preventDefault(); dragDepth++; });
+document.addEventListener('dragleave', e => { dragDepth--; if(dragDepth<=0){dragDepth=0;} });
+document.addEventListener('dragover',  e => e.preventDefault());
+document.addEventListener('drop', async e => {
+  e.preventDefault();
+  dragDepth = 0;
+  if(!rootHandle){ log('ERR: No folder selected.','log-err'); clearZones(); return; }
+  if(!activeZone){ clearZones(); return; }
+
+  const zoneType = activeZone.dataset.type;
+  const files = Array.from(e.dataTransfer.files).filter(f => typeFor(f) === zoneType);
+  clearZones();
+
+  if(!files.length){
+    log(`ERR: No valid ${zoneType.toUpperCase()} files dropped.`, 'log-err');
+    return;
+  }
+
+  for(const file of files){
+    log(`\n// IMPORT: ${file.name}`, 'log-ok');
+    try {
+      if(zoneType==='audio') await importAudio(file);
+      else if(zoneType==='image') await importImage(file);
+      else if(zoneType==='video') await importVideo(file);
+    } catch(err) {
+      log(`  ERR: ${err.message}`, 'log-err');
+    }
+  }
+});
+
+zones.forEach(z => {
+  z.addEventListener('dragenter', e => { e.stopPropagation(); activeZone = z; z.classList.add('drag-over'); });
+  z.addEventListener('dragleave', e => { e.stopPropagation(); if(activeZone===z){ activeZone=null; z.classList.remove('drag-over'); } });
+});
+function clearZones(){ zones.forEach(z=>z.classList.remove('drag-over')); activeZone=null; }
+</script>
+</body>
+</html>

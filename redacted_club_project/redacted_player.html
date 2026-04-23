@@ -1173,34 +1173,6 @@
     cursor:pointer;border:none;box-shadow:0 0 4px rgba(0,255,65,0.6);
   }
 
-  /* ═══ IMPORT OVERLAY ═══ */
-  #import-overlay{
-    display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:20000;
-    background:rgba(0,0,0,0.93);flex-direction:column;align-items:center;
-    justify-content:center;gap:32px;
-    outline:3px solid var(--green);outline-offset:-3px;
-    font-family:'Share Tech Mono',monospace;
-  }
-  #import-overlay.active{display:flex;}
-  #import-overlay-title{
-    color:var(--green);font-size:22px;letter-spacing:4px;
-    text-shadow:0 0 12px var(--green);
-  }
-  #import-zones{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;}
-  .import-zone{
-    border:2px dashed var(--green-dark);padding:36px 28px;text-align:center;
-    min-width:160px;cursor:copy;transition:border-color 0.1s,background 0.1s;
-    display:flex;flex-direction:column;align-items:center;gap:10px;
-  }
-  .import-zone.drag-over{
-    border-color:var(--green);background:rgba(0,255,65,0.1);
-    box-shadow:0 0 20px rgba(0,255,65,0.3);
-  }
-  .import-zone-icon{font-size:36px;line-height:1;}
-  .import-zone-label{color:var(--green);font-size:18px;letter-spacing:3px;}
-  .import-zone-types{color:var(--green-dark);font-size:11px;letter-spacing:1px;}
-  #import-hint{color:var(--green-dark);font-size:12px;letter-spacing:2px;}
-
   /* ═══ VIDEO.EXE ═══ */
   #video-popup{
     min-width:480px;max-width:700px;background:#000;
@@ -1731,38 +1703,6 @@
   </div>
 </div>
 
-<!-- ═══ IMPORT OVERLAY ═══ -->
-<div id="import-overlay">
-  <div id="import-overlay-title">// DROP FILES TO IMPORT //</div>
-  <div id="import-zones">
-    <div class="import-zone" id="zone-audio" data-type="audio">
-      <div class="import-zone-icon">♫</div>
-      <div class="import-zone-label">AUDIO</div>
-      <div class="import-zone-types">MP3 · WAV · OGG · FLAC</div>
-    </div>
-    <div class="import-zone" id="zone-image" data-type="image">
-      <div class="import-zone-icon">▣</div>
-      <div class="import-zone-label">IMAGES</div>
-      <div class="import-zone-types">JPG · PNG · GIF · WEBP</div>
-    </div>
-    <div class="import-zone" id="zone-video" data-type="video">
-      <div class="import-zone-icon">▶</div>
-      <div class="import-zone-label">VIDEO</div>
-      <div class="import-zone-types">MP4 · WEBM · MOV</div>
-    </div>
-  </div>
-  <div id="import-hint">hover over a zone then release · drag off window to cancel</div>
-</div>
-
-<!-- ═══ VIDEO.EXE ═══ -->
-<div id="video-popup">
-  <div class="popup-titlebar">
-    <span>▶ VIDEO.EXE</span>
-    <span class="popup-close" onclick="document.getElementById('video-popup').classList.remove('show');document.getElementById('video-player').pause()">✕</span>
-  </div>
-  <video id="video-player" controls></video>
-  <div id="video-track-list"></div>
-</div>
 
 <!-- ═══ GALLERY.EXE ═══ -->
 <div id="gallery-popup">
@@ -1967,7 +1907,6 @@ const WindowRegistry = {
     'synth-popup':   { name: 'SYNTH',   icon: '🎹', command: 'synth',   discovered: false },
     'drums-popup':   { name: 'DRUMS',   icon: '🥁', command: 'drums',   discovered: false },
     'pool-popup':    { name: 'POOL',    icon: '🎱', command: 'pool',    discovered: false },
-    'video-popup':   { name: 'VIDEO',   icon: '▶',  command: 'video',   discovered: false },
   },
 
   discover(windowId) {
@@ -6796,136 +6735,6 @@ document.addEventListener('mouseup', function() {
 
 
 
-// ═══ DRAG & DROP IMPORT ═══
-(function() {
-  const overlay = document.getElementById('import-overlay');
-  const zones = document.querySelectorAll('.import-zone');
-  const AUDIO_EXT = ['mp3','wav','ogg','flac','m4a','aac'];
-  const IMAGE_EXT = ['jpg','jpeg','png','gif','webp','bmp'];
-  const VIDEO_EXT = ['mp4','webm','mov','avi','mkv'];
-  let dragDepth = 0;
-  let activeZone = null;
-  const importedVideos = [];
-
-  function ext(name) { return name.split('.').pop().toLowerCase(); }
-  function typeFor(file) {
-    const e = ext(file.name);
-    if (AUDIO_EXT.includes(e)) return 'audio';
-    if (IMAGE_EXT.includes(e)) return 'image';
-    if (VIDEO_EXT.includes(e)) return 'video';
-    return null;
-  }
-
-  document.addEventListener('dragenter', (e) => {
-    e.preventDefault();
-    dragDepth++;
-    overlay.classList.add('active');
-  });
-  document.addEventListener('dragleave', (e) => {
-    dragDepth--;
-    if (dragDepth <= 0) { dragDepth = 0; overlay.classList.remove('active'); clearZones(); }
-  });
-  document.addEventListener('dragover', (e) => { e.preventDefault(); });
-  document.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dragDepth = 0;
-    overlay.classList.remove('active');
-    if (activeZone) {
-      const zoneType = activeZone.dataset.type;
-      const files = Array.from(e.dataTransfer.files).filter(f => typeFor(f) === zoneType);
-      if (files.length) processFiles(zoneType, files);
-      else printLine(`ERR: No valid ${zoneType.toUpperCase()} files in drop`, 'error');
-    }
-    clearZones();
-  });
-
-  zones.forEach(z => {
-    z.addEventListener('dragenter', (e) => { e.stopPropagation(); activeZone = z; z.classList.add('drag-over'); });
-    z.addEventListener('dragleave', (e) => { e.stopPropagation(); if (activeZone === z) { activeZone = null; z.classList.remove('drag-over'); } });
-  });
-
-  function clearZones() { zones.forEach(z => z.classList.remove('drag-over')); activeZone = null; }
-
-  function processFiles(type, files) {
-    files.forEach(file => {
-      const url = URL.createObjectURL(file);
-      if (type === 'audio') importAudio(file, url);
-      else if (type === 'image') importImage(file, url);
-      else if (type === 'video') importVideo(file, url);
-    });
-  }
-
-  function importAudio(file, url) {
-    const nextNum = CONFIG.tracks.length + 1;
-    const id = 'RC-' + String(nextNum).padStart(3, '0');
-    const title = file.name.replace(/\.[^.]+$/, '').toUpperCase();
-    CONFIG.tracks.push({ id, title, file_mp3: file.name, file_wav: file.name, _blobUrl: url, visible: true, locked: false });
-    renderPlayerTracks();
-    printLine(`✓ IMPORTED AUDIO: ${title} → ${id}`, 'success');
-    printLine(`  Config: {id:'${id}',title:'${title}',file_mp3:'${file.name}',file_wav:'${file.name}',visible:true,locked:false}`, 'dim');
-    const popup = document.getElementById('player-popup');
-    if (!popup.classList.contains('show')) { popup.classList.add('show'); WindowRegistry.discover('player'); }
-  }
-
-  function importImage(file, url) {
-    const id = 'img_' + String(galleryImages.length + 1).padStart(2, '0');
-    const title = file.name.replace(/\.[^.]+$/, '').toUpperCase().replace(/[_-]/g, ' ');
-    galleryImages.push({ id, title, description: 'Imported', unlockCode: null, url, _imported: true });
-    renderGallery();
-    printLine(`✓ IMPORTED IMAGE: ${title}`, 'success');
-    printLine(`  Drop file into: redacted_assets/gallery/${file.name}`, 'dim');
-    const popup = document.getElementById('gallery-popup');
-    if (!popup.classList.contains('show')) { popup.classList.add('show'); }
-  }
-
-  function importVideo(file, url) {
-    const title = file.name.replace(/\.[^.]+$/, '').toUpperCase().replace(/[_-]/g, ' ');
-    importedVideos.push({ title, url, name: file.name });
-    renderVideoList();
-    playVideoByIndex(importedVideos.length - 1);
-    printLine(`✓ IMPORTED VIDEO: ${title}`, 'success');
-    printLine(`  Drop file into: redacted_assets/video/`, 'dim');
-  }
-
-  function renderVideoList() {
-    const list = document.getElementById('video-track-list');
-    if (!list) return;
-    list.innerHTML = '';
-    importedVideos.forEach((v, i) => {
-      const el = document.createElement('div');
-      el.className = 'video-entry';
-      el.textContent = `▶ ${v.title}`;
-      el.onclick = () => playVideoByIndex(i);
-      list.appendChild(el);
-    });
-  }
-
-  function playVideoByIndex(i) {
-    const v = importedVideos[i];
-    if (!v) return;
-    const player = document.getElementById('video-player');
-    const popup = document.getElementById('video-popup');
-    player.src = v.url;
-    player.play();
-    popup.classList.add('show');
-    document.querySelectorAll('.video-entry').forEach((el, idx) => el.classList.toggle('active', idx === i));
-    WindowRegistry.discover('video');
-  }
-
-  // Override playTrackByIndex to support blob URLs
-  const _origPlay = window.playTrackByIndex;
-  window.playTrackByIndex = function(i) {
-    const t = CONFIG.tracks[i];
-    if (t && t._blobUrl) {
-      if (t.locked && !state.discovered.has(t.id)) { playSFX('glitch_error',0.4); printLine('ACCESS DENIED','error'); return; }
-      state.currentTrack = i;
-      audio.src = t._blobUrl;
-      audio.play().then(() => { state.isPlaying = true; updatePlayerUI(); printLine(`▶ ${t.id} :: ${t.title}`, 'dim'); }).catch(() => printLine('ERR: playback failed','error'));
-    } else {
-      _origPlay(i);
-    }
-  };
-})();
 
 // Notepad focus handling
 const notepadDiv = document.getElementById('notepad-textarea');
