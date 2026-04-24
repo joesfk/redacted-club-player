@@ -1173,6 +1173,88 @@
     cursor:pointer;border:none;box-shadow:0 0 4px rgba(0,255,65,0.6);
   }
 
+  /* ═══ MANUAL.EXE ═══ */
+  #manual-popup{
+    width:620px;max-width:96vw;background:#0d0a04;
+    border:2px solid #6b5530;position:fixed;top:40px;left:50%;
+    transform:translateX(-50%);z-index:9997;display:none;
+    box-shadow:0 8px 40px rgba(0,0,0,0.9),inset 0 0 60px rgba(0,0,0,0.3);
+  }
+  #manual-popup.show{display:block;}
+  #manual-popup .popup-titlebar{background:#1a1206;border-bottom:1px solid #6b5530;color:#c8a96e;}
+  #manual-book{
+    background:#f0e2b6;color:#1a0f00;
+    font-family:Georgia,'Times New Roman',serif;
+    padding:36px 40px 24px;min-height:520px;position:relative;
+    background-image:
+      radial-gradient(ellipse at 20% 80%, rgba(180,140,80,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(160,120,60,0.1) 0%, transparent 50%),
+      repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.03) 28px, rgba(0,0,0,0.03) 29px);
+    border-left:4px solid #b8943a;
+  }
+  #manual-book::before{
+    content:'';position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;
+    background:radial-gradient(ellipse at 30% 60%, rgba(120,80,20,0.08) 30%, transparent 70%);
+  }
+  .manual-page{display:none;animation:pageIn 0.2s ease;}
+  .manual-page.active{display:block;}
+  @keyframes pageIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+  .manual-cover{text-align:center;padding:20px 0;}
+  .manual-cover-title{font-size:28px;font-weight:bold;letter-spacing:4px;color:#1a0f00;margin-bottom:4px;}
+  .manual-cover-sub{font-size:13px;letter-spacing:6px;color:#5a3e20;margin-bottom:28px;text-transform:uppercase;}
+  .manual-cover-art{
+    font-family:'Share Tech Mono',monospace;font-size:9px;line-height:1.3;
+    color:#5a3e20;margin:0 auto 24px;display:inline-block;text-align:left;
+  }
+  .manual-cover-meta{font-size:11px;color:#8a6840;letter-spacing:2px;margin-top:24px;border-top:1px solid #b8943a;padding-top:16px;}
+  .manual-h1{font-size:20px;font-weight:bold;letter-spacing:2px;color:#1a0f00;border-bottom:2px solid #b8943a;padding-bottom:6px;margin-bottom:16px;text-transform:uppercase;}
+  .manual-h2{font-size:14px;font-weight:bold;letter-spacing:2px;color:#3a2010;margin:16px 0 8px;text-transform:uppercase;}
+  .manual-p{font-size:13px;line-height:1.8;color:#2a1a08;margin-bottom:12px;}
+  .manual-note{
+    font-size:11px;font-style:italic;color:#6a4a20;border-left:3px solid #b8943a;
+    padding:6px 12px;margin:12px 0;background:rgba(180,140,60,0.08);
+  }
+  .manual-cmd{
+    font-family:'VT323',monospace;font-size:16px;color:#1a5f1a;
+    background:rgba(0,80,0,0.08);padding:1px 6px;border:1px solid rgba(0,80,0,0.2);
+  }
+  .manual-toc-row{display:flex;justify-content:space-between;align-items:flex-end;margin:6px 0;font-size:13px;}
+  .manual-toc-dots{flex:1;border-bottom:1px dotted #b8943a;margin:0 8px 3px;}
+  .manual-toc-page{color:#8a6840;font-size:12px;}
+  .manual-redacted{
+    background:#1a0f00;color:#1a0f00;display:inline;
+    user-select:none;border-radius:2px;padding:0 3px;
+  }
+  .manual-stamp{
+    position:absolute;top:40px;right:30px;
+    font-family:'VT323',monospace;font-size:42px;color:rgba(180,30,30,0.35);
+    border:4px solid rgba(180,30,30,0.3);padding:4px 12px;
+    transform:rotate(-12deg);letter-spacing:4px;pointer-events:none;
+  }
+  .manual-pagenum{
+    position:absolute;bottom:8px;width:100%;text-align:center;
+    font-size:11px;color:#8a6840;letter-spacing:2px;
+    font-family:Georgia,serif;
+  }
+  .manual-coffee{
+    position:absolute;bottom:60px;right:24px;width:60px;height:60px;
+    border-radius:50%;border:3px solid rgba(120,80,30,0.18);
+    box-shadow:inset 0 0 0 6px rgba(120,80,30,0.06);pointer-events:none;
+  }
+  #manual-nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 14px;background:#1a1206;border-top:1px solid #6b5530;
+  }
+  #manual-nav button{
+    background:rgba(180,140,60,0.1);border:1px solid #6b5530;color:#c8a96e;
+    font-family:'VT323',monospace;font-size:17px;padding:4px 14px;cursor:pointer;
+    letter-spacing:1px;
+  }
+  #manual-nav button:hover{background:rgba(180,140,60,0.25);}
+  #manual-nav button:disabled{opacity:0.3;cursor:not-allowed;}
+  #manual-page-num{font-family:'Share Tech Mono',monospace;font-size:12px;color:#8a6840;letter-spacing:2px;}
+  .manual-sigil{color:#b8943a;font-size:22px;text-align:center;margin:16px 0;letter-spacing:8px;}
+
   /* ═══ VIDEO.EXE ═══ */
   #video-popup{
     min-width:480px;max-width:700px;background:#000;
@@ -1704,6 +1786,195 @@
 </div>
 
 
+<!-- ═══ MANUAL.EXE ═══ -->
+<div id="manual-popup">
+  <div class="popup-titlebar">
+    <span>📖 MANUAL.EXE</span>
+    <span class="popup-close" onclick="document.getElementById('manual-popup').classList.remove('show')">✕</span>
+  </div>
+  <div id="manual-book">
+
+    <!-- PAGE 1 — COVER -->
+    <div class="manual-page active" id="manual-p1">
+      <div class="manual-cover">
+        <div class="manual-cover-sub">Official System Documentation</div>
+        <div class="manual-cover-title">REDACTED CLUB</div>
+        <div style="font-size:13px;letter-spacing:8px;color:#8a6840;margin-bottom:28px;">── PLAYER MANUAL ──</div>
+        <pre class="manual-cover-art">
+    ██████╗  ██████╗
+    ██╔══██╗██╔════╝
+    ██████╔╝██║
+    ██╔══██╗██║
+    ██║  ██║╚██████╗
+    ╚═╝  ╚═╝ ╚═════╝
+        </pre>
+        <div class="manual-p" style="font-style:italic;color:#5a3e20;font-size:13px;max-width:360px;margin:0 auto;">
+          "The signal was always there.<br>You just needed to know where to listen."
+        </div>
+        <div class="manual-cover-meta">
+          VERSION 1.0 &nbsp;·&nbsp; FOR INTERNAL USE &nbsp;·&nbsp; <span class="manual-redacted">REDACTED</span> RECORDS
+        </div>
+      </div>
+      <div class="manual-pagenum">— i —</div>
+    </div>
+
+    <!-- PAGE 2 — TABLE OF CONTENTS -->
+    <div class="manual-page" id="manual-p2">
+      <div class="manual-h1">Table of Contents</div>
+      <div class="manual-toc-row"><span>Introduction</span><span class="manual-toc-dots"></span><span class="manual-toc-page">3</span></div>
+      <div class="manual-toc-row"><span>The Terminal Interface</span><span class="manual-toc-dots"></span><span class="manual-toc-page">4</span></div>
+      <div class="manual-toc-row"><span>Audio System</span><span class="manual-toc-dots"></span><span class="manual-toc-page">5</span></div>
+      <div class="manual-toc-row"><span>Signal Detection</span><span class="manual-toc-dots"></span><span class="manual-toc-page">6</span></div>
+      <div class="manual-toc-row"><span>Gallery &amp; Archives</span><span class="manual-toc-dots"></span><span class="manual-toc-page">7</span></div>
+      <div class="manual-toc-row"><span>Known Anomalies</span><span class="manual-toc-dots"></span><span class="manual-toc-page">8</span></div>
+      <div class="manual-toc-row"><span style="color:#8a6840;font-style:italic;">Appendix <span class="manual-redacted">REDACTED</span></span><span class="manual-toc-dots"></span><span class="manual-toc-page" style="color:#8a6840;">?</span></div>
+      <div class="manual-note" style="margin-top:24px;">
+        Note: This document was recovered in an incomplete state. Several sections have been withheld pending security review. Proceed with appropriate caution.
+      </div>
+      <div class="manual-coffee"></div>
+      <div class="manual-pagenum">— ii —</div>
+    </div>
+
+    <!-- PAGE 3 — INTRODUCTION -->
+    <div class="manual-page" id="manual-p3">
+      <div class="manual-h1">§1 — Introduction</div>
+      <div class="manual-p">
+        Welcome to the REDACTED CLUB system. This terminal provides access to the band's audio archive, signal intelligence tools, and various classified subsystems discovered during routine maintenance.
+      </div>
+      <div class="manual-p">
+        If you are reading this, you have successfully initiated a connection. Not everyone does. The system does not advertise itself. It does not explain itself. This manual is a courtesy — and like all courtesies, it has limits.
+      </div>
+      <div class="manual-h2">What Is This?</div>
+      <div class="manual-p">
+        A music player. A puzzle. A transmission. The distinction matters less than you think.
+      </div>
+      <div class="manual-note">
+        "We didn't build this to be found. We built it to hold something real."<br>— <span class="manual-redacted">████████████</span>, founding member
+      </div>
+      <div class="manual-sigil">· · ✦ · ·</div>
+      <div class="manual-pagenum">— 3 —</div>
+    </div>
+
+    <!-- PAGE 4 — TERMINAL -->
+    <div class="manual-page" id="manual-p4">
+      <div class="manual-h1">§2 — The Terminal</div>
+      <div class="manual-p">
+        The primary interface is a command-line terminal. Type a command and press <strong>Enter</strong>. The system will respond. Most commands are single words.
+      </div>
+      <div class="manual-h2">Basic Commands</div>
+      <div class="manual-p">
+        <span class="manual-cmd">help</span> — lists available commands<br>
+        <span class="manual-cmd">status</span> — displays system state<br>
+        <span class="manual-cmd">clear</span> — clears the terminal<br>
+        <span class="manual-cmd">files</span> — browse available files<br>
+        <span class="manual-cmd">read [file]</span> — opens a file<br>
+        <span class="manual-cmd">secrets</span> — lists your discoveries
+      </div>
+      <div class="manual-h2">A Note on Commands</div>
+      <div class="manual-p">
+        The help menu is not exhaustive. The system responds to inputs that are not listed. Experimentation is encouraged. Some commands have been deliberately omitted from this document.
+      </div>
+      <div class="manual-note">
+        The terminal accepts natural language fragments. If a command is close enough, it may still work.
+      </div>
+      <div class="manual-pagenum">— 4 —</div>
+    </div>
+
+    <!-- PAGE 5 — AUDIO -->
+    <div class="manual-page" id="manual-p5">
+      <div class="manual-h1">§3 — Audio System</div>
+      <div class="manual-p">
+        To access the audio player, type <span class="manual-cmd">player</span> or click the <strong>♫</strong> button in the right panel. Tracks can also be played directly with <span class="manual-cmd">play [number]</span>.
+      </div>
+      <div class="manual-h2">Playback Controls</div>
+      <div class="manual-p">
+        <span class="manual-cmd">play [n]</span> — play track by number<br>
+        <span class="manual-cmd">pause</span> — pause playback<br>
+        <span class="manual-cmd">stop</span> — stop and reset<br>
+        <span class="manual-cmd">next</span> / <span class="manual-cmd">prev</span> — skip tracks<br>
+        <span class="manual-cmd">vol [0–100]</span> — set volume
+      </div>
+      <div class="manual-h2">Encrypted Tracks</div>
+      <div class="manual-p">
+        Not all tracks are immediately accessible. Several files in the archive are encrypted. The decryption keys are hidden within the system. Finding them requires exploration.
+      </div>
+      <div class="manual-note">
+        Encrypted tracks display as <strong>███ ████ █████</strong>. This is intentional. Keep looking.
+      </div>
+      <div class="manual-pagenum">— 5 —</div>
+    </div>
+
+    <!-- PAGE 6 — SCANNER -->
+    <div class="manual-page" id="manual-p6">
+      <div class="manual-h1">§4 — Signal Detection</div>
+      <div class="manual-p">
+        Type <span class="manual-cmd">scan</span> to open the frequency scanner. The scanner monitors the electromagnetic spectrum for hidden transmissions embedded in the noise floor.
+      </div>
+      <div class="manual-h2">Using the Scanner</div>
+      <div class="manual-p">
+        Adjust the <strong>FREQUENCY</strong> and <strong>AMPLITUDE</strong> dials. Press <strong>PING</strong> to probe the current frequency. The ECHOES window logs proximity to known signals. When proximity exceeds 90%, press <strong>LOCK</strong>.
+      </div>
+      <div class="manual-h2">Decryption</div>
+      <div class="manual-p">
+        A locked signal yields a decryption key. Use <span class="manual-cmd">decode [key]</span> in the terminal to unlock the corresponding archive file.
+      </div>
+      <div class="manual-note">
+        Three signals are documented in the field logs. A fourth is not. Whether a fifth exists is <span class="manual-redacted">REDACTED</span>.
+      </div>
+      <div class="manual-sigil">∿∿∿∿∿</div>
+      <div class="manual-pagenum">— 6 —</div>
+    </div>
+
+    <!-- PAGE 7 — GALLERY -->
+    <div class="manual-page" id="manual-p7">
+      <div class="manual-h1">§5 — Gallery &amp; Archives</div>
+      <div class="manual-p">
+        Type <span class="manual-cmd">gallery</span> or click the <strong>▣</strong> button to access the visual archive. Images are unlocked progressively as you interact with the system.
+      </div>
+      <div class="manual-h2">Unlocking Images</div>
+      <div class="manual-p">
+        Each locked image requires a specific discovery to reveal it. Some are tied to codes. Some to actions. Some to patience. A locked image is not gone — it is waiting.
+      </div>
+      <div class="manual-h2">The PIN System</div>
+      <div class="manual-p">
+        Type <span class="manual-cmd">pincode</span> to access the secure PIN terminal. Four-digit codes unlock additional content. The codes exist somewhere in the system. You have already seen at least one.
+      </div>
+      <div class="manual-note" style="font-style:normal;">
+        ████ Clearance Level: <span class="manual-redacted">REDACTED</span><br>
+        Access tier: <span class="manual-redacted">REDACTED</span><br>
+        Images pending review: <span class="manual-redacted">REDACTED</span>
+      </div>
+      <div class="manual-pagenum">— 7 —</div>
+    </div>
+
+    <!-- PAGE 8 — ANOMALIES -->
+    <div class="manual-page" id="manual-p8">
+      <div class="manual-stamp">CLASSIFIED</div>
+      <div class="manual-h1">§6 — Known Anomalies</div>
+      <div class="manual-p">
+        The following behaviours have been observed and are considered <em>features</em>, not errors. Maintenance staff are advised not to correct them.
+      </div>
+      <div class="manual-h2">Documented</div>
+      <div class="manual-p">
+        · A specific key sequence, when entered anywhere on the system, triggers an undocumented response. The sequence is old. You likely already know it.<br><br>
+        · Typing certain names into the terminal yields unexpected results. Staff member <span class="manual-redacted">REDACTED</span> discovered this accidentally and has not been seen since.<br><br>
+        · The donut rotates indefinitely. This was not intended. It has not been stopped.
+      </div>
+      <div class="manual-h2">Undocumented</div>
+      <div class="manual-p" style="color:#8a6840;font-style:italic;">
+        This section has been withheld. If you believe you have encountered an undocumented anomaly, <span class="manual-redacted">REDACTED</span>. Do not attempt to <span class="manual-redacted">REDACTED</span> under any circumstances.
+      </div>
+      <div class="manual-pagenum">— 8 —</div>
+    </div>
+
+  </div><!-- end manual-book -->
+  <div id="manual-nav">
+    <button id="manual-prev" onclick="manualPage(-1)" disabled>◄ PREV</button>
+    <span id="manual-page-num">PAGE 1 / 8</span>
+    <button id="manual-next" onclick="manualPage(1)">NEXT ►</button>
+  </div>
+</div>
+
 <!-- ═══ GALLERY.EXE ═══ -->
 <div id="gallery-popup">
   <div class="popup-titlebar">
@@ -1907,6 +2178,7 @@ const WindowRegistry = {
     'synth-popup':   { name: 'SYNTH',   icon: '🎹', command: 'synth',   discovered: false },
     'drums-popup':   { name: 'DRUMS',   icon: '🥁', command: 'drums',   discovered: false },
     'pool-popup':    { name: 'POOL',    icon: '🎱', command: 'pool',    discovered: false },
+    'manual-popup':  { name: 'MANUAL',  icon: '📖', command: 'manual',  discovered: false },
   },
 
   discover(windowId) {
@@ -2380,6 +2652,7 @@ let A=0,B=0;const iv=setInterval(()=>{const b=[];const z=[];for(let k=0;k<1760;k
   synth:()=>{if(!state.progression.milestones.includes('DEEP_SCAN')){playSFX('glitch_error',0.4);printLine('SYNTH.EXE — MODULE LOCKED','error');setTimeout(()=>printLine('Deeper signal analysis may activate this module.','ghost'),600);return}document.getElementById('synth-popup').classList.add('show');WindowRegistry.discover('synth-popup');initSynth();printLine('Opening SYNTH.EXE...','dim')},
   drums:()=>{if(!state.progression.milestones.includes('DEEP_SCAN')){playSFX('glitch_error',0.4);printLine('DRUMS.EXE — MODULE LOCKED','error');setTimeout(()=>printLine('Deeper signal analysis may activate this module.','ghost'),600);return}document.getElementById('drums-popup').classList.add('show');WindowRegistry.discover('drums-popup');initDrums();printLine('Opening DRUMS.EXE...','dim')},
   pool:()=>{document.getElementById('pool-popup').classList.add('show');WindowRegistry.discover('pool-popup');Pool.init();printLine('Opening POOL.EXE... Rack \'em up.','dim')},
+  manual:()=>{document.getElementById('manual-popup').classList.add('show');WindowRegistry.discover('manual-popup');manualGoTo(1);printLine('Opening MANUAL.EXE...','dim');printLine('Use PREV / NEXT to turn pages.','ghost')},
   billiards:()=>{COMMANDS.pool()},
   '8ball':()=>{COMMANDS.pool()},
   trippy:()=>{COMMANDS.viz()},
@@ -6735,6 +7008,19 @@ document.addEventListener('mouseup', function() {
 
 
 
+
+// ═══ MANUAL ═══
+const MANUAL_TOTAL = 8;
+let manualCurrent = 1;
+function manualGoTo(n) {
+  document.getElementById('manual-p' + manualCurrent).classList.remove('active');
+  manualCurrent = Math.max(1, Math.min(MANUAL_TOTAL, n));
+  document.getElementById('manual-p' + manualCurrent).classList.add('active');
+  document.getElementById('manual-page-num').textContent = 'PAGE ' + manualCurrent + ' / ' + MANUAL_TOTAL;
+  document.getElementById('manual-prev').disabled = manualCurrent === 1;
+  document.getElementById('manual-next').disabled = manualCurrent === MANUAL_TOTAL;
+}
+function manualPage(dir) { manualGoTo(manualCurrent + dir); }
 
 // Notepad focus handling
 const notepadDiv = document.getElementById('notepad-textarea');
