@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RC — Vinyl Player</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+:root{
+  --plinth:      #1a1208;
+  --plinth-edge: #2e1f0a;
+  --platter:     #2a2a2a;
+  --vinyl:       #0d0d0d;
+  --label-bg:    #1a0a00;
+  --label-fg:    #c8a96e;
+  --arm:         #b0b0b0;
+  --arm-dark:    #707070;
+  --green:       #00ff41;
+  --amber:       #ffaa00;
+  --cream:       #f0e2b6;
+}
+
+body{
+  background:#0a0a0a;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-height:100vh; font-family:'Share Tech Mono',monospace;
+  user-select:none;
+}
+
+/* ── PLINTH ── */
+#plinth{
+  position:relative;
+  width:680px; height:480px;
+  background: linear-gradient(160deg, #2e1f0a 0%, #1a1208 40%, #120d04 100%);
+  border-radius:12px;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.8),
+    0 4px 0 #0a0800,
+    inset 0 1px 0 rgba(255,200,100,0.1),
+    inset 0 0 80px rgba(0,0,0,0.5);
+  border: 1px solid #3a2810;
+}
+
+/* Wood grain lines */
+#plinth::before{
+  content:'';position:absolute;inset:0;border-radius:12px;
+  background: repeating-linear-gradient(
+    88deg,
+    transparent 0px, transparent 18px,
+    rgba(255,180,80,0.025) 18px, rgba(255,180,80,0.025) 19px
+  );
+  pointer-events:none;
+}
+
+/* ── PLATTER AREA ── */
+#platter-wrap{
+  position:absolute; left:60px; top:40px;
+  width:360px; height:360px;
+}
+
+#platter{
+  width:360px; height:360px; border-radius:50%;
+  background: radial-gradient(circle at 50% 50%,
+    #3a3a3a 0%, #282828 40%, #1e1e1e 70%, #151515 100%);
+  box-shadow:
+    0 0 0 6px #111,
+    0 0 0 8px #222,
+    0 8px 24px rgba(0,0,0,0.8),
+    inset 0 0 30px rgba(0,0,0,0.6);
+  position:relative; display:flex; align-items:center; justify-content:center;
+}
+
+/* Rubber mat texture */
+#platter::after{
+  content:'';position:absolute;inset:8px;border-radius:50%;
+  background:repeating-radial-gradient(circle at 50% 50%,
+    #1c1c1c 0px, #1c1c1c 3px, #202020 3px, #202020 6px);
+}
+
+/* ── VINYL RECORD ── */
+#record{
+  position:absolute; width:320px; height:320px; border-radius:50%;
+  top:50%; left:50%; transform:translate(-50%,-50%);
+  cursor:default; z-index:2;
+  transition: transform 0.4s ease;
+}
+
+#record-canvas{ border-radius:50%; display:block; }
+
+/* ── TONEARM ── */
+#arm-pivot{
+  position:absolute;
+  right:40px; top:30px;
+  width:28px; height:28px;
+  z-index:10;
+}
+
+#arm-pivot-dot{
+  width:28px; height:28px; border-radius:50%;
+  background:radial-gradient(circle at 40% 35%, #d0d0d0, #707070);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.3);
+  position:relative; z-index:2;
+}
+
+#arm-group{
+  position:absolute; top:14px; left:14px;
+  transform-origin:0 0;
+  transform: rotate(28deg);
+  z-index:9;
+  cursor:grab;
+  transition: transform 0.05s linear;
+}
+#arm-group.lifted{ filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
+#arm-group:active{ cursor:grabbing; }
+
+/* The arm shaft */
+#arm-shaft{
+  position:absolute; top:0; left:-3px;
+  width:6px; height:200px;
+  background:linear-gradient(90deg, #909090, #d0d0d0 40%, #b0b0b0 60%, #808080);
+  transform-origin:top center;
+  transform:rotate(-12deg);
+  border-radius:3px;
+  box-shadow: 1px 0 3px rgba(0,0,0,0.4);
+}
+
+/* Headshell at the end */
+#arm-headshell{
+  position:absolute; top:168px; left:-14px;
+  width:28px; height:32px;
+  background:linear-gradient(180deg, #c0c0c0, #909090);
+  border-radius:4px 4px 8px 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  transform:rotate(12deg);
+  transform-origin:top center;
+}
+
+/* Needle */
+#arm-needle{
+  position:absolute; bottom:-8px; left:50%; transform:translateX(-50%);
+  width:2px; height:10px;
+  background:linear-gradient(180deg, #909090, #ff3300);
+  border-radius:0 0 2px 2px;
+}
+
+/* Counterweight */
+#arm-counterweight{
+  position:absolute; top:-16px; left:-8px;
+  width:22px; height:22px; border-radius:50%;
+  background:radial-gradient(circle at 40% 35%, #c0c0c0, #606060);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  transform:rotate(12deg);
+  transform-origin:top center;
+}
+
+/* ── DUST COVER ── */
+#dust-cover{
+  position:absolute; left:30px; top:20px;
+  width:400px; height:400px;
+  border-radius:8px;
+  background:rgba(200,220,255,0.04);
+  border:1px solid rgba(200,220,255,0.12);
+  transform-origin:top center;
+  transform:perspective(600px) rotateX(0deg);
+  transition:transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
+  pointer-events:none; z-index:8;
+  box-shadow:inset 0 0 40px rgba(150,180,255,0.03);
+}
+#dust-cover.open{
+  transform:perspective(600px) rotateX(-110deg);
+}
+#dust-cover::after{
+  content:''; position:absolute; inset:0; border-radius:8px;
+  background:linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 50%);
+}
+
+/* ── CONTROLS PANEL ── */
+#controls{
+  position:absolute; right:30px; bottom:30px;
+  width:200px;
+  display:flex; flex-direction:column; gap:12px;
+}
+
+.ctrl-section{
+  border:1px solid #3a2810;
+  padding:12px;
+  background:rgba(0,0,0,0.4);
+  border-radius:4px;
+}
+.ctrl-label{
+  font-size:9px; letter-spacing:3px; color:#6a4a20;
+  margin-bottom:8px; text-transform:uppercase;
+}
+
+/* Start/stop lever */
+#lever-wrap{ display:flex; align-items:center; gap:10px; }
+#lever{
+  width:44px; height:22px; border-radius:11px;
+  background:#1a1008; border:1px solid #4a3018;
+  position:relative; cursor:pointer;
+  transition:background 0.2s;
+  box-shadow:inset 0 2px 4px rgba(0,0,0,0.5);
+}
+#lever.on{ background:#0a2008; border-color:#1a6030; }
+#lever-knob{
+  position:absolute; top:2px; left:2px;
+  width:18px; height:18px; border-radius:50%;
+  background:radial-gradient(circle at 40% 35%, #c0c0c0, #707070);
+  transition:left 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.5);
+}
+#lever.on #lever-knob{ left:24px; background:radial-gradient(circle at 40% 35%, #80ff80, #208040); }
+#lever-status{ font-size:11px; color:#6a4a20; letter-spacing:1px; }
+#lever.on + #lever-status{ color:var(--green); }
+
+/* RPM buttons */
+#rpm-btns{ display:flex; gap:6px; }
+.rpm-btn{
+  flex:1; padding:5px; text-align:center;
+  font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:1px;
+  background:#0a0800; border:1px solid #3a2810; color:#6a4a20;
+  cursor:pointer; border-radius:2px; transition:all 0.15s;
+}
+.rpm-btn.active{
+  background:#1a2a08; border-color:var(--green); color:var(--green);
+  box-shadow:0 0 6px rgba(0,255,65,0.2);
+}
+
+/* Lift button */
+#lift-btn{
+  width:100%; padding:7px;
+  font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:2px;
+  background:#0a0800; border:1px solid #3a2810; color:#8a6840;
+  cursor:pointer; border-radius:2px; transition:all 0.15s; text-align:center;
+}
+#lift-btn:hover{ background:#1a1208; border-color:#6a4a20; color:var(--amber); }
+#lift-btn.lifted{ border-color:var(--amber); color:var(--amber); }
+
+/* ── TRACK INFO ── */
+#track-info{
+  position:absolute; left:60px; bottom:28px;
+  width:320px;
+}
+#now-playing-label{ font-size:9px; letter-spacing:3px; color:#4a3010; margin-bottom:4px; }
+#now-playing-title{ font-size:16px; color:var(--amber); letter-spacing:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#now-playing-id{ font-size:10px; color:#4a3010; letter-spacing:2px; margin-top:2px; }
+#now-playing-time{ font-size:11px; color:#5a4020; letter-spacing:1px; margin-top:4px; }
+
+/* ── SLEEVE ── */
+#sleeve-btn{
+  position:absolute; right:30px; top:30px;
+  font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:2px;
+  color:#4a3010; background:none; border:1px solid #2a1808; padding:5px 8px;
+  cursor:pointer; border-radius:2px; transition:all 0.15s;
+}
+#sleeve-btn:hover{ color:var(--amber); border-color:#6a4a20; }
+
+/* ── SLEEVE OVERLAY ── */
+#sleeve-overlay{
+  display:none; position:fixed; inset:0; z-index:100;
+  background:rgba(0,0,0,0.85);
+  align-items:center; justify-content:center;
+}
+#sleeve-overlay.show{ display:flex; }
+#sleeve-card{
+  width:420px; height:420px; position:relative;
+  transform-style:preserve-3d;
+  transition:transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+#sleeve-card.flipped{ transform:rotateY(180deg); }
+#sleeve-front, #sleeve-back{
+  position:absolute; inset:0; border-radius:4px;
+  backface-visibility:hidden;
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column;
+  border:2px solid #3a2810;
+  box-shadow:0 20px 60px rgba(0,0,0,0.8);
+}
+#sleeve-front{
+  background:linear-gradient(135deg, #1a1208 0%, #0d0a04 100%);
+  color:var(--label-fg);
+}
+#sleeve-back{
+  background:linear-gradient(135deg, #0d0a04 0%, #1a1208 100%);
+  color:var(--label-fg);
+  transform:rotateY(180deg);
+}
+.sleeve-title{ font-size:28px; letter-spacing:6px; margin-bottom:6px; font-family:'VT323',monospace; }
+.sleeve-sub{ font-size:11px; letter-spacing:4px; color:#6a4a20; margin-bottom:24px; }
+.sleeve-tracklist{ font-size:12px; color:#8a6840; line-height:2; text-align:left; letter-spacing:1px; }
+.sleeve-tracklist span{ color:var(--label-fg); }
+#sleeve-flip-btn{
+  margin-top:24px; padding:8px 20px;
+  font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:2px;
+  background:rgba(180,140,60,0.1); border:1px solid #6a4a20; color:#c8a96e;
+  cursor:pointer;
+}
+#sleeve-flip-btn:hover{ background:rgba(180,140,60,0.2); }
+#sleeve-close{
+  position:absolute; top:16px; right:16px;
+  font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:2px;
+  background:none; border:1px solid #3a2810; color:#4a3010; padding:4px 10px;
+  cursor:pointer;
+}
+#sleeve-close:hover{ color:var(--amber); border-color:#6a4a20; }
+
+/* ── VOLUME KNOB ── */
+#vol-knob-wrap{ display:flex; align-items:center; gap:10px; }
+#vol-knob{
+  width:36px; height:36px; border-radius:50%;
+  background:radial-gradient(circle at 40% 35%, #404040, #181818);
+  box-shadow:0 2px 6px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+  position:relative; cursor:ns-resize;
+}
+#vol-knob-line{
+  position:absolute; top:4px; left:50%; transform:translateX(-50%);
+  width:2px; height:10px; background:#c0c0c0; border-radius:1px;
+  transform-origin:bottom center;
+}
+#vol-display{ font-size:12px; color:#6a4a20; letter-spacing:1px; }
+</style>
+</head>
+<body>
+
+<div id="plinth">
+
+  <!-- Dust cover -->
+  <div id="dust-cover" class="open"></div>
+
+  <!-- Platter + record -->
+  <div id="platter-wrap">
+    <div id="platter">
+      <div id="record">
+        <canvas id="record-canvas" width="320" height="320"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tonearm -->
+  <div id="arm-pivot">
+    <div id="arm-pivot-dot"></div>
+    <div id="arm-group">
+      <div id="arm-counterweight"></div>
+      <div id="arm-shaft"></div>
+      <div id="arm-headshell">
+        <div id="arm-needle"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Track info -->
+  <div id="track-info">
+    <div id="now-playing-label">NOW PLAYING</div>
+    <div id="now-playing-title">—</div>
+    <div id="now-playing-id"></div>
+    <div id="now-playing-time">0:00 / 0:00</div>
+  </div>
+
+  <!-- Controls -->
+  <div id="controls">
+
+    <div class="ctrl-section">
+      <div class="ctrl-label">Transport</div>
+      <div id="lever-wrap">
+        <div id="lever" onclick="togglePlay()"><div id="lever-knob"></div></div>
+        <span id="lever-status">STOP</span>
+      </div>
+    </div>
+
+    <div class="ctrl-section">
+      <div class="ctrl-label">Speed</div>
+      <div id="rpm-btns">
+        <div class="rpm-btn active" id="rpm33" onclick="setRPM(33)">33⅓</div>
+        <div class="rpm-btn" id="rpm45" onclick="setRPM(45)">45</div>
+      </div>
+    </div>
+
+    <div class="ctrl-section">
+      <div class="ctrl-label">Volume</div>
+      <div id="vol-knob-wrap">
+        <div id="vol-knob"><div id="vol-knob-line"></div></div>
+        <span id="vol-display">70%</span>
+      </div>
+    </div>
+
+    <div class="ctrl-section">
+      <div class="ctrl-label">Tonearm</div>
+      <div id="lift-btn" onclick="toggleLift()">LIFT ARM</div>
+    </div>
+
+  </div>
+
+  <!-- Sleeve button -->
+  <div id="sleeve-btn" onclick="openSleeve()">SLEEVE ▣</div>
+
+</div>
+
+<!-- Sleeve overlay -->
+<div id="sleeve-overlay" onclick="closeSleeve(event)">
+  <div id="sleeve-card">
+    <div id="sleeve-front">
+      <div class="sleeve-title">REDACTED CLUB</div>
+      <div class="sleeve-sub">SELF-TITLED EP</div>
+      <pre style="font-family:'Share Tech Mono',monospace;font-size:9px;color:#4a3010;line-height:1.4;margin-bottom:16px;">
+    ██████╗  ██████╗
+    ██╔══██╗██╔════╝
+    ██████╔╝██║
+    ██╔══██╗██║
+    ██║  ██║╚██████╗
+    ╚═╝  ╚═╝ ╚═════╝</pre>
+      <button id="sleeve-flip-btn" onclick="flipSleeve()">FLIP ↻</button>
+    </div>
+    <div id="sleeve-back">
+      <div class="sleeve-title" style="font-size:20px;margin-bottom:16px;">TRACK LISTING</div>
+      <div class="sleeve-tracklist" id="sleeve-tracklist"></div>
+      <button class="sleeve-flip-btn" style="margin-top:20px;padding:8px 20px;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;background:rgba(180,140,60,0.1);border:1px solid #6a4a20;color:#c8a96e;cursor:pointer;" onclick="flipSleeve()">FLIP ↻</button>
+    </div>
+    <button id="sleeve-close" onclick="closeSleeve()">✕ CLOSE</button>
+  </div>
+</div>
+
+<audio id="audio"></audio>
+
+<script>
+'use strict';
+
+// ── TRACKS ──────────────────────────────────────────────────────────────────
+const AUDIO_BASE = '../redacted_club_project/redacted_assets/audio/';
+const TRACKS = [
+  { id:'RC-001', title:'CASINO',              file:'Casino.mp3' },
+  { id:'RC-002', title:'DRUNK N STUMBLIN',    file:'DnS.mp3' },
+  { id:'RC-003', title:'DESTROY ARCHITECTURE',file:'DA.mp3' },
+  { id:'RC-004', title:'COULD BE WORSE',      file:'Could Be 5.mp3' },
+  { id:'RC-005', title:'ONE LAST DRINK',      file:'One Last Drink 2.mp3' },
+  { id:'RC-006', title:'SUNDEE ARVO',         file:'Sundee Arvo.mp3' },
+  { id:'RC-007', title:'GG',                  file:'GG.mp3' },
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+const audio = document.getElementById('audio');
+let currentTrack = -1;
+let isPlaying    = false;
+let isLifted     = false;
+let rpm          = 33;
+let volume       = 0.7;
+let recordAngle  = 0;
+let animId       = null;
+let volDragging  = false;
+let volStartY    = 0;
+let volStartVal  = 0;
+let armDragging  = false;
+let armAngle     = 28;          // degrees — resting position (off record)
+const ARM_MIN    = 28;          // tonearm outer edge of record
+const ARM_MAX    = 62;          // tonearm inner edge (lead-out)
+const ARM_REST   = 26;          // parked off record
+
+// ── RECORD CANVAS ────────────────────────────────────────────────────────────
+const canvas = document.getElementById('record-canvas');
+const ctx    = canvas.getContext('2d');
+const CX     = 160, CY = 160, R = 158;
+
+function drawRecord(angle) {
+  ctx.clearRect(0, 0, 320, 320);
+
+  // Outer vinyl body
+  ctx.save();
+  ctx.translate(CX, CY);
+  ctx.rotate(angle);
+
+  // Base disc
+  const grad = ctx.createRadialGradient(0,0,0, 0,0,R);
+  grad.addColorStop(0,   '#151515');
+  grad.addColorStop(0.3, '#0d0d0d');
+  grad.addColorStop(1,   '#080808');
+  ctx.beginPath();
+  ctx.arc(0, 0, R, 0, Math.PI*2);
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Groove rings
+  const trackCount = TRACKS.length;
+  for (let i = 0; i < 60; i++) {
+    const r = 58 + i * 1.6;
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI*2);
+    // Highlight grooves near active track zone
+    const zone = grooveToTrack(r);
+    const isActive = zone === currentTrack;
+    ctx.strokeStyle = isActive
+      ? 'rgba(180,140,60,0.18)'
+      : (i % 3 === 0 ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.025)');
+    ctx.lineWidth = isActive ? 1.2 : 0.7;
+    ctx.stroke();
+  }
+
+  // Track separator lines (slightly brighter gaps)
+  for (let t = 0; t <= trackCount; t++) {
+    const r = trackInnerR(t);
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+
+  // Lead-in groove (outer edge)
+  ctx.beginPath();
+  ctx.arc(0, 0, 154, 0, Math.PI*2);
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Centre label
+  const labelR = 50;
+  const labelGrad = ctx.createRadialGradient(0,0,0, 0,0,labelR);
+  labelGrad.addColorStop(0, '#2a1800');
+  labelGrad.addColorStop(1, '#1a0a00');
+  ctx.beginPath();
+  ctx.arc(0, 0, labelR, 0, Math.PI*2);
+  ctx.fillStyle = labelGrad;
+  ctx.fill();
+  ctx.strokeStyle = '#6a4a20';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Label text (fixed — don't rotate with record)
+  ctx.restore();
+  ctx.save();
+  ctx.translate(CX, CY);
+
+  ctx.fillStyle = '#c8a96e';
+  ctx.font = 'bold 11px "Share Tech Mono", monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('REDACTED CLUB', 0, -10);
+  ctx.fillStyle = '#6a4a20';
+  ctx.font = '9px "Share Tech Mono", monospace';
+  ctx.fillText('SELF-TITLED EP', 0, 4);
+  ctx.fillStyle = '#4a3010';
+  ctx.font = '8px "Share Tech Mono", monospace';
+  ctx.fillText('33⅓ RPM  •  STEREO', 0, 18);
+
+  // Spindle hole
+  ctx.beginPath();
+  ctx.arc(0, 0, 4, 0, Math.PI*2);
+  ctx.fillStyle = '#080808';
+  ctx.fill();
+  ctx.strokeStyle = '#2a2a2a';
+  ctx.lineWidth = 0.5;
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+// ── GROOVE / TRACK MAPPING ───────────────────────────────────────────────────
+// Tracks spread from r=154 (outer) to r=58 (inner)
+const GROOVE_OUTER = 154;
+const GROOVE_INNER = 58;
+
+function trackOuterR(trackIdx) {
+  const total = TRACKS.length;
+  const span  = GROOVE_OUTER - GROOVE_INNER;
+  return GROOVE_OUTER - (trackIdx / total) * span;
+}
+function trackInnerR(trackIdx) {
+  const total = TRACKS.length;
+  const span  = GROOVE_OUTER - GROOVE_INNER;
+  return GROOVE_OUTER - ((trackIdx + 1) / total) * span;
+}
+function grooveToTrack(r) {
+  if (r > GROOVE_OUTER || r < GROOVE_INNER) return -1;
+  const norm  = (GROOVE_OUTER - r) / (GROOVE_OUTER - GROOVE_INNER);
+  return Math.min(Math.floor(norm * TRACKS.length), TRACKS.length - 1);
+}
+
+// Arm angle → groove radius
+function armAngleToGrooveR(deg) {
+  const t = (deg - ARM_MIN) / (ARM_MAX - ARM_MIN); // 0=outer, 1=inner
+  return GROOVE_OUTER - t * (GROOVE_OUTER - GROOVE_INNER);
+}
+// Groove radius → arm angle
+function grooveRToArmAngle(r) {
+  const t = (GROOVE_OUTER - r) / (GROOVE_OUTER - GROOVE_INNER);
+  return ARM_MIN + t * (ARM_MAX - ARM_MIN);
+}
+// Track index → arm angle (start of track)
+function trackToArmAngle(idx) {
+  return grooveRToArmAngle(trackOuterR(idx));
+}
+
+// ── ANIMATION LOOP ───────────────────────────────────────────────────────────
+function animate() {
+  const rps = rpm / 60;
+  recordAngle += (2 * Math.PI * rps) / 60; // 60fps target
+  drawRecord(recordAngle);
+
+  // Advance needle across record as track plays
+  if (isPlaying && !isLifted && !armDragging && audio.duration) {
+    const progress  = audio.currentTime / audio.duration;
+    const trackOuter = grooveRToArmAngle(trackOuterR(currentTrack));
+    const trackInner = grooveRToArmAngle(trackInnerR(currentTrack));
+    armAngle = trackOuter + progress * (trackInner - trackOuter);
+    setArmVisual(armAngle);
+  }
+
+  updateTimeDisplay();
+  animId = requestAnimationFrame(animate);
+}
+
+// ── ARM VISUAL ───────────────────────────────────────────────────────────────
+const armGroup = document.getElementById('arm-group');
+
+function setArmVisual(deg) {
+  armGroup.style.transform = `rotate(${deg}deg)`;
+}
+
+// Arm drag
+const pivotEl = document.getElementById('arm-pivot');
+let pivotRect;
+
+armGroup.addEventListener('mousedown', startArmDrag);
+armGroup.addEventListener('touchstart', startArmDrag, { passive:false });
+
+function startArmDrag(e) {
+  if (isPlaying) return; // only drag when stopped or lifted
+  e.preventDefault();
+  armDragging = true;
+  pivotRect = pivotEl.getBoundingClientRect();
+  document.addEventListener('mousemove', onArmDrag);
+  document.addEventListener('mouseup',   stopArmDrag);
+  document.addEventListener('touchmove', onArmDrag, { passive:false });
+  document.addEventListener('touchend',  stopArmDrag);
+}
+function getEventPos(e) {
+  return e.touches ? { x:e.touches[0].clientX, y:e.touches[0].clientY }
+                   : { x:e.clientX, y:e.clientY };
+}
+function onArmDrag(e) {
+  if (!armDragging) return;
+  e.preventDefault();
+  const { x, y } = getEventPos(e);
+  const pivotX = pivotRect.left + pivotRect.width / 2;
+  const pivotY = pivotRect.top  + pivotRect.height / 2;
+  const dx = x - pivotX, dy = y - pivotY;
+  let deg = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+  if (deg < 0) deg += 360;
+  deg = Math.max(ARM_REST - 2, Math.min(ARM_MAX + 2, deg));
+  armAngle = deg;
+  setArmVisual(armAngle);
+}
+function stopArmDrag() {
+  armDragging = false;
+  document.removeEventListener('mousemove', onArmDrag);
+  document.removeEventListener('mouseup',   stopArmDrag);
+  document.removeEventListener('touchmove', onArmDrag);
+  document.removeEventListener('touchend',  stopArmDrag);
+
+  if (armAngle >= ARM_MIN) {
+    const r = armAngleToGrooveR(armAngle);
+    const t = grooveToTrack(r);
+    if (t >= 0 && t < TRACKS.length) {
+      loadTrack(t, false);
+    }
+  } else {
+    // Parked off record
+    setArmVisual(ARM_REST);
+    armAngle = ARM_REST;
+  }
+}
+
+// ── PLAYBACK ─────────────────────────────────────────────────────────────────
+function loadTrack(idx, autoPlay) {
+  currentTrack = idx;
+  const t = TRACKS[idx];
+  audio.src = AUDIO_BASE + t.file;
+  audio.volume = volume;
+  updateTrackInfo();
+  if (autoPlay) {
+    audio.play().then(() => { setPlayState(true); }).catch(() => {});
+  }
+  // Snap arm to start of track
+  if (!isPlaying) {
+    armAngle = trackToArmAngle(idx);
+    setArmVisual(armAngle);
+  }
+}
+
+function togglePlay() {
+  if (!isPlaying) {
+    if (currentTrack < 0) loadTrack(0, true);
+    else audio.play().then(() => setPlayState(true)).catch(() => {});
+  } else {
+    audio.pause();
+    setPlayState(false);
+  }
+}
+
+function setPlayState(playing) {
+  isPlaying = playing;
+  const lever = document.getElementById('lever');
+  const status = document.getElementById('lever-status');
+  if (playing) {
+    lever.classList.add('on');
+    status.textContent = 'PLAY';
+    status.style.color = 'var(--green)';
+    if (!animId) animId = requestAnimationFrame(animate);
+  } else {
+    lever.classList.remove('on');
+    status.textContent = 'STOP';
+    status.style.color = '';
+  }
+}
+
+audio.addEventListener('ended', () => {
+  if (currentTrack < TRACKS.length - 1) {
+    loadTrack(currentTrack + 1, true);
+  } else {
+    setPlayState(false);
+    armAngle = ARM_REST;
+    setArmVisual(ARM_REST);
+  }
+});
+
+// ── LIFT ARM ─────────────────────────────────────────────────────────────────
+function toggleLift() {
+  isLifted = !isLifted;
+  const btn = document.getElementById('lift-btn');
+  armGroup.classList.toggle('lifted', isLifted);
+  btn.classList.toggle('lifted', isLifted);
+  btn.textContent = isLifted ? 'LOWER ARM' : 'LIFT ARM';
+  if (isLifted) {
+    // Visual lift — arm floats above record via drop shadow
+  }
+}
+
+// ── RPM ───────────────────────────────────────────────────────────────────────
+function setRPM(r) {
+  rpm = r;
+  document.getElementById('rpm33').classList.toggle('active', r === 33);
+  document.getElementById('rpm45').classList.toggle('active', r === 45);
+}
+
+// ── VOLUME KNOB ──────────────────────────────────────────────────────────────
+const volKnob = document.getElementById('vol-knob');
+const volLine = document.getElementById('vol-knob-line');
+const volDisplay = document.getElementById('vol-display');
+
+volKnob.addEventListener('mousedown', e => {
+  volDragging = true;
+  volStartY   = e.clientY;
+  volStartVal = volume;
+  e.preventDefault();
+});
+document.addEventListener('mousemove', e => {
+  if (!volDragging) return;
+  const delta = (volStartY - e.clientY) / 120;
+  volume = Math.max(0, Math.min(1, volStartVal + delta));
+  audio.volume = volume;
+  const pct = Math.round(volume * 100);
+  volDisplay.textContent = pct + '%';
+  // Rotate knob line: -135° (min) to +135° (max)
+  const rot = -135 + volume * 270;
+  volLine.style.transform = `translateX(-50%) rotate(${rot}deg)`;
+});
+document.addEventListener('mouseup', () => { volDragging = false; });
+
+// Init knob position
+volLine.style.transform = `translateX(-50%) rotate(${-135 + volume * 270}deg)`;
+
+// ── TRACK INFO ────────────────────────────────────────────────────────────────
+function updateTrackInfo() {
+  if (currentTrack < 0) return;
+  const t = TRACKS[currentTrack];
+  document.getElementById('now-playing-title').textContent = t.title;
+  document.getElementById('now-playing-id').textContent    = t.id;
+}
+function updateTimeDisplay() {
+  const cur = isNaN(audio.currentTime) ? 0 : audio.currentTime;
+  const dur = isNaN(audio.duration)    ? 0 : audio.duration;
+  document.getElementById('now-playing-time').textContent =
+    fmt(cur) + ' / ' + fmt(dur);
+}
+function fmt(s) {
+  const m = Math.floor(s / 60), ss = Math.floor(s % 60);
+  return m + ':' + String(ss).padStart(2,'0');
+}
+
+// ── SLEEVE ────────────────────────────────────────────────────────────────────
+let sleeveFlipped = false;
+function openSleeve() {
+  document.getElementById('sleeve-overlay').classList.add('show');
+}
+function closeSleeve(e) {
+  if (e && e.target !== document.getElementById('sleeve-overlay') && !e.target.id.startsWith('sleeve-close')) return;
+  document.getElementById('sleeve-overlay').classList.remove('show');
+}
+function flipSleeve() {
+  sleeveFlipped = !sleeveFlipped;
+  document.getElementById('sleeve-card').classList.toggle('flipped', sleeveFlipped);
+}
+
+// Populate sleeve tracklist
+function buildSleevelist() {
+  const el = document.getElementById('sleeve-tracklist');
+  el.innerHTML = TRACKS.map((t,i) =>
+    `A${i+1}. <span>${t.title}</span>`
+  ).join('<br>');
+}
+buildSleevelist();
+
+// ── CLICK RECORD TO SELECT TRACK ─────────────────────────────────────────────
+canvas.addEventListener('click', e => {
+  if (isPlaying && !isLifted) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left - CX;
+  const y = e.clientY - rect.top  - CY;
+  const r = Math.sqrt(x*x + y*y);
+  const t = grooveToTrack(r);
+  if (t >= 0) {
+    loadTrack(t, isPlaying);
+    armAngle = trackToArmAngle(t);
+    setArmVisual(armAngle);
+  }
+});
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+drawRecord(0);
+setArmVisual(ARM_REST);
+// Start animation loop for platter spin (even when stopped, very slow)
+let idleId;
+function idleSpin() {
+  recordAngle += 0.001;
+  drawRecord(recordAngle);
+  idleId = requestAnimationFrame(idleSpin);
+}
+idleId = requestAnimationFrame(idleSpin);
+audio.addEventListener('play',  () => { cancelAnimationFrame(idleId); if(!animId) animId = requestAnimationFrame(animate); });
+audio.addEventListener('pause', () => { cancelAnimationFrame(animId); animId=null; idleId=requestAnimationFrame(idleSpin); });
+</script>
+</body>
+</html>
