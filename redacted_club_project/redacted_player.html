@@ -584,7 +584,7 @@
   .pin-btn.wide{grid-column:span 2;}
 
   /* ═══ SIDEBAR BUTTONS ═══ */
-  #music-fab,#gallery-fab{
+  #music-fab,#gallery-fab,#manual-fab{
     width:100%;
     height:44px;
     background:rgba(0,20,10,0.95);
@@ -601,7 +601,7 @@
     user-select:none;
     margin-bottom:4px;
   }
-  #music-fab:hover,#gallery-fab:hover{
+  #music-fab:hover,#gallery-fab:hover,#manual-fab:hover{
     box-shadow:0 0 18px rgba(0,255,65,0.6);
     border-color:#4f4;
     background:rgba(0,255,65,0.08);
@@ -2013,6 +2013,7 @@
 <div id="sidebar">
   <div id="music-fab" onclick="toggleWindow('player-popup')" title="PLAYER.EXE">♫</div>
   <div id="gallery-fab" onclick="toggleWindow('gallery-popup');renderGallery()" title="GALLERY.EXE">🖼</div>
+  <div id="manual-fab" onclick="toggleWindow('manual-popup')" title="MANUAL.EXE">📖</div>
   <div class="sidebar-divider"></div>
   <div id="taskbar-label">PROCESSES</div>
   <div id="taskbar"></div>
@@ -2061,8 +2062,8 @@ const CONFIG={
     {id:'RC-005',title:'███ ████ █████',file_mp3:'One Last Drink 2.mp3',file_wav:'One Last Drink 2.wav',visible:false,locked:true,unlockCode:'SIGNAL'},
     {id:'RC-006',title:'██████ ████',file_mp3:'Sundee Arvo.mp3',file_wav:'Sundee Arvo.wav',visible:false,locked:true,unlockCode:'BENEATH'},
 
-    // Secret Track - Master Code
-    {id:'RC-007',title:'██████ ██',file_mp3:'GG.mp3',file_wav:'GG.wav',visible:false,locked:true,unlockCode:'REDACTED'},
+    // Secret Track - decodes from the anomalous VOID signal (115.3 MHz)
+    {id:'RC-007',title:'██████ ██',file_mp3:'GG.mp3',file_wav:'GG.wav',visible:false,locked:true,unlockCode:'VOID'},
   ],
   secrets:{codesFound:[],totalCodes:10,masterCode:'OMNISCIENT'}
 };
@@ -2511,6 +2512,19 @@ async function startBoot(){
   renderPlayerTracks();
   toggleWindow('player-popup');
 
+  // Delayed mail-style nudge toward the manual
+  setTimeout(()=>{
+    if(WindowRegistry.windows['manual-popup'].discovered)return;
+    playSFX('ui_click',0.4);
+    printLine('');
+    printLine('▓▓ 1 NEW MESSAGE ▓▓','warning');
+    printLine('FROM: sysadmin@[REDACTED]','dim');
+    printLine('SUBJ: found this in the archive','dim');
+    printLine('> old maintenance manual, scanned copy attached','ghost');
+    printLine('> type "manual" or press 📖 to open it','ghost');
+    printLine('');
+  },12000);
+
   generateSessionId();startClock();cmdInput.focus();
 }
 
@@ -2529,6 +2543,7 @@ function showHelp(){
   printLine('  read [file]   — open a file','dim');
   printLine('  player        — audio controls','dim');
   printLine('  gallery       — view images','dim');
+  printLine('  manual        — the player manual (start here)','dim');
   // Milestone 1+: playback, search, games
   if(m.includes('EXPLORATION')){
     printLine('','');printLine('── PLAYBACK ──','dim');
@@ -2596,9 +2611,9 @@ scan:(a)=>{
     printLine('Opening SCANNER.EXE...','dim');
     discoverCommandGroup('scanner');
   },
-  tune:(a)=>{const f=a[0];if(f==='97.7'){tuneToFrequency(97.7)}else if(f==='108.0'||f==='108'){tuneToFrequency(108.0)}else if(f){printLine(`${f} MHz — noise floor only. Try 97.7 or 108.0.`,'dim')}else{printLine('Usage: tune [frequency]  (e.g. tune 97.7)','dim');printLine('Or use the SCANNER to find signals first.','ghost')}},
+  tune:(a)=>{const f=a[0];if(f==='97.7'){tuneToFrequency(97.7)}else if(f==='108.0'||f==='108'){tuneToFrequency(108.0)}else if(f==='115.3'){tuneToFrequency(115.3)}else if(f){printLine(`${f} MHz — noise floor only. Try 97.7 or 108.0.`,'dim')}else{printLine('Usage: tune [frequency]  (e.g. tune 97.7)','dim');printLine('Or use the SCANNER to find signals first.','ghost')}},
   decode:(a)=>{const c=a.join(' ').toLowerCase().trim();if(c===CONFIG.secrets.masterCode.toLowerCase()){COMMANDS.unlockAll();return}if(c){const sig=scannerState.lockedSignals.find(s=>s.code.toLowerCase()===c);if(sig){decodeOpenForSignal(sig.code);return}const m=CONFIG.tracks.find(t=>t.unlockCode&&t.unlockCode.toLowerCase()===c);if(m){printLine('Signal not locked yet. Use SCANNER.EXE to find and lock this frequency.','dim');return}}openDecode()},
-  signal:()=>decodeOpenForSignal('SIGNAL'),beneath:()=>decodeOpenForSignal('BENEATH'),
+  signal:()=>decodeOpenForSignal('SIGNAL'),beneath:()=>decodeOpenForSignal('BENEATH'),void:()=>decodeOpenForSignal('VOID'),
   redacted:()=>{
     playSFX('glitch_heavy',0.4);
     printLine('');
@@ -3348,7 +3363,15 @@ function tuneToFrequency(freq) {
       printLine('');
       printLine('Use "decode ' + signal.code.toLowerCase() + '" to unlock encrypted file.', 'dim');
       addSecret('TUNE_' + signal.code);
-      
+      // Tuning directly counts as locking the signal — feeds the DECODE flow
+      if(!scannerState.lockedSignals.find(s => s.code === signal.code)) {
+        scannerState.lockedSignals.push(signal);
+        state.progression.signalsLocked = scannerState.lockedSignals.length;
+        discoverCommandGroup('decode');
+        checkProgression();
+        updateEchoesDisplay();
+      }
+
 
       // Special message for VOID signal
       if(signal.code === 'VOID') {
