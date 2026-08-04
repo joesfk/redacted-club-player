@@ -131,6 +131,9 @@
   #header .title::before{color:var(--red);animation:screen-tear 4s infinite;opacity:.4;z-index:-1}
   #header .title::after{color:var(--cyan);animation:screen-tear 4s infinite reverse;opacity:.3;z-index:-1}
   #header .status{font-size:10px;color:var(--green-dark)}
+  #mute-btn{cursor:pointer;font-size:12px;padding:0 2px;user-select:none;transition:filter .15s,opacity .15s}
+  #mute-btn:hover{filter:drop-shadow(0 0 4px rgba(0,255,65,.6))}
+  #mute-btn.active{opacity:.5}
 
   #terminal,#terminal *{text-shadow:0 0 4px rgba(0,255,65,.15),0 0 8px rgba(0,255,65,.06)}
   #header .title{text-shadow:0 0 5px rgba(0,255,65,.6),0 0 10px rgba(0,255,65,.3),0 0 20px rgba(0,255,65,.1)}
@@ -1396,7 +1399,7 @@
       <div id="terminal">
         <div id="header">
           <div class="title" data-text="░░░░░░://███">░░░░░░://███</div>
-          <div class="status"><span id="clock">00:00:00</span> │ <span id="session-id">SES-0000</span> │ <span id="conn-status">■</span></div>
+          <div class="status"><span id="clock">00:00:00</span> │ <span id="session-id">SES-0000</span> │ <span id="conn-status">■</span> │ <span id="mute-btn" onclick="toggleMute()" title="Mute">🔊</span></div>
         </div>
         <div id="output"></div>
         <div id="input-line">
@@ -2145,7 +2148,7 @@ const CONFIG={
   defaultVolume:0.7,
   pinLength:4,
   colors:{green:'#00ff41',greenDim:'#00aa2a',greenDark:'#00752b',amber:'#ffaa00',red:'#ff0040',cyan:'#00aaff'},
-  storage:{prefix:'rcplayer_',secrets:'rcplayer_secrets',discovered:'rcplayer_discovered',discoveredCmds:'rcplayer_discoveredCmds',progression:'rcplayer_progression',snakeHigh:'rcplayer_snakeHighScore',tronWins:'rcplayer_tronWins',mailRead:'rcplayer_mailRead'},
+  storage:{prefix:'rcplayer_',secrets:'rcplayer_secrets',discovered:'rcplayer_discovered',discoveredCmds:'rcplayer_discoveredCmds',progression:'rcplayer_progression',snakeHigh:'rcplayer_snakeHighScore',tronWins:'rcplayer_tronWins',mailRead:'rcplayer_mailRead',muted:'rcplayer_muted'},
   tracks:[
     // Main EP - Always Visible
     {id:'RC-001',title:'CASINO',file_mp3:'Casino.mp3',file_wav:'Casino.wav',visible:true,locked:false},
@@ -2168,6 +2171,7 @@ const SFX = {
   path: './redacted_assets/sfx/',
   volume: 0.7,  // Global SFX volume (0.0 - 1.0)
   enabled: true,  // Master SFX toggle
+  muted: false,  // Master mute (separate from `enabled` — the sfx on/off command)
   cache: {},  // Preloaded sounds
 
   // Sound library with categories
@@ -2220,6 +2224,7 @@ const SFX = {
     // Set volume
     const vol = volumeOverride !== null ? volumeOverride : this.volume;
     sound.volume = Math.max(0, Math.min(1, vol));
+    sound.muted = this.muted;
 
     // Play with error handling
     sound.play().catch(err => {
@@ -2432,6 +2437,8 @@ let state={
 };
 
 // Restore persisted progress from localStorage
+let audioMuted=false;
+let ambientHumAudio=null;
 try{
   const ss=JSON.parse(localStorage.getItem(CONFIG.storage.secrets)||'[]')
   ss.forEach(s=>{if(!CONFIG.secrets.codesFound.includes(s))CONFIG.secrets.codesFound.push(s)})
@@ -2442,6 +2449,7 @@ try{
   if(ss.length>0)state.headerRevealed=true
   const sp=JSON.parse(localStorage.getItem(CONFIG.storage.progression)||'null')
   if(sp)Object.assign(state.progression,sp)
+  audioMuted=JSON.parse(localStorage.getItem(CONFIG.storage.muted)||'false')
 }catch(e){}
 
 function persistProgression(){
@@ -2474,6 +2482,28 @@ if(CONFIG.secrets.codesFound.length>0)recalculateMilestones()
 const audio=document.getElementById('audio-player');
 const output=document.getElementById('output');
 const cmdInput=document.getElementById('cmd-input');
+
+// ═══ MASTER MUTE ═══
+SFX.muted=audioMuted;
+audio.muted=audioMuted;
+
+function applyMuteState(){
+  audio.muted=audioMuted;
+  SFX.muted=audioMuted;
+  if(ambientHumAudio)ambientHumAudio.muted=audioMuted;
+  if(synthState){const v=parseInt(document.getElementById('synth-volume')?.value||50)/100;synthState.master.gain.value=audioMuted?0:v}
+  if(drumState){const v=parseInt(document.getElementById('drums-volume')?.value||50)/100;drumState.master.gain.value=audioMuted?0:v}
+  const btn=document.getElementById('mute-btn');
+  if(btn){btn.textContent=audioMuted?'🔇':'🔊';btn.title=audioMuted?'Unmute':'Mute';btn.classList.toggle('active',audioMuted)}
+}
+
+function toggleMute(){
+  audioMuted=!audioMuted;
+  localStorage.setItem(CONFIG.storage.muted,JSON.stringify(audioMuted));
+  applyMuteState();
+  if(!audioMuted)playSFX('ui_click',0.3);
+}
+applyMuteState();
 
 
 
@@ -2572,8 +2602,9 @@ async function startBoot(){
   bs.classList.remove('active');bs.classList.add('hidden');await sleep(500);
   state.bootComplete=true;openSidebar();
   // Start ambient terminal hum loop
-  const ambientHum=playSFX('ambient_hum',0.15);
-  if(ambientHum){ambientHum.loop=true}
+  ambientHumAudio=playSFX('ambient_hum',0.15);
+  if(ambientHumAudio){ambientHumAudio.loop=true;ambientHumAudio.muted=audioMuted}
+  applyMuteState();
   // Start idle hint system
   HintEngine.init();
   initScreensaverIdle();
@@ -5176,7 +5207,7 @@ function initSynth(){
   const AC = window.AudioContext || window.webkitAudioContext
   const ctx = new AC()
   const master = ctx.createGain()
-  master.gain.value = 0.5
+  master.gain.value = audioMuted ? 0 : 0.5
   const filter = ctx.createBiquadFilter()
   filter.type = 'lowpass'
   filter.frequency.value = 8000
@@ -5366,7 +5397,7 @@ function updateSynthFilter(){
 function updateSynthVol(){
   if(!synthState) return
   const v = parseInt(document.getElementById('synth-volume').value) / 100
-  synthState.master.gain.value = v
+  synthState.master.gain.value = audioMuted ? 0 : v
   document.getElementById('synth-vol-val').textContent = Math.round(v*100)+'%'
 }
 
@@ -5516,7 +5547,7 @@ function initDrums(){
   const AC = window.AudioContext || window.webkitAudioContext
   const ctx = new AC()
   const master = ctx.createGain()
-  master.gain.value = 0.5
+  master.gain.value = audioMuted ? 0 : 0.5
   master.connect(ctx.destination)
 
   drumState = {
@@ -5790,7 +5821,7 @@ function updateDrumsBPM(){
 function updateDrumsVol(){
   if(!drumState) return
   const v = parseInt(document.getElementById('drums-volume').value) / 100
-  drumState.master.gain.value = v
+  drumState.master.gain.value = audioMuted ? 0 : v
   document.getElementById('drums-vol-val').textContent = Math.round(v*100)+'%'
 }
 
