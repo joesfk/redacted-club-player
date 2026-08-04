@@ -583,6 +583,34 @@
   }
   .tron-game-over.show{display:block;}
 
+  /* ═══ CODEC.EXE ═══ */
+  #codec-popup{
+    position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:380px;
+    background:rgba(0,20,10,0.98);
+    border:2px solid var(--cyan);
+    box-shadow:0 0 30px rgba(0,170,255,0.4),inset 0 0 20px rgba(0,0,0,0.8);
+    z-index:9990;display:none;font-family:'VT323',monospace;
+  }
+  #codec-popup.show{display:block;}
+  #codec-popup .popup-titlebar{background:rgba(0,170,255,0.15);border-bottom:1px solid var(--cyan);color:var(--cyan);}
+  .codec-box{
+    background:#000;border:2px solid var(--cyan);padding:14px;
+    display:flex;justify-content:space-between;align-items:center;
+    box-shadow:inset 0 0 15px rgba(0,170,255,0.3);
+  }
+  #codec-freq-big{font-size:32px;color:var(--cyan);letter-spacing:2px;text-shadow:0 0 10px rgba(0,170,255,.8);}
+  #codec-blink{font-size:20px;color:var(--cyan);animation:codec-blink 1s steps(1) infinite;}
+  @keyframes codec-blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+  .codec-box.connecting{animation:codec-connecting .3s steps(2) infinite;}
+  @keyframes codec-connecting{0%{border-color:var(--cyan)}50%{border-color:var(--red)}100%{border-color:var(--cyan)}}
+  #codec-speaker{margin-top:10px;color:var(--cyan);font-size:15px;letter-spacing:1px;min-height:18px;}
+  #codec-dialogue{min-height:60px;font-size:15px;line-height:1.5;color:var(--green);}
+  #codec-freq-input{flex:1;background:#000;border:1px solid var(--green-dark);color:var(--green);padding:6px;font-family:'VT323',monospace;font-size:16px;}
+  #codec-call-btn{background:var(--cyan);color:#000;border:none;padding:6px 16px;cursor:pointer;font-family:'VT323',monospace;font-size:16px;}
+  #codec-call-btn:hover{background:#4fd6ff;}
+  #codec-hint{margin-top:8px;font-size:11px;color:var(--green-dark);}
+
   /* ═══ PINCODE.EXE ═══ */
   #pincode-popup{
     position:fixed;
@@ -1625,6 +1653,27 @@
   </div>
 </div>
 
+<!-- ═══ CODEC.EXE ═══ -->
+<div id="codec-popup">
+  <div class="popup-titlebar">
+    <span>📻 CODEC.EXE</span>
+    <span class="popup-close" onclick="codecClose()">✕</span>
+  </div>
+  <div style="padding:14px;">
+    <div id="codec-box" class="codec-box">
+      <div id="codec-freq-big">---.--</div>
+      <div id="codec-blink">●</div>
+    </div>
+    <div id="codec-speaker"></div>
+    <div id="codec-dialogue">Enter a frequency and press CALL.</div>
+    <div style="display:flex;gap:6px;margin-top:12px;">
+      <input type="text" id="codec-freq-input" placeholder="141.80" onkeydown="if(event.key==='Enter')codecCall()">
+      <button id="codec-call-btn" onclick="codecCall()">CALL</button>
+    </div>
+    <div id="codec-hint">tune in a frequency, format XXX.XX</div>
+  </div>
+</div>
+
 <!-- ═══ PINCODE.EXE ═══ -->
 <div id="pincode-popup">
   <div class="popup-titlebar">
@@ -2349,6 +2398,7 @@ const WindowRegistry = {
     'tron-popup':    { name: 'TRON',    icon: '⚡', command: 'tron',    discovered: false },
     'matrix-popup':  { name: 'MATRIX',  icon: '🟢', command: 'matrix',  discovered: false },
     'pincode-popup': { name: 'PINCODE', icon: '🔐', command: 'pincode', discovered: false },
+    'codec-popup':   { name: 'CODEC',   icon: '📻', command: 'codec',   discovered: false },
     'radar-popup':   { name: 'RADAR',   icon: '📡', command: 'radar',   discovered: false },
     'echoes-popup':  { name: 'ECHOES',  icon: '📋', command: 'echoes',  discovered: false },
     'donut-popup':   { name: 'DONUT',   icon: '🍩', command: 'donut',   discovered: false },
@@ -2900,7 +2950,7 @@ scan:(a)=>{
   cowlevel:()=>{printLine('');printLine('       (__)','dim');printLine('       (oo)','dim');printLine(' /------\\/','dim');printLine('/ |    ||','dim');printLine('*  /\\---/\\','dim');printLine('   ~~   ~~','dim');printLine('THERE IS NO COW LEVEL','warning');addSecret('COW_LEVEL')},
   allyourbase:()=>{playSFX('glitch_heavy',0.3);flashScreen('red');printLine('');printLine('HOW ARE YOU GENTLEMEN !!','error');printLine('ALL YOUR BASE ARE BELONG TO US','error');printLine('someone set up us the bomb.','ghost');addSecret('AYBABTU')},
   cake:()=>{playSFX('glitch_corrupt',0.3);flashScreen('red');printLine('');printLine('THE CAKE IS A LIE','error');printLine('THE CAKE IS A LIE','error');printLine('THE CAKE IS A LIE','error');addSecret('CAKE_LIE')},
-  codec:()=>{printLine('');printLine('141.80 CALLING...','dim');setTimeout(()=>{printLine('"Snake? Snake?! SNAAAKE!"','cyan');addSecret('CODEC')},900)},
+  codec:()=>{document.getElementById('codec-popup').classList.add('show');WindowRegistry.discover('codec-popup');codecOpen();printLine('Opening CODEC.EXE...','dim');document.getElementById('codec-freq-input').value='141.80';setTimeout(()=>codecCall(),400)},
   sora:()=>{printLine('');printLine('"I\'ve been having these weird thoughts lately."','dim');setTimeout(()=>{printLine('"Like, is any of this for real, or not?"','dim');addSecret('SORA')},1200)},
   keyblade:()=>{materializeIcon('🗝️','var(--green)');playSFX('scanner_lock',0.4);printLine('');printLine('A KEYBLADE MATERIALIZES IN YOUR HAND.','warning');printLine('there is nothing left here to unlock. put it away.','ghost');addSecret('KEYBLADE')},
   xehanort:()=>{printLine('');printLine('ANAGRAM ENGINE ENGAGED...','dim');const l=printLine('','warning');scrambleReveal(l,'XEHANORT',500);setTimeout(()=>{scrambleReveal(l,'ANSEM',600);setTimeout(()=>{printLine('...contains ANSEM, XEMNAS, and about eleven other guys.','ghost');printLine('nobody in this organization uses their real name.','ghost');addSecret('ORGANIZATION_XIII')},900)},700)},
@@ -5276,6 +5326,95 @@ function pinSubmit() {
       pinClear();
     }, 1000);
   }
+}
+
+// ═══ CODEC.EXE ═══
+// A few frequencies are real Metal Gear Solid canon (140.96 was famously
+// printed on the back of the physical PS1 case — the original ARG secret).
+// Everything else just returns static.
+const CODEC_FREQUENCIES = {
+  '140.96': { speaker: 'MERYL', secret: 'CODEC_MERYL', lines: [
+    "...Snake? Is that really you calling on this frequency?",
+    "How did you even find this number? ...never mind.",
+    "Some things aren't meant to be printed in the manual."
+  ]},
+  '140.15': { speaker: 'COLONEL', secret: 'CODEC_CAMPBELL', lines: [
+    "This is Campbell. You again?",
+    "Save your progress and get back to work, soldier.",
+    "...and stop calling this frequency for no reason."
+  ]},
+  '141.12': { speaker: 'NAOMI', secret: 'CODEC_NAOMI', lines: [
+    "Your vitals look stable.",
+    "Try not to die on an empty stomach.",
+    "...and drink some water. Seriously."
+  ]},
+  '141.80': { speaker: '???', secret: 'CODEC', lines: [
+    '"Snake? Snake?! SNAAAKE!"',
+    "...sorry. couldn't resist."
+  ]}
+};
+
+function codecOpen() {
+  document.getElementById('codec-freq-big').textContent = '---.--';
+  document.getElementById('codec-speaker').textContent = '';
+  document.getElementById('codec-dialogue').textContent = 'Enter a frequency and press CALL.';
+  document.getElementById('codec-box').classList.remove('connecting');
+}
+
+function codecClose() {
+  document.getElementById('codec-popup').classList.remove('show');
+  document.getElementById('codec-box').classList.remove('connecting');
+}
+
+function codecTypeLines(lines) {
+  const el = document.getElementById('codec-dialogue');
+  el.textContent = '';
+  let i = 0;
+  (function next() {
+    if (i >= lines.length) return;
+    el.textContent = lines[i];
+    i++;
+    if (i < lines.length) setTimeout(next, 1600);
+  })();
+}
+
+function codecCall() {
+  const input = document.getElementById('codec-freq-input');
+  const freq = input.value.trim();
+  if (!freq) return;
+  const box = document.getElementById('codec-box');
+  const freqBig = document.getElementById('codec-freq-big');
+  const speakerEl = document.getElementById('codec-speaker');
+  const dialogueEl = document.getElementById('codec-dialogue');
+
+  freqBig.textContent = freq;
+  speakerEl.textContent = '';
+  dialogueEl.textContent = 'CONNECTING...';
+  box.classList.add('connecting');
+  // Placeholder SFX reusing existing library sounds. Swap for a real codec
+  // call/ring tone once one's added to SFX.library (redacted_assets/sfx/).
+  playSFX('scanner_ping', 0.4);
+
+  setTimeout(() => {
+    box.classList.remove('connecting');
+    const entry = CODEC_FREQUENCIES[freq];
+    if (entry) {
+      playSFX('scanner_lock', 0.5);
+      speakerEl.textContent = entry.speaker + ':';
+      codecTypeLines(entry.lines);
+      addSecret(entry.secret);
+    } else if (Math.random() < 0.12) {
+      // rare Psycho Mantis-style gag on a random wrong number
+      playSFX('scanner_lock', 0.3);
+      speakerEl.textContent = '???';
+      codecTypeLines(["...you like puzzle games, don't you?", "I can tell. put the terminal down for a second."]);
+      addSecret('CODEC_MANTIS');
+    } else {
+      speakerEl.textContent = '';
+      dialogueEl.textContent = '...NO SIGNAL...';
+      playSFX('glitch_error', 0.3);
+    }
+  }, 900);
 }
 
 // ═══ SYNTH.EXE ═══
