@@ -54,10 +54,30 @@
   /* ═══ TERMINAL SURFACE & CRT ═══ */
   #terminal-surface{
     width:100vw;height:100vh;position:relative;z-index:1;
+    display:flex;flex-direction:column;
     transform-style:preserve-3d;transition:all 2.5s cubic-bezier(0.4, 0.0, 0.2, 1);
-    background:var(--bg);border-radius:18px;overflow:hidden;
+    background:var(--bg);border-radius:4px;overflow:hidden;
     box-shadow:inset 0 0 80px rgba(0,255,65,.03),inset 0 0 200px rgba(0,0,0,.5),0 0 40px rgba(0,255,65,.06),0 0 2px rgba(0,255,65,.1);
   }
+
+  /* ═══ TOP BAR ═══ */
+  #top-bar{
+    flex-shrink:0;display:flex;justify-content:space-between;align-items:center;
+    padding:8px 16px;border-bottom:1px solid rgba(0,170,255,.35);
+    background:linear-gradient(180deg,rgba(0,170,255,.06),transparent);
+    font-family:'VT323',monospace;font-size:13px;color:var(--cyan);
+    letter-spacing:2px;position:relative;z-index:2;
+  }
+  #top-bar-brand{text-shadow:0 0 6px rgba(0,170,255,.5);}
+  #top-bar-status{font-size:11px;color:var(--green-dark);letter-spacing:1px;}
+  #top-bar-status .cy{color:var(--cyan)}
+
+  /* Corner HUD brackets — purely decorative */
+  .hud-corner{position:absolute;width:20px;height:20px;opacity:.45;pointer-events:none;z-index:102}
+  .corner-tl{top:6px;left:6px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan)}
+  .corner-tr{top:6px;right:6px;border-top:2px solid var(--cyan);border-right:2px solid var(--cyan)}
+  .corner-bl{bottom:6px;left:6px;border-bottom:2px solid var(--cyan);border-left:2px solid var(--cyan)}
+  .corner-br{bottom:6px;right:6px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan)}
 
   /* CRT BEZEL */
   #crt-bezel{
@@ -95,7 +115,7 @@
   @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
   @keyframes progress-pulse{0%,100%{box-shadow:0 0 4px rgba(0,255,65,.2)}50%{box-shadow:0 0 10px rgba(0,255,65,.5)}}
   @keyframes screen-tear{0%,100%{clip-path:inset(0)}10%{clip-path:inset(15% 0 60% 0);transform:translateX(-5px)}20%{clip-path:inset(40% 0 30% 0);transform:translateX(8px)}30%{clip-path:inset(70% 0 10% 0);transform:translateX(-3px)}40%{clip-path:inset(0);transform:none}}
-  @keyframes sidebar-reveal{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+  @keyframes sidebar-reveal{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
   @keyframes taskbar-add{from{opacity:0;transform:translateX(10px);max-height:0}to{opacity:1;transform:translateX(0);max-height:30px}}
 
   #screensaver-overlay{position:fixed;inset:0;z-index:500;background:#000;display:none;cursor:none}
@@ -119,18 +139,17 @@
   #boot-text .boot-line{opacity:0;animation:boot-fade .15s ease forwards}
 
   /* ═══ LAYOUT ═══ */
-  #main-grid{width:100%;height:100%;display:grid;grid-template-columns:1fr 0px;transition:grid-template-columns .6s ease;padding:14px;gap:0}
-  #main-grid.sidebar-open{grid-template-columns:1fr var(--sidebar-w);gap:12px}
+  #main-grid{width:100%;flex:1;min-height:0;display:grid;grid-template-columns:0px 1fr;transition:grid-template-columns .6s ease;padding:14px;gap:0}
+  #main-grid.sidebar-open{grid-template-columns:var(--sidebar-w) 1fr;gap:12px}
 
   /* TERMINAL */
-  #terminal{display:flex;flex-direction:column;min-width:0;overflow:hidden;color:var(--green);position:relative}
-  #header{border-bottom:1px solid var(--green-ghost);padding-bottom:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+  #terminal{order:2;display:flex;flex-direction:column;min-width:0;overflow:hidden;color:var(--green);position:relative}
+  #header{border-bottom:1px solid var(--green-ghost);padding-bottom:8px;margin-bottom:8px;display:flex;justify-content:flex-start;align-items:center;flex-shrink:0}
   #header .title{font-family:'VT323',monospace;font-size:22px;letter-spacing:2px;position:relative;
     text-shadow:0 0 5px rgba(0,255,65,.6),0 0 10px rgba(0,255,65,.3),0 0 20px rgba(0,255,65,.1)}
   #header .title::before,#header .title::after{content:attr(data-text);position:absolute;left:0;top:0;width:100%;height:100%}
   #header .title::before{color:var(--red);animation:screen-tear 4s infinite;opacity:.4;z-index:-1}
   #header .title::after{color:var(--cyan);animation:screen-tear 4s infinite reverse;opacity:.3;z-index:-1}
-  #header .status{font-size:10px;color:var(--green-dark)}
   #mute-btn{cursor:pointer;font-size:12px;padding:0 2px;user-select:none;transition:filter .15s,opacity .15s}
   #mute-btn:hover{filter:drop-shadow(0 0 4px rgba(0,255,65,.6))}
   #mute-btn.active{opacity:.5}
@@ -160,7 +179,7 @@
   #input-line:focus-within{border-color:var(--green);box-shadow:0 0 12px rgba(0,255,65,0.2) inset,0 0 8px rgba(0,255,65,0.15)}
 
   /* ═══ SIDEBAR & TASKBAR ═══ */
-  #sidebar{overflow:hidden;opacity:0;display:flex;flex-direction:column;border-left:1px solid var(--green-ghost);padding-left:12px;transition:opacity .4s ease;min-width:0}
+  #sidebar{order:1;overflow:hidden;opacity:0;display:flex;flex-direction:column;border-right:1px solid var(--green-ghost);padding-right:12px;transition:opacity .4s ease;min-width:0}
   #main-grid.sidebar-open #sidebar{opacity:1;animation:sidebar-reveal .6s ease forwards}
 
 
@@ -197,7 +216,7 @@
     #welcome-art{font-size:7px}
   }
   @media(max-width:500px){
-    #main-grid.sidebar-open{grid-template-columns:1fr 0px;gap:0}
+    #main-grid.sidebar-open{grid-template-columns:0px 1fr;gap:0}
     #main-grid.sidebar-open #sidebar{opacity:0;pointer-events:none}
   }
 
@@ -678,6 +697,7 @@
   .pin-btn.wide{grid-column:span 2;}
 
   /* ═══ SIDEBAR BUTTONS ═══ */
+  #fab-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
   #music-fab,#gallery-fab,#manual-fab,#mail-fab{
     width:100%;
     height:44px;
@@ -693,7 +713,6 @@
     box-shadow:0 0 10px rgba(0,255,65,0.3);
     transition:all .2s ease;
     user-select:none;
-    margin-bottom:4px;
     position:relative;
   }
   #music-fab:hover,#gallery-fab:hover,#manual-fab:hover,#mail-fab:hover{
@@ -1462,12 +1481,19 @@
   </div>
   <div id="crt-bezel"></div>
   <div id="terminal-surface">
+    <div class="hud-corner corner-tl"></div>
+    <div class="hud-corner corner-tr"></div>
+    <div class="hud-corner corner-bl"></div>
+    <div class="hud-corner corner-br"></div>
     <div id="flicker-layer"></div>
+    <div id="top-bar">
+      <div id="top-bar-brand">░░░░░░://███</div>
+      <div id="top-bar-status"><span id="clock">00:00:00</span> │ <span id="session-id">SES-0000</span> │ SECRETS: <span id="topbar-secrets" class="cy">0/10</span> │ <span id="conn-status">■</span> │ <span id="mute-btn" onclick="toggleMute()" title="Mute">🔊</span></div>
+    </div>
     <div id="main-grid">
       <div id="terminal">
         <div id="header">
           <div class="title" data-text="░░░░░░://███">░░░░░░://███</div>
-          <div class="status"><span id="clock">00:00:00</span> │ <span id="session-id">SES-0000</span> │ <span id="conn-status">■</span> │ <span id="mute-btn" onclick="toggleMute()" title="Mute">🔊</span></div>
         </div>
         <div id="output"></div>
         <div id="input-line">
@@ -2218,10 +2244,12 @@
 
 <!-- ═══ SIDEBAR ═══ -->
 <div id="sidebar">
-  <div id="music-fab" onclick="toggleWindow('player-popup')" title="PLAYER.EXE">♫</div>
-  <div id="gallery-fab" onclick="toggleWindow('gallery-popup');renderGallery()" title="GALLERY.EXE">🖼</div>
-  <div id="manual-fab" onclick="toggleWindow('manual-popup')" title="MANUAL.EXE">📖</div>
-  <div id="mail-fab" onclick="COMMANDS.mail()" title="MAIL.EXE">✉️<span id="mail-badge" class="mail-badge">0</span></div>
+  <div id="fab-grid">
+    <div id="music-fab" onclick="toggleWindow('player-popup')" title="PLAYER.EXE">♫</div>
+    <div id="gallery-fab" onclick="toggleWindow('gallery-popup');renderGallery()" title="GALLERY.EXE">🖼</div>
+    <div id="manual-fab" onclick="toggleWindow('manual-popup')" title="MANUAL.EXE">📖</div>
+    <div id="mail-fab" onclick="COMMANDS.mail()" title="MAIL.EXE">✉️<span id="mail-badge" class="mail-badge">0</span></div>
+  </div>
   <div class="sidebar-divider"></div>
   <div id="taskbar-label">PROCESSES</div>
   <div id="taskbar"></div>
@@ -2526,8 +2554,11 @@ const HintEngine = {
 };
 
 function updateSidebarStatus() {
+  const count = Math.min(CONFIG.secrets.codesFound.length, CONFIG.secrets.totalCodes);
   const secretsEl = document.getElementById('sidebar-secrets');
-  if (secretsEl) secretsEl.textContent = `SECRETS: ${Math.min(CONFIG.secrets.codesFound.length, CONFIG.secrets.totalCodes)}/${CONFIG.secrets.totalCodes}`;
+  if (secretsEl) secretsEl.textContent = `SECRETS: ${count}/${CONFIG.secrets.totalCodes}`;
+  const topbarEl = document.getElementById('topbar-secrets');
+  if (topbarEl) topbarEl.textContent = `${count}/${CONFIG.secrets.totalCodes}`;
 }
 
 let state={
@@ -3040,7 +3071,7 @@ function processCommand(input){
 }
 
 // ═══ HEADER ═══
-function revealHeader(){if(state.headerRevealed)return;state.headerRevealed=true;const t=document.querySelector('#header .title');t.setAttribute('data-text','R3DACT3D://SYS');t.textContent='R3DACT3D://SYS';document.getElementById('prompt').textContent='RDCTD>';document.getElementById('prompt').style.color='var(--green)';document.getElementById('bg-env').style.opacity='.3'}
+function revealHeader(){if(state.headerRevealed)return;state.headerRevealed=true;const t=document.querySelector('#header .title');t.setAttribute('data-text','R3DACT3D://SYS');t.textContent='R3DACT3D://SYS';const tb=document.getElementById('top-bar-brand');if(tb)tb.textContent='R3DACT3D://SYS';document.getElementById('prompt').textContent='RDCTD>';document.getElementById('prompt').style.color='var(--green)';document.getElementById('bg-env').style.opacity='.3'}
 
 // ═══ AUDIO ═══
 function playTrackByIndex(i){if(i<0||i>=CONFIG.tracks.length)return;const t=CONFIG.tracks[i];if(t.locked&&!state.discovered.has(t.id)){playSFX('glitch_error',0.5);printLine('ACCESS DENIED','error');return}state.currentTrack=i;const f=CONFIG.format==='mp3'?t.file_mp3:t.file_wav;audio.src=CONFIG.audioPath+f;audio.play().then(()=>{state.isPlaying=true;updatePlayerUI();printLine(`▶ ${t.id} :: ${t.title}`,'dim')}).catch(()=>printLine(`ERR: ${f} — file not found`,'error'))}
