@@ -2503,7 +2503,10 @@ function toggleMute(){
   applyMuteState();
   if(!audioMuted)playSFX('ui_click',0.3);
 }
-applyMuteState();
+// Note: applyMuteState() reads synthState/drumState, which aren't declared
+// (let, TDZ) until later in this script — don't call it at top level here.
+// audio.muted/SFX.muted above already cover the pre-boot state; the icon
+// and synth/drums gains get synced properly once startBoot() runs.
 
 
 
