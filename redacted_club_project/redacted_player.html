@@ -941,6 +941,25 @@
     to{opacity:0;}
   }
 
+  /* ═══ SECRET ANIMATIONS ═══ */
+  @keyframes flash-pulse{0%{opacity:0}20%{opacity:.55}100%{opacity:0}}
+  .screen-flash{position:fixed;inset:0;z-index:99998;pointer-events:none;animation:flash-pulse .7s ease-out forwards}
+  .screen-flash.flash-green{background:radial-gradient(circle,rgba(0,255,65,.5),transparent 70%)}
+  .screen-flash.flash-red{background:radial-gradient(circle,rgba(255,0,64,.5),transparent 70%)}
+  .screen-flash.flash-amber{background:radial-gradient(circle,rgba(255,170,0,.5),transparent 70%)}
+
+  @keyframes item-materialize{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(.5) rotate(-20deg)}
+    55%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(8deg)}
+    75%{transform:translate(-50%,-50%) scale(.95) rotate(-4deg)}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(1) rotate(0deg)}
+  }
+  .item-flash{
+    position:fixed;top:50%;left:50%;z-index:99998;pointer-events:none;
+    font-size:64px;text-shadow:0 0 20px currentColor,0 0 40px currentColor;
+    animation:item-materialize 1.3s ease-out forwards;
+  }
+
   #echoes-popup{
     position:fixed;
     left:550px;
@@ -2875,16 +2894,16 @@ scan:(a)=>{
   gandalf:()=>{COMMANDS.norm()},pixl:()=>{COMMANDS.norm()},
   // Video game cheat codes and gaming in-jokes — undocumented on purpose. Try things.
   xyzzy:()=>{printLine('');printSlow('A hollow voice says "Fool."','dim',35);addSecret('XYZZY')},
-  iddqd:()=>{playSFX('glitch_heavy',0.3);printLine('');printLine('GOD MODE ENABLED','warning');printLine('(you were always going to make it out of here)','ghost');addSecret('IDDQD')},
-  idkfa:()=>{playSFX('glitch_heavy',0.3);printLine('');printLine('ALL WEAPONS ACQUIRED','warning');printLine('somewhere, a cyberdemon just sighed.','ghost');addSecret('IDKFA')},
+  iddqd:()=>{playSFX('glitch_heavy',0.3);flashScreen('green');printLine('');printLine('GOD MODE ENABLED','warning');printLine('(you were always going to make it out of here)','ghost');addSecret('IDDQD')},
+  idkfa:()=>{playSFX('glitch_heavy',0.3);flashScreen('green');printLine('');printLine('ALL WEAPONS ACQUIRED','warning');printLine('somewhere, a cyberdemon just sighed.','ghost');addSecret('IDKFA')},
   rosebud:()=>{printLine('');printLine('$$$ MONEY CHEAT -- DENIED $$$','error');printLine('this isn\'t The Sims. try "scan" instead.','dim');addSecret('ROSEBUD')},
   cowlevel:()=>{printLine('');printLine('       (__)','dim');printLine('       (oo)','dim');printLine(' /------\\/','dim');printLine('/ |    ||','dim');printLine('*  /\\---/\\','dim');printLine('   ~~   ~~','dim');printLine('THERE IS NO COW LEVEL','warning');addSecret('COW_LEVEL')},
-  allyourbase:()=>{playSFX('glitch_heavy',0.3);printLine('');printLine('HOW ARE YOU GENTLEMEN !!','error');printLine('ALL YOUR BASE ARE BELONG TO US','error');printLine('someone set up us the bomb.','ghost');addSecret('AYBABTU')},
-  cake:()=>{playSFX('glitch_corrupt',0.3);printLine('');printLine('THE CAKE IS A LIE','error');printLine('THE CAKE IS A LIE','error');printLine('THE CAKE IS A LIE','error');addSecret('CAKE_LIE')},
+  allyourbase:()=>{playSFX('glitch_heavy',0.3);flashScreen('red');printLine('');printLine('HOW ARE YOU GENTLEMEN !!','error');printLine('ALL YOUR BASE ARE BELONG TO US','error');printLine('someone set up us the bomb.','ghost');addSecret('AYBABTU')},
+  cake:()=>{playSFX('glitch_corrupt',0.3);flashScreen('red');printLine('');printLine('THE CAKE IS A LIE','error');printLine('THE CAKE IS A LIE','error');printLine('THE CAKE IS A LIE','error');addSecret('CAKE_LIE')},
   codec:()=>{printLine('');printLine('141.80 CALLING...','dim');setTimeout(()=>{printLine('"Snake? Snake?! SNAAAKE!"','cyan');addSecret('CODEC')},900)},
   sora:()=>{printLine('');printLine('"I\'ve been having these weird thoughts lately."','dim');setTimeout(()=>{printLine('"Like, is any of this for real, or not?"','dim');addSecret('SORA')},1200)},
-  keyblade:()=>{printLine('');printLine('A KEYBLADE MATERIALIZES IN YOUR HAND.','warning');printLine('there is nothing left here to unlock. put it away.','ghost');addSecret('KEYBLADE')},
-  xehanort:()=>{printLine('');printLine('ANAGRAM ENGINE ENGAGED...','dim');setTimeout(()=>{printLine('XEHANORT contains ANSEM, XEMNAS, and about eleven other guys.','warning');printLine('nobody in this organization uses their real name.','ghost');addSecret('ORGANIZATION_XIII')},900)},
+  keyblade:()=>{materializeIcon('🗝️','var(--green)');playSFX('scanner_lock',0.4);printLine('');printLine('A KEYBLADE MATERIALIZES IN YOUR HAND.','warning');printLine('there is nothing left here to unlock. put it away.','ghost');addSecret('KEYBLADE')},
+  xehanort:()=>{printLine('');printLine('ANAGRAM ENGINE ENGAGED...','dim');const l=printLine('','warning');scrambleReveal(l,'XEHANORT',500);setTimeout(()=>{scrambleReveal(l,'ANSEM',600);setTimeout(()=>{printLine('...contains ANSEM, XEMNAS, and about eleven other guys.','ghost');printLine('nobody in this organization uses their real name.','ghost');addSecret('ORGANIZATION_XIII')},900)},700)},
   nobody:()=>{printLine('');printLine('NOBODY is listening.','dim');printLine('...that was the joke. Organization XIII was never subtle either.','ghost');addSecret('NOBODY')},
   simpleandclean:()=>{printLine('');printLine('"you\'re giving me too many things, lately"','cyan');printLine('"you\'re all I need, you smiled at me and said..."','cyan');addSecret('SIMPLE_AND_CLEAN')},
   exit:()=>printLine('There is no exit.','error'),quit:()=>printLine('You can\'t leave.','error'),
@@ -3057,6 +3076,43 @@ function checkProgression(){
 }
 
 // ═══ EFFECTS ═══
+
+// Brief full-screen color flash — used by a few of the hidden commands
+function flashScreen(color='green'){
+  const el=document.createElement('div');
+  el.className='screen-flash flash-'+color;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),800);
+}
+
+// A single emoji/icon that pops in center-screen and fades — e.g. the keyblade gag
+function materializeIcon(icon,color){
+  const el=document.createElement('div');
+  el.className='item-flash';
+  el.style.color=color||'var(--green)';
+  el.textContent=icon;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),1400);
+}
+
+// Hacker-movie decoder effect: scrambles el's text through random chars,
+// locking in the real characters left-to-right until finalText is revealed
+function scrambleReveal(el,finalText,duration=700,charset='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'){
+  const len=finalText.length;
+  const totalFrames=Math.max(4,Math.round(duration/40));
+  let frame=0;
+  const iv=setInterval(()=>{
+    frame++;
+    const revealCount=Math.floor((frame/totalFrames)*len);
+    let out='';
+    for(let i=0;i<len;i++){
+      if(i<revealCount||finalText[i]===' ')out+=finalText[i];
+      else out+=charset[Math.floor(Math.random()*charset.length)];
+    }
+    el.textContent=out;
+    if(frame>=totalFrames){el.textContent=finalText;clearInterval(iv)}
+  },40);
+}
 
 function meltTerminal(){
   const lines = Array.from(output.querySelectorAll('.line'));
