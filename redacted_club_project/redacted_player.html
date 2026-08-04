@@ -139,7 +139,7 @@
   #output{flex:1;overflow-y:auto;padding-right:8px;font-size:14px;line-height:1.55;scrollbar-width:thin;scrollbar-color:var(--green-ghost) transparent}
   #output::-webkit-scrollbar{width:3px}#output::-webkit-scrollbar-track{background:transparent}#output::-webkit-scrollbar-thumb{background:var(--green-ghost)}
   .line{animation:boot-fade .2s ease forwards;white-space:pre-wrap;word-break:break-all}
-  .line.dim{color:var(--green-dark)}.line.ghost{color:var(--green-ghost);font-size:12px}.line.error{color:var(--red)}.line.warning{color:var(--amber)}.line.cyan{color:var(--cyan)}
+  .line.dim{color:var(--green-dark)}.line.ghost{color:var(--green-ghost);font-size:12px}.line.error{color:var(--red)}.line.warning{color:var(--amber)}.line.cyan{color:var(--cyan)}.line.success{color:var(--cyan)}
   .line.system{color:var(--green-dim);font-style:italic}
   .ghost-text{color:var(--bg);cursor:default;transition:color .5s;font-size:11px}
   .ghost-text:hover{color:var(--green-ghost)}
@@ -1020,18 +1020,32 @@
     display:block;
     margin:10px auto;
   }
-  .snake-info{
+  #snake-info{
     display:flex;
     justify-content:space-between;
     padding:0 10px 10px 10px;
     font-size:16px;
   }
-  .snake-controls{
+  #snake-controls{
     padding:10px;
     text-align:center;
     font-size:14px;
     color:var(--green-dark);
   }
+  .snake-game-over{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    background:rgba(0,0,0,0.9);
+    border:2px solid var(--green);
+    padding:20px;
+    color:var(--green);
+    font-size:20px;
+    text-align:center;
+    display:none;
+  }
+  .snake-game-over.show{display:block;}
   #snake-start-btn{
     background:rgba(0,255,65,0.2);
     border:1px solid var(--green);
@@ -1225,6 +1239,7 @@
     background:#1a0f00;color:#1a0f00;display:inline;
     user-select:none;border-radius:2px;padding:0 3px;
   }
+  .manual-redacted.cracked{color:#f0e2b6;transition:color .6s;}
   .manual-stamp{
     position:absolute;top:40px;right:30px;
     font-family:'VT323',monospace;font-size:42px;color:rgba(180,30,30,0.35);
@@ -2298,7 +2313,7 @@ const HintEngine = {
 
 function updateSidebarStatus() {
   const secretsEl = document.getElementById('sidebar-secrets');
-  if (secretsEl) secretsEl.textContent = `SECRETS: ${CONFIG.secrets.codesFound.length}/${CONFIG.secrets.totalCodes}`;
+  if (secretsEl) secretsEl.textContent = `SECRETS: ${Math.min(CONFIG.secrets.codesFound.length, CONFIG.secrets.totalCodes)}/${CONFIG.secrets.totalCodes}`;
 }
 
 let state={
@@ -2568,7 +2583,7 @@ const COMMANDS={
   },
   play:(a)=>{const n=parseInt(a[0]);if(a[0]&&!isNaN(n))playTrackByIndex(n-1);else if(state.currentTrack>=0)togglePlay();else printLine('Usage: play [number]  (e.g. play 1)','error')},
   pause:()=>togglePlay(),stop:()=>stopTrack(),next:()=>nextTrack(),prev:()=>prevTrack(),
-  vol:(a)=>{const v=parseInt(a[0]);if(!isNaN(v)&&v>=0&&v<=100){setVolume(v);const ps=document.getElementById('player-volume');if(ps)ps.value=v;const pd=document.getElementById('player-volume-display');if(pd)pd.textContent=v;printLine(`VOL: ${v}`,'dim')}},
+  vol:(a)=>{const v=parseInt(a[0]);if(!isNaN(v)&&v>=0&&v<=100){setVolume(v);const ps=document.getElementById('player-volume');if(ps)ps.value=v;const pd=document.getElementById('player-volume-display');if(pd)pd.textContent=v+'%';printLine(`VOL: ${v}`,'dim')}else{printLine('Usage: vol [0-100]','error')}},
   format:()=>toggleFormat(),clear:()=>{output.innerHTML=''},
   files:()=>{openFilesExe();printLine('Opening FILES.EXE...','dim');addSecret('LS');if(!state.progression.filesRead.includes('files')){state.progression.filesRead.push('files');checkProgression()}},
   ls:()=>COMMANDS.files(),
@@ -2630,7 +2645,7 @@ scan:(a)=>{
   },
   source:()=>{printLine('');printLine('// you found this','ghost');printLine('// the frequencies hold the keys','ghost');printLine('// 97.7 and 108.0','ghost');printLine('// OMNISCIENT is the word that opens ██████████','error');printLine('');addSecret('SOURCE')},
   whoami:()=>{printLine('');printSlow('QUERY: IDENTITY','dim',40);setTimeout(()=>{printLine('...','dim');setTimeout(()=>{printLine('UNAUTHORIZED','error')},600)},400)},
-  secrets:()=>{if(CONFIG.secrets.codesFound.length===0)printLine('Nothing found yet.','dim');else{printLine(`[${CONFIG.secrets.codesFound.length}/${CONFIG.secrets.totalCodes}] discoveries:` ,'dim');CONFIG.secrets.codesFound.forEach(s=>printLine(`  ■ ${s}`,'ghost'))}printLine('')},
+  secrets:()=>{if(CONFIG.secrets.codesFound.length===0)printLine('Nothing found yet.','dim');else{printLine(`[${Math.min(CONFIG.secrets.codesFound.length,CONFIG.secrets.totalCodes)}/${CONFIG.secrets.totalCodes}] discoveries:` ,'dim');CONFIG.secrets.codesFound.forEach(s=>printLine(`  ■ ${s}`,'ghost'))}printLine('')},
   ping:()=>{printLine('PING ████████.███ ...','dim');setTimeout(()=>printLine(`seq=1 ttl=██ time=${Math.floor(Math.random()*999)}ms`,'dim'),200);setTimeout(()=>printLine(`seq=2 ttl=██ time=${Math.floor(Math.random()*999)}ms`,'dim'),500);setTimeout(()=>{printLine('SIGNAL LOST','error')},900)},
   echo:(a)=>{const t=a.join(' ');if(t.toLowerCase().includes('redacted')){playSFX('glitch_heavy',0.4);printLine('████████████████████████████████','error')}else printLine(t,'')},
   search:(a)=>{const q=(a.join(' ')||'').toLowerCase();if(!q){printLine('Usage: search [term]','dim');return}if(q.includes('signal'))printLine('system.log: signal detected at frequency 97.7','ghost');else if(q.includes('beneath')||q.includes('hidden'))printLine('system.log: something beneath the noise floor','ghost');else if(q.includes('key')||q.includes('decrypt'))printLine('frequencies.log: the frequencies hold the keys','ghost');else if(q.includes('redacted')||q.includes('club'))printLine('manifest.log: REDACTED CLUB','ghost');else printLine('No matches found.','dim')},
@@ -2655,8 +2670,8 @@ let A=0,B=0;const iv=setInterval(()=>{const b=[];const z=[];for(let k=0;k<1760;k
   manual:()=>{document.getElementById('manual-popup').classList.add('show');WindowRegistry.discover('manual-popup');manualGoTo(1);printLine('Opening MANUAL.EXE...','dim');printLine('Use PREV / NEXT to turn pages.','ghost')},
   billiards:()=>{COMMANDS.pool()},
   '8ball':()=>{COMMANDS.pool()},
-  trippy:()=>{COMMANDS.viz()},
-  status:()=>{const mNames=['BOOT','EXPLORATION','SIGNAL_DISCOVERY','DEEP_SCAN','FULL_INTERCEPT','TRANSMISSION_COMPLETE'];printLine('');printLine(`SYS:    ${state.isPlaying?'ACTIVE':'STANDBY'}`,'dim');printLine(`FMT:    ${CONFIG.format.toUpperCase()}`,'dim');printLine(`VOL:    ${Math.round(audio.volume*100)}`,'dim');printLine(`FILES:  ${CONFIG.tracks.filter(t=>t.visible||state.discovered.has(t.id)).length}/${CONFIG.tracks.length}`,'dim');printLine(`ENC:    ${CONFIG.tracks.filter(t=>t.locked&&!state.discovered.has(t.id)).length}`,state.discovered.size<CONFIG.tracks.length?'error':'dim');printLine(`SECRET: ${CONFIG.secrets.codesFound.length}/${CONFIG.secrets.totalCodes}`,'dim');printLine(`LEVEL:  ${state.progression.milestone}/5 — ${mNames[state.progression.milestone]||'UNKNOWN'}`,'dim');printLine('')},
+  trippy:()=>{COMMANDS.screensaver()},
+  status:()=>{const mNames=['BOOT','EXPLORATION','SIGNAL_DISCOVERY','DEEP_SCAN','FULL_INTERCEPT','TRANSMISSION_COMPLETE'];printLine('');printLine(`SYS:    ${state.isPlaying?'ACTIVE':'STANDBY'}`,'dim');printLine(`FMT:    ${CONFIG.format.toUpperCase()}`,'dim');printLine(`VOL:    ${Math.round(audio.volume*100)}`,'dim');printLine(`FILES:  ${CONFIG.tracks.filter(t=>t.visible||state.discovered.has(t.id)).length}/${CONFIG.tracks.length}`,'dim');printLine(`ENC:    ${CONFIG.tracks.filter(t=>t.locked&&!state.discovered.has(t.id)).length}`,state.discovered.size<CONFIG.tracks.length?'error':'dim');printLine(`SECRET: ${Math.min(CONFIG.secrets.codesFound.length,CONFIG.secrets.totalCodes)}/${CONFIG.secrets.totalCodes}`,'dim');printLine(`LEVEL:  ${state.progression.milestone}/5 — ${mNames[state.progression.milestone]||'UNKNOWN'}`,'dim');printLine('')},
   cd:()=>printLine('restricted','error'),pwd:()=>printLine('/███/████████/░░░░░░','dim'),
   rm:()=>{printLine('PERMISSION DENIED','error')},
   sudo:()=>{printLine('Nice try.','error')},
@@ -2763,7 +2778,7 @@ function toggleFormat(){CONFIG.format=CONFIG.format==='mp3'?'wav':'mp3';if(state
 
 // ═══ SECRETS ═══
 function unlockTrack(id){const t=CONFIG.tracks.find(x=>x.id===id);if(!t||state.discovered.has(id)){printLine('already decrypted','dim');return}playSFX('glitch_corrupt',0.5);state.discovered.add(id);localStorage.setItem(CONFIG.storage.discovered,JSON.stringify([...state.discovered]));addSecret(`UNLOCK_${id}`);printLine('');printLine('DECRYPTION KEY ACCEPTED','warning');setTimeout(()=>{printLine(`  ${id} :: ${t.title}`,'');printLine('')},400);if(document.getElementById('player-popup').classList.contains('show')){renderPlayerTracks()}state.progression.tracksUnlocked=state.discovered.size;checkProgression()}
-function addSecret(id){if(!CONFIG.secrets.codesFound.includes(id)){CONFIG.secrets.codesFound.push(id);localStorage.setItem(CONFIG.storage.secrets,JSON.stringify(CONFIG.secrets.codesFound));localStorage.setItem(CONFIG.storage.discovered,JSON.stringify([...state.discovered]));playSFX('retro_movie',0.4);unlockGalleryImage(id);const c=document.getElementById('conn-status');c.textContent=`■ ${CONFIG.secrets.codesFound.length}`;c.style.color='var(--amber)';setTimeout(()=>{c.style.color='';c.textContent='■'},2000);updateSidebarStatus();if(CONFIG.secrets.codesFound.length===CONFIG.secrets.totalCodes){setTimeout(()=>{playSFX('glitch_heavy',0.4);printLine('');printLine('████████████████████████████████████','error');setTimeout(()=>{printLine('  TRANSMISSION COMPLETE','error');printLine('  ALL SIGNALS RECOVERED','error');printLine('████████████████████████████████████','error');revealHeader();updateSidebarStatus()},500)},800)}}}
+function addSecret(id){if(!CONFIG.secrets.codesFound.includes(id)){CONFIG.secrets.codesFound.push(id);localStorage.setItem(CONFIG.storage.secrets,JSON.stringify(CONFIG.secrets.codesFound));localStorage.setItem(CONFIG.storage.discovered,JSON.stringify([...state.discovered]));playSFX('retro_movie',0.4);unlockGalleryImage(id);const c=document.getElementById('conn-status');c.textContent=`■ ${Math.min(CONFIG.secrets.codesFound.length,CONFIG.secrets.totalCodes)}`;c.style.color='var(--amber)';setTimeout(()=>{c.style.color='';c.textContent='■'},2000);updateSidebarStatus();if(CONFIG.secrets.codesFound.length===CONFIG.secrets.totalCodes){setTimeout(()=>{playSFX('glitch_heavy',0.4);printLine('');printLine('████████████████████████████████████','error');setTimeout(()=>{printLine('  TRANSMISSION COMPLETE','error');printLine('  ALL SIGNALS RECOVERED','error');printLine('████████████████████████████████████','error');revealHeader();updateSidebarStatus()},500)},800)}}}
 
 // ═══ PROGRESSION ═══
 const MILESTONE_REWARDS={
@@ -3193,7 +3208,7 @@ function initScreensaverIdle(){
 
 
 // ═══ AUDIO EVENTS ═══
-audio.addEventListener('ended',()=>nextTrack());
+// 'ended' is handled by _onAudioEnded (registered once in setupPlayerControls)
 
 // ═══ UTILITIES ═══
 function fmtTime(s){return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0')}
@@ -3215,7 +3230,7 @@ document.addEventListener('click',(e)=>{if(state.welcomeDismissed&&!e.target.clo
 // Konami
 const KONAMI=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];let ks=[];
 document.addEventListener('keydown',(e)=>{if(!state.welcomeDismissed)return;ks.push(e.key);if(ks.length>KONAMI.length)ks.shift();if(ks.join(',')===KONAMI.join(',')){playSFX('retro_movie',0.6);printLine('');printLine('▓▓▓ CHEAT CODE ▓▓▓','error');setTimeout(()=>{printLine('Cheating won\'t help you here.','ghost');printLine('...or will it?','ghost')},500);addSecret('KONAMI');ks=[]}});
-document.addEventListener('dblclick',(e)=>{if(e.target.classList.contains('redact-block')){e.target.classList.add('cracked');addSecret('REDACT_CRACK')}});
+document.addEventListener('dblclick',(e)=>{if(e.target.classList.contains('redact-block')||e.target.classList.contains('manual-redacted')){e.target.classList.add('cracked');addSecret('REDACT_CRACK')}});
 
 audio.volume=CONFIG.defaultVolume;
 
@@ -3670,7 +3685,7 @@ function drawNoiseVisualization() {
 
       // Color based on proximity and lock state
       let signalColor, glowColor;
-      if(scannerState.lockedSignal === sig) {
+      if(isLocked) {
         // Locked signal - bright yellow (always visible)
         signalColor = `rgba(255,255,100,1)`;
         glowColor = '#ffff00';
@@ -4767,7 +4782,8 @@ function renderPlayerTracks() {
 function downloadTrack(trackFile, trackTitle) {
   const link = document.createElement('a');
   link.href = trackFile;
-  link.download = `${trackTitle}.wav`;
+  const ext = trackFile.split('.').pop() || 'mp3';
+  link.download = `${trackTitle}.${ext}`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -4777,7 +4793,7 @@ function downloadTrack(trackFile, trackTitle) {
 
 function _onAudioPlay(){state.isPlaying=true;updatePlayerUI()}
 function _onAudioPause(){state.isPlaying=false;updatePlayerUI()}
-function _onAudioEnded(){const visibleTracks=CONFIG.tracks.filter(t=>t.visible);if(state.currentTrack<visibleTracks.length-1)playTrackByIndex(state.currentTrack+1)}
+function _onAudioEnded(){nextTrack()}
 var _playerControlsInit=false
 function setupPlayerControls() {
   const playBtn = document.getElementById('player-play');
@@ -4799,20 +4815,11 @@ function setupPlayerControls() {
   }
 
   if (prevBtn) {
-    prevBtn.onclick = () => {
-      if (state.currentTrack > 0) {
-        playTrackByIndex(state.currentTrack - 1);
-      }
-    };
+    prevBtn.onclick = () => prevTrack();
   }
 
   if (nextBtn) {
-    nextBtn.onclick = () => {
-      const visibleTracks = CONFIG.tracks.filter(t => t.visible);
-      if (state.currentTrack < visibleTracks.length - 1) {
-        playTrackByIndex(state.currentTrack + 1);
-      }
-    };
+    nextBtn.onclick = () => nextTrack();
   }
 
   if (volumeSlider) {
@@ -5734,6 +5741,7 @@ function startSnake() {
   snakeGame.dx = 1;
   snakeGame.dy = 0;
   snakeGame.score = 0;
+  snakeGame.speed = 100;
   snakeGame.isRunning = true;
   document.getElementById('snake-score').textContent = '0';
   document.getElementById('snake-game-over').classList.remove('show');
