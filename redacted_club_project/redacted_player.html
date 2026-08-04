@@ -2873,7 +2873,7 @@ scan:(a)=>{
   toasters:()=>{COMMANDS.screensaver()},
   norm:()=>{printLine('','');printLine('...','dim');setTimeout(()=>{printLine('someone was here once.','ghost');setTimeout(()=>{printLine('no forwarding address.','ghost');setTimeout(()=>{printLine('only static remains.','ghost');addSecret('NORM_GONE')},1500)},1500)},800)},
   gandalf:()=>{COMMANDS.norm()},pixl:()=>{COMMANDS.norm()},
-  // Video game cheat codes — undocumented on purpose. Try things.
+  // Video game cheat codes and gaming in-jokes — undocumented on purpose. Try things.
   xyzzy:()=>{printLine('');printSlow('A hollow voice says "Fool."','dim',35);addSecret('XYZZY')},
   iddqd:()=>{playSFX('glitch_heavy',0.3);printLine('');printLine('GOD MODE ENABLED','warning');printLine('(you were always going to make it out of here)','ghost');addSecret('IDDQD')},
   idkfa:()=>{playSFX('glitch_heavy',0.3);printLine('');printLine('ALL WEAPONS ACQUIRED','warning');printLine('somewhere, a cyberdemon just sighed.','ghost');addSecret('IDKFA')},
@@ -2882,6 +2882,11 @@ scan:(a)=>{
   allyourbase:()=>{playSFX('glitch_heavy',0.3);printLine('');printLine('HOW ARE YOU GENTLEMEN !!','error');printLine('ALL YOUR BASE ARE BELONG TO US','error');printLine('someone set up us the bomb.','ghost');addSecret('AYBABTU')},
   cake:()=>{playSFX('glitch_corrupt',0.3);printLine('');printLine('THE CAKE IS A LIE','error');printLine('THE CAKE IS A LIE','error');printLine('THE CAKE IS A LIE','error');addSecret('CAKE_LIE')},
   codec:()=>{printLine('');printLine('141.80 CALLING...','dim');setTimeout(()=>{printLine('"Snake? Snake?! SNAAAKE!"','cyan');addSecret('CODEC')},900)},
+  sora:()=>{printLine('');printLine('"I\'ve been having these weird thoughts lately."','dim');setTimeout(()=>{printLine('"Like, is any of this for real, or not?"','dim');addSecret('SORA')},1200)},
+  keyblade:()=>{printLine('');printLine('A KEYBLADE MATERIALIZES IN YOUR HAND.','warning');printLine('there is nothing left here to unlock. put it away.','ghost');addSecret('KEYBLADE')},
+  xehanort:()=>{printLine('');printLine('ANAGRAM ENGINE ENGAGED...','dim');setTimeout(()=>{printLine('XEHANORT contains ANSEM, XEMNAS, and about eleven other guys.','warning');printLine('nobody in this organization uses their real name.','ghost');addSecret('ORGANIZATION_XIII')},900)},
+  nobody:()=>{printLine('');printLine('NOBODY is listening.','dim');printLine('...that was the joke. Organization XIII was never subtle either.','ghost');addSecret('NOBODY')},
+  simpleandclean:()=>{printLine('');printLine('"you\'re giving me too many things, lately"','cyan');printLine('"you\'re all I need, you smiled at me and said..."','cyan');addSecret('SIMPLE_AND_CLEAN')},
   exit:()=>printLine('There is no exit.','error'),quit:()=>printLine('You can\'t leave.','error'),
   man:()=>printLine('No manual. Try "help".','dim'),find:()=>printLine('Try "files" or "search".','dim'),
   date:()=>{printLine('TEMPORAL DATA CORRUPTED','error');printLine('LAST KNOWN: ██/██/████','dim')},
