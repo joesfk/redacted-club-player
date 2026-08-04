@@ -204,7 +204,7 @@
     right:20px;
     top:50%;
     margin-top:-150px;
-    width:320px;
+    width:420px;
     background:rgba(0,20,10,0.98);
     border:2px solid var(--green);
     box-shadow:0 0 30px rgba(0,255,65,0.5),inset 0 0 20px rgba(0,0,0,0.8);
@@ -240,12 +240,10 @@
     border:1px solid var(--green);
   }
   .popup-close:hover{background:var(--green);color:#000}
-  .donut-content{
-    padding:20px;
-    text-align:center;
-    color:var(--green);
-    min-height:150px;
-  }
+  #donut-canvas{display:block;width:100%;background:#000;cursor:grab}
+  #donut-canvas:active{cursor:grabbing}
+  #donut-controls{display:flex;gap:6px;justify-content:center;padding:8px}
+  #donut-status{text-align:center;font-size:12px;color:var(--green-dark);padding-bottom:8px;letter-spacing:1px}
 
   /* ═══ CALC.EXE ═══ */
   #calc-popup{
@@ -401,6 +399,71 @@
     display:flex;
     justify-content:space-between;
     flex-shrink:0;
+  }
+
+  /* ═══ MAIL.EXE ═══ */
+  #email-popup{
+    position:fixed;
+    left:120px;
+    top:110px;
+    width:580px;
+    background:rgba(0,20,10,0.98);
+    border:2px solid var(--green);
+    box-shadow:0 0 30px rgba(0,255,65,0.5),inset 0 0 20px rgba(0,0,0,0.8);
+    z-index:9989;
+    display:none;
+    font-family:'VT323',monospace;
+  }
+  #email-popup.show{display:flex;flex-direction:column;}
+  #email-main{
+    display:flex;
+    min-height:320px;
+    max-height:400px;
+  }
+  #email-list{
+    width:190px;
+    min-width:190px;
+    border-right:1px solid var(--green-dark);
+    overflow-y:auto;
+    background:rgba(0,0,0,0.3);
+  }
+  .email-item{
+    padding:8px 10px;
+    cursor:pointer;
+    border-bottom:1px solid rgba(0,255,65,0.08);
+    position:relative;
+  }
+  .email-item:hover{background:rgba(0,255,65,0.08);}
+  .email-item.active{background:rgba(0,255,65,0.15);}
+  .email-item.unread{border-left:3px solid var(--amber);}
+  .email-item .em-from{color:var(--green);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .email-item .em-subj{color:var(--green-dim);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .email-item .em-date{color:var(--green-dark);font-size:10px;margin-top:2px;}
+  #email-reading{
+    flex:1;
+    padding:14px 16px;
+    overflow-y:auto;
+    color:var(--green);
+    font-size:14px;
+  }
+  #email-reading .em-header-row{
+    border-bottom:1px solid var(--green-dark);
+    padding-bottom:8px;margin-bottom:10px;
+    font-size:12px;color:var(--green-dark);line-height:1.6;
+  }
+  #email-reading .em-body{
+    font-size:14px;line-height:1.7;white-space:pre-wrap;
+  }
+  #email-empty{
+    display:flex;align-items:center;justify-content:center;
+    height:100%;color:var(--green-dark);font-size:13px;text-align:center;
+  }
+  #email-statusbar{
+    background:rgba(0,255,65,0.03);
+    border-top:1px solid var(--green-dark);
+    padding:3px 8px;
+    font-size:12px;
+    color:var(--green-dark);
   }
 
   /* ═══ NOTEPAD.EXE ═══ */
@@ -584,7 +647,7 @@
   .pin-btn.wide{grid-column:span 2;}
 
   /* ═══ SIDEBAR BUTTONS ═══ */
-  #music-fab,#gallery-fab,#manual-fab{
+  #music-fab,#gallery-fab,#manual-fab,#mail-fab{
     width:100%;
     height:44px;
     background:rgba(0,20,10,0.95);
@@ -600,11 +663,23 @@
     transition:all .2s ease;
     user-select:none;
     margin-bottom:4px;
+    position:relative;
   }
-  #music-fab:hover,#gallery-fab:hover,#manual-fab:hover{
+  #music-fab:hover,#gallery-fab:hover,#manual-fab:hover,#mail-fab:hover{
     box-shadow:0 0 18px rgba(0,255,65,0.6);
     border-color:#4f4;
     background:rgba(0,255,65,0.08);
+  }
+  .mail-badge{
+    position:absolute;top:-5px;right:-5px;
+    background:var(--red);color:#fff;
+    font-family:'Share Tech Mono',monospace;
+    font-size:10px;line-height:1;
+    min-width:16px;height:16px;border-radius:8px;
+    display:none;align-items:center;justify-content:center;
+    padding:0 3px;
+    box-shadow:0 0 8px rgba(255,0,64,0.7);
+    animation:fab-pulse 2s ease-in-out infinite;
   }
   #music-fab.playing{
     animation:fab-pulse 2s ease-in-out infinite;
@@ -1388,6 +1463,19 @@
   </div>
 </div>
 
+<!-- ═══ MAIL.EXE ═══ -->
+<div id="email-popup">
+  <div class="popup-titlebar">
+    <span>✉️ MAIL.EXE</span>
+    <span class="popup-close" onclick="document.getElementById('email-popup').classList.remove('show')">✕</span>
+  </div>
+  <div id="email-main">
+    <div id="email-list"></div>
+    <div id="email-reading"><div id="email-empty">Select a message to read</div></div>
+  </div>
+  <div id="email-statusbar"><span id="email-status-left">Ready</span></div>
+</div>
+
 <!-- ═══ NOTEPAD.EXE ═══ -->
 <div id="notepad-popup">
   <div class="popup-titlebar">
@@ -1754,9 +1842,15 @@
 <div id="donut-popup">
   <div class="popup-titlebar">
     <span>🍩 DONUT.EXE</span>
-    <span class="popup-close" onclick="document.getElementById('donut-popup').classList.remove('show')">✕</span>
+    <span class="popup-close" onclick="closeDonut()">✕</span>
   </div>
-  <div class="donut-content" id="donut-content"></div>
+  <canvas id="donut-canvas" width="400" height="260"></canvas>
+  <div id="donut-controls">
+    <button class="synth-btn" onclick="donutSpeed(-1)">◄ SLOW</button>
+    <button class="synth-btn" onclick="donutColor()">COLOR</button>
+    <button class="synth-btn" onclick="donutSpeed(1)">FAST ►</button>
+  </div>
+  <div id="donut-status">drag the donut to spin it</div>
 </div>
 
 <!-- ═══ DRUMS.EXE ═══ -->
@@ -2014,6 +2108,7 @@
   <div id="music-fab" onclick="toggleWindow('player-popup')" title="PLAYER.EXE">♫</div>
   <div id="gallery-fab" onclick="toggleWindow('gallery-popup');renderGallery()" title="GALLERY.EXE">🖼</div>
   <div id="manual-fab" onclick="toggleWindow('manual-popup')" title="MANUAL.EXE">📖</div>
+  <div id="mail-fab" onclick="COMMANDS.mail()" title="MAIL.EXE">✉️<span id="mail-badge" class="mail-badge">0</span></div>
   <div class="sidebar-divider"></div>
   <div id="taskbar-label">PROCESSES</div>
   <div id="taskbar"></div>
@@ -2050,7 +2145,7 @@ const CONFIG={
   defaultVolume:0.7,
   pinLength:4,
   colors:{green:'#00ff41',greenDim:'#00aa2a',greenDark:'#00752b',amber:'#ffaa00',red:'#ff0040',cyan:'#00aaff'},
-  storage:{prefix:'rcplayer_',secrets:'rcplayer_secrets',discovered:'rcplayer_discovered',discoveredCmds:'rcplayer_discoveredCmds',progression:'rcplayer_progression',snakeHigh:'rcplayer_snakeHighScore',tronWins:'rcplayer_tronWins'},
+  storage:{prefix:'rcplayer_',secrets:'rcplayer_secrets',discovered:'rcplayer_discovered',discoveredCmds:'rcplayer_discoveredCmds',progression:'rcplayer_progression',snakeHigh:'rcplayer_snakeHighScore',tronWins:'rcplayer_tronWins',mailRead:'rcplayer_mailRead'},
   tracks:[
     // Main EP - Always Visible
     {id:'RC-001',title:'CASINO',file_mp3:'Casino.mp3',file_wav:'Casino.wav',visible:true,locked:false},
@@ -2195,6 +2290,7 @@ const WindowRegistry = {
     'drums-popup':   { name: 'DRUMS',   icon: '🥁', command: 'drums',   discovered: false },
     'pool-popup':    { name: 'POOL',    icon: '🎱', command: 'pool',    discovered: false },
     'manual-popup':  { name: 'MANUAL',  icon: '📖', command: 'manual',  discovered: false },
+    'email-popup':   { name: 'MAIL',    icon: '✉️', command: 'mail',    discovered: false },
   },
 
   discover(windowId) {
@@ -2512,16 +2608,16 @@ async function startBoot(){
   renderPlayerTracks();
   toggleWindow('player-popup');
 
-  // Delayed mail-style nudge toward the manual
+  // Delayed inbox notification — points the player at MAIL.EXE
+  updateMailBadge();
   setTimeout(()=>{
-    if(WindowRegistry.windows['manual-popup'].discovered)return;
+    if(WindowRegistry.windows['email-popup'].discovered)return;
     playSFX('ui_click',0.4);
+    updateMailBadge();
     printLine('');
     printLine('▓▓ 1 NEW MESSAGE ▓▓','warning');
-    printLine('FROM: sysadmin@[REDACTED]','dim');
-    printLine('SUBJ: found this in the archive','dim');
-    printLine('> old maintenance manual, scanned copy attached','ghost');
-    printLine('> type "manual" or press 📖 to open it','ghost');
+    printLine('Incoming mail detected.','dim');
+    printLine('Type "mail" or check the ✉ icon.','ghost');
     printLine('');
   },12000);
 
@@ -2544,6 +2640,7 @@ function showHelp(){
   printLine('  player        — audio controls','dim');
   printLine('  gallery       — view images','dim');
   printLine('  manual        — the player manual (start here)','dim');
+  printLine('  mail          — check your inbox','dim');
   // Milestone 1+: playback, search, games
   if(m.includes('EXPLORATION')){
     printLine('','');printLine('── PLAYBACK ──','dim');
@@ -2666,8 +2763,7 @@ scan:(a)=>{
   search:(a)=>{const q=(a.join(' ')||'').toLowerCase();if(!q){printLine('Usage: search [term]','dim');return}if(q.includes('signal'))printLine('system.log: signal detected at frequency 97.7','ghost');else if(q.includes('beneath')||q.includes('hidden'))printLine('system.log: something beneath the noise floor','ghost');else if(q.includes('key')||q.includes('decrypt'))printLine('frequencies.log: the frequencies hold the keys','ghost');else if(q.includes('redacted')||q.includes('club'))printLine('manifest.log: REDACTED CLUB','ghost');else printLine('No matches found.','dim')},
   grep:(a)=>COMMANDS.search(a),
   hint:()=>{setTimeout(()=>{const hints=['Try typing HELP to see commands.','Type FILES to see what is available.','You can READ files that are here.','Try scanning the spectrum with SCAN.','The signals are hiding in the noise.','Use tune [frequency] to lock onto signals.','Three signals hide in the noise.','115.3 is far from the others.','The files are INSIDE the computer.','Not all commands are in the help menu.','Some things are hidden in plain sight.','What lies BENEATH the static?','The frequencies hold secrets.','Try everything. Break everything.','The truth is encoded in the transmission.'];const h=hints[Math.floor(Math.random()*hints.length)];printLine(h,'ghost')},800)},
-  donut:()=>{const popup=document.getElementById('donut-popup');const dcontent=document.getElementById('donut-content');popup.classList.add('show');WindowRegistry.discover('donut-popup');
-let A=0,B=0;const iv=setInterval(()=>{const b=[];const z=[];for(let k=0;k<1760;k++){b[k]=k%80===79?'\n':' ';z[k]=0}for(let j=0;j<6.28;j+=0.07){for(let i=0;i<6.28;i+=0.02){const c=Math.sin(i),d=Math.cos(j),e=Math.sin(A),f=Math.sin(j),g=Math.cos(A),h=d+2,D=1/(c*h*e+f*g+5),l=Math.cos(i),m=Math.cos(B),n=Math.sin(B),t=c*h*g-f*e,x=Math.floor(40+30*D*(l*h*m-t*n)),y=Math.floor(12+15*D*(l*h*n+t*m)),o=x+80*y,N=Math.floor(8*((f*e-c*d*g)*m-c*d*e-f*g-l*d*n));if(y<22&&y>=0&&x>=0&&x<79&&D>z[o]){z[o]=D;b[o]='.,-~:;=!*#$@'[N>0?N:0]}}}A+=0.04;B+=0.02;dcontent.innerHTML='<pre style="color:var(--green);line-height:0.8;font-size:8px;letter-spacing:-0.5px;font-family:monospace">'+b.join('')+'</pre>';if(A>12){clearInterval(iv)}},50);printLine('Opening DONUT.EXE...','dim')},
+  donut:()=>{openDonut();printLine('Opening DONUT.EXE...','dim');printLine('It rotates indefinitely. This was not intended.','ghost')},
 
   music:()=>{COMMANDS.player()},
   pincode:()=>{if(!state.progression.milestones.includes('SIGNAL_DISCOVERY')){playSFX('glitch_error',0.4);printLine('SECURE.EXE — CLEARANCE INSUFFICIENT','error');setTimeout(()=>printLine('Signal analysis required first. Try "scan".','ghost'),600);return}document.getElementById('pincode-popup').classList.add('show');WindowRegistry.discover('pincode-popup');resetPin();printLine('Opening SECURE.EXE...','dim');discoverCommandGroup('pincode')},
@@ -2683,6 +2779,9 @@ let A=0,B=0;const iv=setInterval(()=>{const b=[];const z=[];for(let k=0;k<1760;k
   drums:()=>{if(!state.progression.milestones.includes('DEEP_SCAN')){playSFX('glitch_error',0.4);printLine('DRUMS.EXE — MODULE LOCKED','error');setTimeout(()=>printLine('Deeper signal analysis may activate this module.','ghost'),600);return}document.getElementById('drums-popup').classList.add('show');WindowRegistry.discover('drums-popup');initDrums();printLine('Opening DRUMS.EXE...','dim')},
   pool:()=>{document.getElementById('pool-popup').classList.add('show');WindowRegistry.discover('pool-popup');Pool.init();printLine('Opening POOL.EXE... Rack \'em up.','dim')},
   manual:()=>{document.getElementById('manual-popup').classList.add('show');WindowRegistry.discover('manual-popup');manualGoTo(1);printLine('Opening MANUAL.EXE...','dim');printLine('Use PREV / NEXT to turn pages.','ghost')},
+  mail:()=>{openEmail();printLine('Opening MAIL.EXE...','dim')},
+  email:()=>{COMMANDS.mail()},
+  inbox:()=>{COMMANDS.mail()},
   billiards:()=>{COMMANDS.pool()},
   '8ball':()=>{COMMANDS.pool()},
   trippy:()=>{COMMANDS.screensaver()},
@@ -2746,6 +2845,7 @@ let A=0,B=0;const iv=setInterval(()=>{const b=[];const z=[];for(let k=0;k<1760;k
       keys.forEach(k=>localStorage.removeItem(k))
       CONFIG.secrets.codesFound.length=0;state.discovered.clear();state.headerRevealed=false;state.discoveredCommands={scanner:false,decode:false,pincode:false,gallery:false};state.progression={milestone:0,milestones:[],filesRead:[],signalsLocked:0,tracksUnlocked:0,pinsEntered:[],breadcrumbsSeen:[]}
       updateSidebarStatus()
+      updateMailBadge()
       printLine('ALL DATA ERASED','error');playSFX('glitch_corrupt',0.5)
     }else{printLine('WARNING: This will erase all saved progress.','error');printLine('Type "resetdata confirm" to proceed.','warning')}
   },
@@ -2844,6 +2944,7 @@ function advanceMilestone(id){
   playSFX('scanner_lock',0.5)
   if(MILESTONE_REWARDS[id])MILESTONE_REWARDS[id]()
   persistProgression()
+  updateMailBadge()
 }
 
 function checkProgression(){
@@ -3953,11 +4054,13 @@ function toggleWindow(windowId) {
     el.classList.remove('show');
     playSFX('ui_click',0.3);
     if(windowId === 'player-popup') stopTrack();
+    if(windowId === 'donut-popup' && donutState.anim) { cancelAnimationFrame(donutState.anim); donutState.anim = null; }
   } else {
     el.classList.add('show');
     playSFX('ui_click',0.4);
     WindowRegistry.discover(windowId);
     if(windowId === 'player-popup') initPlayerPopup();
+    if(windowId === 'donut-popup' && !donutState.anim) { donutUpdateStatus(); donutRender(); }
   }
   WindowRegistry.updateIndicators();
 }
@@ -6232,6 +6335,122 @@ function stopMatrix() {
   }
 }
 
+// ═══ DONUT.EXE ═══
+const donutState = {
+  A: 0, B: 0,          // rotation angles
+  vA: 0.03, vB: 0.015, // spin velocities
+  speed: 1, mode: 0,
+  anim: null, dragging: false, lastX: 0, lastY: 0, hue: 120
+};
+const DONUT_MODES = ['GREEN', 'AMBER', 'CYCLE'];
+const DONUT_CHARS = '.,-~:;=!*#$@';
+
+function openDonut() {
+  document.getElementById('donut-popup').classList.add('show');
+  WindowRegistry.discover('donut-popup');
+  donutUpdateStatus();
+  if (!donutState.anim) donutRender();
+}
+
+function closeDonut() {
+  document.getElementById('donut-popup').classList.remove('show');
+  if (donutState.anim) { cancelAnimationFrame(donutState.anim); donutState.anim = null; }
+  WindowRegistry.updateIndicators();
+}
+
+function donutSpeed(dir) {
+  donutState.speed = Math.max(0.25, Math.min(4, donutState.speed * (dir > 0 ? 1.5 : 1 / 1.5)));
+  donutUpdateStatus();
+}
+
+function donutColor() {
+  donutState.mode = (donutState.mode + 1) % DONUT_MODES.length;
+  donutUpdateStatus();
+}
+
+function donutUpdateStatus() {
+  const el = document.getElementById('donut-status');
+  if (el) el.textContent = `SPD ×${donutState.speed.toFixed(2).replace(/\.?0+$/,'')} · ${DONUT_MODES[donutState.mode]} · drag to spin`;
+}
+
+function donutRender() {
+  const canvas = document.getElementById('donut-canvas');
+  const ctx = canvas.getContext('2d');
+  const COLS = 80, ROWS = 24;
+  const cw = canvas.width / COLS, lh = canvas.height / ROWS;
+  ctx.font = Math.ceil(lh) + 'px monospace';
+
+  function frame() {
+    const s = donutState;
+    if (!s.dragging) { s.A += s.vA * s.speed; s.B += s.vB * s.speed; }
+    s.hue = (s.hue + 0.6) % 360;
+
+    // Classic torus projection with a z-buffer, luminance per cell
+    const z = new Float32Array(COLS * ROWS);
+    const lum = new Int8Array(COLS * ROWS).fill(-1);
+    for (let j = 0; j < 6.28; j += 0.07) {
+      for (let i = 0; i < 6.28; i += 0.02) {
+        const c = Math.sin(i), d = Math.cos(j), e = Math.sin(s.A), f = Math.sin(j), g = Math.cos(s.A);
+        const h = d + 2, D = 1 / (c * h * e + f * g + 5);
+        const l = Math.cos(i), m = Math.cos(s.B), n = Math.sin(s.B), t = c * h * g - f * e;
+        const x = Math.floor(COLS / 2 + 30 * D * (l * h * m - t * n));
+        const y = Math.floor(ROWS / 2 + 15 * D * (l * h * n + t * m));
+        const o = x + COLS * y;
+        const N = Math.floor(8 * ((f * e - c * d * g) * m - c * d * e - f * g - l * d * n));
+        if (y >= 0 && y < ROWS && x >= 0 && x < COLS && D > z[o]) { z[o] = D; lum[o] = N > 0 ? (N > 11 ? 11 : N) : 0; }
+      }
+    }
+
+    // Shade palette for this frame
+    const colors = [];
+    for (let k = 0; k < 12; k++) {
+      const b = 0.25 + 0.75 * (k / 11);
+      if (s.mode === 0) colors.push(`rgba(0,255,65,${b.toFixed(2)})`);
+      else if (s.mode === 1) colors.push(`rgba(255,170,0,${b.toFixed(2)})`);
+      else colors.push(`hsla(${Math.round(s.hue)},100%,${Math.round(30 + b * 40)}%,${(0.5 + b * 0.5).toFixed(2)})`);
+    }
+
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.shadowBlur = 0;
+    for (let y = 0; y < ROWS; y++) {
+      for (let x = 0; x < COLS; x++) {
+        const k = lum[x + COLS * y];
+        if (k < 0) continue;
+        ctx.fillStyle = colors[k];
+        if (k >= 10) { ctx.shadowColor = colors[11]; ctx.shadowBlur = 8; }
+        else ctx.shadowBlur = 0;
+        ctx.fillText(DONUT_CHARS[k], x * cw, y * lh + lh * 0.82);
+      }
+    }
+    ctx.shadowBlur = 0;
+
+    donutState.anim = requestAnimationFrame(frame);
+  }
+  donutState.anim = requestAnimationFrame(frame);
+}
+
+// Drag the donut to spin it — release keeps momentum
+(function () {
+  const c = document.getElementById('donut-canvas');
+  if (!c) return;
+  c.addEventListener('mousedown', (e) => {
+    donutState.dragging = true;
+    donutState.lastX = e.clientX; donutState.lastY = e.clientY;
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', (e) => {
+    if (!donutState.dragging) return;
+    const dx = e.clientX - donutState.lastX, dy = e.clientY - donutState.lastY;
+    donutState.B += dx * 0.01;
+    donutState.A += dy * 0.01;
+    if (dx) donutState.vB = Math.max(-0.12, Math.min(0.12, dx * 0.002));
+    if (dy) donutState.vA = Math.max(-0.12, Math.min(0.12, dy * 0.002));
+    donutState.lastX = e.clientX; donutState.lastY = e.clientY;
+  });
+  document.addEventListener('mouseup', () => { donutState.dragging = false; });
+})();
+
 // ═══ POOL.EXE (8-BALL) ═══
 const Pool = {
   canvas:null, ctx:null, W:1280, H:680,
@@ -6999,6 +7218,80 @@ function openFilesExe(){
   WindowRegistry.discover('files-popup');
   filesRenderTree();
   filesShowRoot();
+}
+
+// ═══ MAIL.EXE ═══
+const EMAIL_INBOX=[
+  {id:'em_sysadmin',from:'sysadmin@[REDACTED]',subject:'found this in the archive',date:'██/██/██',always:true,secret:'MAIL_SYSADMIN',
+   body:()=>'Found this old maintenance manual scanned into\nthe archive a while back. Figured it might help\nyou make sense of this thing before it makes a\nmess of you.\n\nType "manual" or click the 📖 icon.\n\n— sysadmin'},
+  {id:'em_welcome',from:'noreply@rcplayer.sys',subject:'connection established',date:'██/██/██',always:true,secret:null,
+   body:()=>'AUTOMATED MESSAGE\n\nYour connection to this terminal has been logged.\nUnauthorized access is a violation of something,\nprobably. Nobody has enforced it in a while.\n\nEnjoy the archive.'},
+  {id:'em_thread',from:'j████@redactedclub.██',subject:'re: that frequency thing',date:'██/██/██',milestone:'EXPLORATION',secret:'MAIL_THREAD',
+   body:()=>'> did you ever figure out what was on 97.7?\n\nnot yet. keeps cutting to static right when it\ngets interesting. going to try tuning it manually\ntonight. if I go quiet, check the terminal.\n\n— J'},
+  {id:'em_deeper',from:'j████@redactedclub.██',subject:'don\'t stop at two',date:'██/██/██',milestone:'SIGNAL_DISCOVERY',secret:'MAIL_DEEPER',
+   body:()=>'two signals down. there\'s a third. it is not on\nthe dial where it should be — you have to go\nlooking for it. the old access codes still work\ntoo, if you remember any of them.\n\n— J'}
+];
+
+function getVisibleEmails(){
+  const m=state.progression.milestones;
+  return EMAIL_INBOX.filter(e=>{
+    if(e.always)return true;
+    if(e.milestone)return m.includes(e.milestone);
+    return false;
+  });
+}
+
+function emailReadIds(){
+  try{return JSON.parse(localStorage.getItem(CONFIG.storage.mailRead)||'[]')}catch(e){return []}
+}
+
+let emailCurrent=null;
+function openEmail(){
+  document.getElementById('email-popup').classList.add('show');
+  WindowRegistry.discover('email-popup');
+  emailRenderList();
+}
+
+function emailRenderList(){
+  const list=document.getElementById('email-list');
+  const visible=getVisibleEmails();
+  const read=emailReadIds();
+  list.innerHTML=visible.map(e=>{
+    const unread=!read.includes(e.id);
+    return `<div class="email-item${unread?' unread':''}${emailCurrent===e.id?' active':''}" onclick="emailOpenMessage('${e.id}')">
+      <div class="em-from">${e.from}</div>
+      <div class="em-subj">${e.subject}</div>
+      <div class="em-date">${e.date}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('email-status-left').textContent=`${visible.length} message(s) — ${visible.length-visible.filter(e=>read.includes(e.id)).length} unread`;
+}
+
+function emailOpenMessage(id){
+  const email=EMAIL_INBOX.find(e=>e.id===id);
+  if(!email)return;
+  playSFX('ui_click',0.3);
+  emailCurrent=id;
+  const reading=document.getElementById('email-reading');
+  reading.innerHTML=`<div class="em-header-row">FROM: ${email.from}<br>SUBJECT: ${email.subject}<br>DATE: ${email.date}</div><div class="em-body">${email.body()}</div>`;
+  const read=emailReadIds();
+  if(!read.includes(id)){
+    read.push(id);
+    localStorage.setItem(CONFIG.storage.mailRead,JSON.stringify(read));
+  }
+  if(email.secret)addSecret(email.secret);
+  emailRenderList();
+  updateMailBadge();
+}
+
+function updateMailBadge(){
+  const badge=document.getElementById('mail-badge');
+  if(!badge)return;
+  const visible=getVisibleEmails();
+  const read=emailReadIds();
+  const unreadCount=visible.filter(e=>!read.includes(e.id)).length;
+  if(unreadCount>0){badge.style.display='flex';badge.textContent=unreadCount>9?'9+':unreadCount}
+  else badge.style.display='none';
 }
 
 // ═══ DRAGGABLE POPUPS ═══
