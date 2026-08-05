@@ -8,7 +8,11 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23050505'/%3E%3Crect x='2' y='2' width='28' height='28' rx='3' fill='none' stroke='%2300ff41' stroke-width='1.5' opacity='0.6'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='monospace' font-size='18' font-weight='bold' fill='%2300ff41'%3ERC%3C/text%3E%3C/svg%3E">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
-  :root{--green:#00ff41;--green-dim:#00aa2a;--green-dark:#00752b;--green-ghost:#004d18;--red:#ff0040;--amber:#ffaa00;--cyan:#00aaff;--bg:#050505;--sidebar-w:220px}
+  :root{--green:#00ff41;--green-dim:#00aa2a;--green-dark:#00752b;--green-ghost:#004d18;--red:#ff0040;--amber:#ffaa00;--cyan:#00aaff;--bg:#050505;--sidebar-w:220px;
+    /* Rustic-industrial palette for the ARG signal tools (scanner/radar/echoes/decode/pincode/codec) */
+    --brass:#c9a45c;--brass-dim:#8a6d34;--brass-dark:#4a3a1c;--amber-crt:#ffb000;--metal-dark:#1c1a14;--metal-mid:#332f24;
+    --rivets:radial-gradient(circle 3px at 10px 10px,#d4c28a 40%,transparent 42%),radial-gradient(circle 3px at calc(100% - 10px) 10px,#d4c28a 40%,transparent 42%),radial-gradient(circle 3px at 10px calc(100% - 10px),#d4c28a 40%,transparent 42%),radial-gradient(circle 3px at calc(100% - 10px) calc(100% - 10px),#d4c28a 40%,transparent 42%);
+  }
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{width:100%;height:100%;background:#000;overflow:hidden;cursor:default;user-select:none;font-family:'Share Tech Mono',monospace}
 
@@ -846,9 +850,9 @@
   }
   .decode-override input:focus{border-color:var(--green);}
   @keyframes decode-success{
-    0%{box-shadow:0 0 30px rgba(0,255,65,0.3);}
+    0%{box-shadow:0 0 30px rgba(255,176,0,0.3);}
     50%{box-shadow:0 0 60px rgba(0,170,255,0.8),0 0 100px rgba(0,170,255,0.3);}
-    100%{box-shadow:0 0 30px rgba(0,255,65,0.3);}
+    100%{box-shadow:0 0 30px rgba(255,176,0,0.3);}
   }
   .decode-success-flash{animation:decode-success 1s ease-out;}
 
@@ -1453,6 +1457,74 @@
   .video-entry:hover,.video-entry.active{
     color:var(--green);border-color:var(--green-dark);background:rgba(0,255,65,0.07);
   }
+
+  /* ═══════════════════════════════════════════════════════════
+     ARG INDUSTRIAL RESKIN — scanner/radar/echoes/decode/pincode/codec
+     Rustic military-surplus signal gear: riveted brass housings,
+     amber CRT phosphor readouts, dark brushed metal. Placed last so
+     it wins cascade order against the base rules above (same
+     specificity). --green is redefined *inside* each popup's own
+     subtree only — var(--green) used anywhere in JS-driven inline
+     styles for these popups resolves to amber here without any JS
+     edits, and nothing outside these six IDs is affected.
+     ═══════════════════════════════════════════════════════════ */
+  #scanner-popup,#radar-popup,#echoes-popup,#decode-popup,#pincode-popup,#codec-popup{
+    --green:var(--amber-crt);--green-dim:var(--amber-crt);--green-dark:var(--brass-dim);--green-ghost:var(--brass-dark);
+    background:var(--rivets),linear-gradient(160deg,var(--metal-mid) 0%,var(--metal-dark) 55%,var(--metal-mid) 100%);
+    border:3px solid var(--brass-dim);
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.05),inset 0 -3px 0 rgba(0,0,0,.7),0 6px 24px rgba(0,0,0,.7),0 0 0 1px rgba(0,0,0,.5);
+  }
+  #codec-popup{--cyan:var(--brass);} /* codec's whole look was built on --cyan; the other five keep cyan as a status-light accent */
+  #scanner-popup .popup-titlebar,#radar-popup .popup-titlebar,#echoes-popup .popup-titlebar,
+  #decode-popup .popup-titlebar,#pincode-popup .popup-titlebar,#codec-popup .popup-titlebar{
+    background:linear-gradient(180deg,var(--brass-dim),var(--brass-dark));
+    border-bottom:2px solid var(--brass);color:var(--amber-crt);
+    text-shadow:0 0 4px rgba(255,176,0,.5);letter-spacing:1px;
+  }
+  #scanner-popup .popup-close,#radar-popup .popup-close,#echoes-popup .popup-close,
+  #decode-popup .popup-close,#pincode-popup .popup-close,#codec-popup .popup-close{
+    background:var(--metal-dark);color:var(--amber-crt);border:1px solid var(--brass);
+  }
+  #scanner-popup .popup-close:hover,#radar-popup .popup-close:hover,#echoes-popup .popup-close:hover,
+  #decode-popup .popup-close:hover,#pincode-popup .popup-close:hover,#codec-popup .popup-close:hover{
+    background:var(--amber-crt);color:#1a1000;
+  }
+
+  /* SCANNER.EXE — knobs, spectrum, ping/lock (mostly inline-styled in HTML, needs !important) */
+  #scanner-popup [id$="-knob-container"]{background:radial-gradient(circle,#241f16 50%,#3c3424 100%) !important;border-color:var(--brass-dim) !important}
+  #scanner-popup [id$="-knob-container"] > div:last-child{background:var(--metal-dark) !important;border-color:var(--brass) !important}
+  #frequency-indicator,#amplitude-indicator{background:var(--amber-crt) !important;box-shadow:0 0 5px var(--amber-crt) !important}
+  #frequency-value,#amplitude-value{color:var(--amber-crt) !important}
+  #scanner-popup input[type=number]{background:var(--metal-dark) !important;border-color:var(--brass-dim) !important;color:var(--amber-crt) !important}
+  #scanner-popup #noise-canvas{border-color:var(--brass-dim) !important}
+  #ping-btn{background:var(--brass) !important;color:#1a1000 !important;box-shadow:0 0 10px rgba(201,164,92,.4) !important}
+
+  /* DECODE.EXE waveform — hardcoded rgba(0,255,65,...) in the base rules won't follow the --green remap */
+  .decode-signal-item{border-color:var(--brass-dim);background:rgba(201,164,92,0.06)}
+  .decode-signal-item:hover{background:rgba(201,164,92,0.14);border-color:var(--brass)}
+  .decode-waveform{border-color:var(--brass-dim)}
+  .decode-bar-target{background:rgba(255,176,0,0.1);border-top-color:rgba(255,176,0,0.3)}
+  .decode-bar-input{background:var(--amber-crt);box-shadow:0 0 6px rgba(255,176,0,0.5)}
+  .decode-header{border-bottom-color:var(--brass-dim)}
+  .decode-back-btn{border-color:var(--brass-dim);color:var(--brass)}
+  .decode-back-btn:hover{border-color:var(--amber-crt);color:var(--amber-crt)}
+  .decode-override{border-top-color:var(--brass-dim)}
+  .decode-override input{border-color:var(--brass-dim);color:var(--amber-crt)}
+  .decode-override input:focus{border-color:var(--amber-crt)}
+
+  /* SECURE.EXE keypad */
+  #pin-display{border-color:var(--brass-dim)}
+  .pin-btn{background:rgba(201,164,92,0.12);border-color:var(--brass);color:var(--amber-crt)}
+  .pin-btn:hover{background:var(--amber-crt);color:#1a1000}
+
+  /* CODEC.EXE */
+  .codec-box{border-color:var(--brass);background:var(--metal-dark);box-shadow:inset 0 0 15px rgba(201,164,92,.25)}
+  #codec-freq-big{color:var(--amber-crt);text-shadow:0 0 10px rgba(255,176,0,.7)}
+  #codec-blink{color:var(--amber-crt)}
+  #codec-speaker{color:var(--brass)}
+  #codec-freq-input{border-color:var(--brass-dim)}
+  #codec-call-btn{background:var(--brass);color:#1a1000}
+  #codec-call-btn:hover{background:var(--amber-crt)}
 </style>
 </head>
 <body>
@@ -1803,7 +1875,7 @@
   <div style="padding:12px;">
     <div style="background:rgba(0,0,0,0.8);border:2px solid var(--green-dark);position:relative;aspect-ratio:1;max-width:400px;">
       <canvas id="radar-canvas" width="400" height="400" style="display:block;width:100%;"></canvas>
-      <div style="position:absolute;top:5px;left:8px;font-size:10px;color:rgba(0,255,65,0.5);font-family:monospace;">SONAR</div>
+      <div style="position:absolute;top:5px;left:8px;font-size:10px;color:rgba(255,176,0,0.5);font-family:monospace;">SONAR</div>
       <div id="scanner-status" style="position:absolute;bottom:5px;left:8px;right:8px;color:var(--amber);font-size:10px;font-family:monospace;"></div>
     </div>
   </div>
@@ -1845,8 +1917,8 @@
     <!-- Spectrum Display -->
     <div style="background:rgba(0,0,0,0.5);border:1px solid var(--green-dark);padding:10px;position:relative;margin-bottom:15px;">
       <div style="color:var(--green-dark);font-size:10px;margin-bottom:8px;font-family:monospace;text-align:center;">SIGNAL CLARITY</div>
-      <canvas id="noise-canvas" width="400" height="80" style="display:block;width:100%;border:1px solid rgba(0,255,65,0.2);"></canvas>
-      <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;font-family:monospace;color:rgba(0,255,65,0.5);">
+      <canvas id="noise-canvas" width="400" height="80" style="display:block;width:100%;border:1px solid rgba(255,176,0,0.2);"></canvas>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;font-family:monospace;color:rgba(255,176,0,0.5);">
         <span>NOISY</span>
         <span id="signal-clarity-text">--</span>
         <span>CLEAR</span>
@@ -1856,13 +1928,13 @@
     <!-- Ping & Lock Controls -->
     <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:12px;">
       <button id="ping-btn" onclick="sendPing()" style="background:var(--green);border:none;color:#000;padding:16px;cursor:pointer;font-family:'VT323',monospace;font-size:20px;font-weight:bold;box-shadow:0 0 10px rgba(0,255,65,0.3);">▶ PING</button>
-      <button id="lock-signal-btn" onclick="attemptLockSignal()" disabled style="background:rgba(0,255,65,0.1);border:1px solid var(--green-dark);color:var(--green-dark);padding:16px;cursor:not-allowed;font-family:'VT323',monospace;font-size:16px;">LOCK</button>
+      <button id="lock-signal-btn" onclick="attemptLockSignal()" disabled style="background:rgba(255,176,0,0.1);border:1px solid var(--green-dark);color:var(--green-dark);padding:16px;cursor:not-allowed;font-family:'VT323',monospace;font-size:16px;">LOCK</button>
     </div>
 
     <!-- Window Toggle Controls -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;border-top:1px solid var(--green-dark);padding-top:12px;">
       <button id="radar-toggle-btn" onclick="toggleWindow('radar-popup')" style="background:rgba(0,0,0,0.5);border:1px solid rgba(255,65,65,0.5);color:rgba(255,65,65,0.5);padding:10px;cursor:not-allowed;font-family:'VT323',monospace;font-size:14px;">🔒 RADAR</button>
-      <button onclick="toggleWindow('echoes-popup')" style="background:rgba(0,255,65,0.1);border:1px solid var(--green-dark);color:var(--green);padding:10px;cursor:pointer;font-family:'VT323',monospace;font-size:14px;">📋 ECHOES</button>
+      <button onclick="toggleWindow('echoes-popup')" style="background:rgba(255,176,0,0.1);border:1px solid var(--green-dark);color:var(--green);padding:10px;cursor:pointer;font-family:'VT323',monospace;font-size:14px;">📋 ECHOES</button>
     </div>
 
   </div>
@@ -2285,7 +2357,7 @@ const CONFIG={
   artist:'REDACTED CLUB',format:'mp3',audioPath:'./redacted_assets/audio/',
   defaultVolume:0.7,
   pinLength:4,
-  colors:{green:'#00ff41',greenDim:'#00aa2a',greenDark:'#00752b',amber:'#ffaa00',red:'#ff0040',cyan:'#00aaff'},
+  colors:{green:'#00ff41',greenDim:'#00aa2a',greenDark:'#00752b',amber:'#ffaa00',red:'#ff0040',cyan:'#00aaff',amberCrt:'#ffb000',brass:'#c9a45c'},
   storage:{prefix:'rcplayer_',secrets:'rcplayer_secrets',discovered:'rcplayer_discovered',discoveredCmds:'rcplayer_discoveredCmds',progression:'rcplayer_progression',snakeHigh:'rcplayer_snakeHighScore',tronWins:'rcplayer_tronWins',mailRead:'rcplayer_mailRead',muted:'rcplayer_muted',pongWins:'rcplayer_pongWins'},
   tracks:[
     // Main EP - Always Visible
@@ -3683,7 +3755,7 @@ function tuneToFrequency(freq) {
   updateScannerStatus('Locking onto ' + freq.toFixed(1) + ' MHz...', CONFIG.colors.amber);
 
   setTimeout(() => {
-    updateScannerStatus('█▓▒░ SIGNAL ACQUIRED ░▒▓█', CONFIG.colors.green);
+    updateScannerStatus('█▓▒░ SIGNAL ACQUIRED ░▒▓█', CONFIG.colors.amberCrt);
     playSFX('scanner_lock',0.6);
     printLine('');
     printLine('FREQUENCY LOCKED: ' + freq.toFixed(1) + ' MHz', 'warning');
@@ -3738,7 +3810,7 @@ function drawRadar() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Grid circles
-  ctx.strokeStyle = 'rgba(0,255,65,0.15)';
+  ctx.strokeStyle = 'rgba(255,176,0,0.15)';
   ctx.lineWidth = 1;
   for(let i = 1; i <= 4; i++) {
     ctx.beginPath();
@@ -3747,7 +3819,7 @@ function drawRadar() {
   }
 
   // Grid lines
-  ctx.strokeStyle = 'rgba(0,255,65,0.1)';
+  ctx.strokeStyle = 'rgba(255,176,0,0.1)';
   for(let i = 0; i < 8; i++) {
     const angle = (Math.PI * 2 / 8) * i;
     ctx.beginPath();
@@ -3762,9 +3834,9 @@ function drawRadar() {
   // Draw ping waves
   scannerState.pingWaves.forEach((wave, idx) => {
     const alpha = 1 - (wave.radius / radius);
-    ctx.strokeStyle = `rgba(0,255,65,${alpha * 0.8})`;
+    ctx.strokeStyle = `rgba(255,176,0,${alpha * 0.8})`;
     ctx.lineWidth = 2;
-    ctx.shadowColor = CONFIG.colors.green;
+    ctx.shadowColor = CONFIG.colors.amberCrt;
     ctx.shadowBlur = 10;
     ctx.beginPath();
     ctx.arc(centerX, centerY, wave.radius, 0, Math.PI * 2);
@@ -3774,14 +3846,14 @@ function drawRadar() {
     // Draw echo returns
     wave.echoes.forEach(echo => {
       const echoAlpha = alpha * 0.6;
-      ctx.fillStyle = `rgba(0,255,65,${echoAlpha})`;
+      ctx.fillStyle = `rgba(255,176,0,${echoAlpha})`;
       const angle = (echo.freq - 80) / 40 * Math.PI * 2 - Math.PI / 2;
       const x = centerX + Math.cos(angle) * wave.radius;
       const y = centerY + Math.sin(angle) * wave.radius;
       ctx.beginPath();
       ctx.arc(x, y, 4, 0, Math.PI * 2);
       ctx.fill();
-      ctx.shadowColor = CONFIG.colors.green;
+      ctx.shadowColor = CONFIG.colors.amberCrt;
       ctx.shadowBlur = 15;
       ctx.fill();
       ctx.shadowBlur = 0;
@@ -3807,7 +3879,7 @@ function drawRadar() {
     const pulseSize = 4 + Math.sin(Date.now() / 200) * 2;
 
     ctx.fillStyle = `rgba(255,${blip.isClose ? 255 : 100},65,${fadeAlpha * 0.8})`;
-    ctx.shadowColor = blip.isClose ? '#ffff41' : CONFIG.colors.green;
+    ctx.shadowColor = blip.isClose ? '#ffff41' : CONFIG.colors.amberCrt;
     ctx.shadowBlur = 20;
     ctx.beginPath();
     ctx.arc(x, y, pulseSize, 0, Math.PI * 2);
@@ -3898,9 +3970,9 @@ function drawRadar() {
     centerX + Math.cos(scannerState.sweepAngle) * radius,
     centerY + Math.sin(scannerState.sweepAngle) * radius
   );
-  gradient.addColorStop(0, 'rgba(0,255,65,0.5)');
-  gradient.addColorStop(0.5, 'rgba(0,255,65,0.2)');
-  gradient.addColorStop(1, 'rgba(0,255,65,0)');
+  gradient.addColorStop(0, 'rgba(255,176,0,0.5)');
+  gradient.addColorStop(0.5, 'rgba(255,176,0,0.2)');
+  gradient.addColorStop(1, 'rgba(255,176,0,0)');
 
   ctx.strokeStyle = gradient;
   ctx.lineWidth = 3;
@@ -3913,8 +3985,8 @@ function drawRadar() {
   ctx.stroke();
 
   // Center dot with glow
-  ctx.fillStyle = CONFIG.colors.green;
-  ctx.shadowColor = CONFIG.colors.green;
+  ctx.fillStyle = CONFIG.colors.amberCrt;
+  ctx.shadowColor = CONFIG.colors.amberCrt;
   ctx.shadowBlur = 15;
   ctx.beginPath();
   ctx.arc(centerX, centerY, 4, 0, Math.PI * 2);
@@ -3922,7 +3994,7 @@ function drawRadar() {
   ctx.shadowBlur = 0;
 
   // Frequency markers
-  ctx.fillStyle = 'rgba(0,255,65,0.5)';
+  ctx.fillStyle = 'rgba(255,176,0,0.5)';
   ctx.font = '10px monospace';
   ctx.textAlign = 'center';
   const freqs = [80, 90, 100, 110, 120];
@@ -3959,16 +4031,16 @@ function drawNoiseVisualization() {
   for(let i = 0; i < imageData.data.length; i += 4) {
     if(Math.random() < 0.08) { // Random static pixels
       const brightness = Math.random() * 150;
-      imageData.data[i] = brightness * 0.2;     // R
-      imageData.data[i + 1] = brightness;       // G (greenish)
-      imageData.data[i + 2] = brightness * 0.3; // B
+      imageData.data[i] = brightness;           // R (amber)
+      imageData.data[i + 1] = brightness * 0.69; // G
+      imageData.data[i + 2] = 0;                // B
       imageData.data[i + 3] = Math.random() * 100 + 50; // Variable alpha
     }
   }
   ctx.putImageData(imageData, 0, 0);
 
   // Draw baseline with slight wobble
-  ctx.strokeStyle = 'rgba(0,255,65,0.25)';
+  ctx.strokeStyle = 'rgba(255,176,0,0.25)';
   ctx.lineWidth = 1;
   ctx.beginPath();
   for(let x = 0; x < canvas.width; x++) {
@@ -3982,14 +4054,14 @@ function drawNoiseVisualization() {
   for(let x = 0; x < canvas.width; x += 3) {
     const noiseHeight = Math.sin(x * 0.08 + noiseOffset) * 4 + Math.random() * 6 + 3;
     const flickerAlpha = 0.1 + Math.random() * 0.08;
-    ctx.fillStyle = `rgba(0,255,65,${flickerAlpha})`;
+    ctx.fillStyle = `rgba(255,176,0,${flickerAlpha})`;
     ctx.fillRect(x, canvas.height - noiseHeight, 2, noiseHeight);
   }
 
   // Add interference bands (horizontal)
   if(Math.random() < 0.3) {
     const bandY = Math.random() * canvas.height;
-    ctx.fillStyle = 'rgba(0,255,65,0.05)';
+    ctx.fillStyle = 'rgba(255,176,0,0.05)';
     ctx.fillRect(0, bandY, canvas.width, 2);
   }
 
@@ -4043,17 +4115,17 @@ function drawNoiseVisualization() {
         signalColor = `rgba(255,255,100,1)`;
         glowColor = '#ffff00';
       } else if(proximity > 0.7) {
-        // Very close - green to yellow
-        signalColor = `rgba(${100 + proximity * 155},255,65,${visibility * 0.9})`;
-        glowColor = CONFIG.colors.green;
+        // Very close - amber intensifying toward bright yellow-white
+        signalColor = `rgba(255,${176 + proximity * 79},0,${visibility * 0.9})`;
+        glowColor = CONFIG.colors.amberCrt;
       } else if(proximity > 0.45) {
         // Medium - orange
         signalColor = `rgba(255,${100 + proximity * 155},65,${visibility * 0.7})`;
         glowColor = CONFIG.colors.amber;
       } else {
-        // Far - very dim green (barely visible)
-        signalColor = `rgba(0,255,65,${visibility * 0.3})`;
-        glowColor = CONFIG.colors.green;
+        // Far - very dim amber (barely visible)
+        signalColor = `rgba(255,176,0,${visibility * 0.3})`;
+        glowColor = CONFIG.colors.amberCrt;
       }
 
       // Draw signal peak with gradient and analog fuzz
@@ -4100,7 +4172,7 @@ function drawNoiseVisualization() {
 
   // Update clarity text - show LOCKED only if closest signal is locked
   const clarityPercent = Math.round(closestProximity * 100);
-  const clarityColor = closestProximity > 0.7 ? CONFIG.colors.green : closestProximity > 0.4 ? CONFIG.colors.amber : '#ff6666';
+  const clarityColor = closestProximity > 0.7 ? CONFIG.colors.amberCrt : closestProximity > 0.4 ? CONFIG.colors.amber : '#ff6666';
 
   // Check if closest signal is a locked one
   const isClosestLocked = closestSignal && scannerState.lockedSignals.some(s =>
@@ -4379,7 +4451,7 @@ function sendPing() {
         !closest || echo.distance < closest.distance ? echo : closest
       , null);
 
-      updateScannerStatus(`${wave.echoes.length} signal(s) detected`, CONFIG.colors.green);
+      updateScannerStatus(`${wave.echoes.length} signal(s) detected`, CONFIG.colors.amberCrt);
 
       // Display cursor position info
       const echoContainer = document.getElementById('echoes-container');
@@ -4416,7 +4488,7 @@ function sendPing() {
         .map(echo => {
           const proximityPercent = Math.round(echo.proximity * 100);
           const isLocked = echo.power >= 90;
-          const powerColor = isLocked ? CONFIG.colors.green : (echo.isClose ? CONFIG.colors.amber : '#ff6666');
+          const powerColor = isLocked ? CONFIG.colors.amberCrt : (echo.isClose ? CONFIG.colors.amber : '#ff6666');
 
           // Signal name visibility
           const signalName = isLocked ? echo.signal.name : 'UNKNOWN SIGNAL';
@@ -4434,7 +4506,7 @@ function sendPing() {
             status = '📡 DETECTED - Move cursor closer';
           }
 
-          return `<div style="padding:8px;border-left:4px solid ${powerColor};margin-bottom:6px;background:rgba(0,255,65,0.05);">
+          return `<div style="padding:8px;border-left:4px solid ${powerColor};margin-bottom:6px;background:rgba(255,176,0,0.05);">
             <div style="display:flex;justify-content:space-between;align-items:center;">
               <div style="font-size:13px;color:var(--green);font-weight:bold;">${signalName}</div>
               <div style="font-size:16px;color:${powerColor};font-weight:bold;text-shadow: 0 0 5px ${powerColor};">${echo.power}%</div>
@@ -4451,14 +4523,14 @@ function sendPing() {
       const lockableSignal = wave.echoes.find(e => e.power >= 90);
       if(lockableSignal) {
         lockButton.disabled = false;
-        lockButton.style.background = 'rgba(0,255,65,0.3)';
+        lockButton.style.background = 'rgba(255,176,0,0.3)';
         lockButton.style.borderColor = 'var(--green)';
         lockButton.style.color = 'var(--green)';
         lockButton.style.cursor = 'pointer';
         scannerState.lockableSignal = lockableSignal;
       } else {
         lockButton.disabled = true;
-        lockButton.style.background = 'rgba(0,255,65,0.1)';
+        lockButton.style.background = 'rgba(255,176,0,0.1)';
         lockButton.style.borderColor = 'var(--green-dark)';
         lockButton.style.color = 'var(--green-dark)';
         lockButton.style.cursor = 'not-allowed';
@@ -4501,7 +4573,7 @@ function sendPing() {
       // Disable lock button
       const lockButton = document.getElementById('lock-signal-btn');
       lockButton.disabled = true;
-      lockButton.style.background = 'rgba(0,255,65,0.1)';
+      lockButton.style.background = 'rgba(255,176,0,0.1)';
       lockButton.style.borderColor = 'var(--green-dark)';
       lockButton.style.color = 'var(--green-dark)';
       lockButton.style.cursor = 'not-allowed';
@@ -4520,7 +4592,7 @@ function attemptLockSignal() {
   updateScannerStatus('🔒 LOCKING SIGNAL...', CONFIG.colors.amber);
 
   setTimeout(() => {
-    updateScannerStatus('█▓▒░ SIGNAL LOCKED ░▒▓█', CONFIG.colors.green);
+    updateScannerStatus('█▓▒░ SIGNAL LOCKED ░▒▓█', CONFIG.colors.amberCrt);
     playSFX('scanner_lock',0.6);
 
     // Add to locked signals array (if not already locked)
@@ -4532,7 +4604,7 @@ function attemptLockSignal() {
     if(scannerState.lockedSignals.length === 1 && !state.radarUnlocked) {
       state.radarUnlocked = true;
       const radarBtn = document.getElementById('radar-toggle-btn');
-      radarBtn.style.background = 'rgba(0,255,65,0.1)';
+      radarBtn.style.background = 'rgba(255,176,0,0.1)';
       radarBtn.style.borderColor = 'var(--green-dark)';
       radarBtn.style.color = 'var(--green)';
       radarBtn.style.cursor = 'pointer';
