@@ -629,10 +629,29 @@
   @keyframes codec-connecting{0%{border-color:var(--cyan)}50%{border-color:var(--red)}100%{border-color:var(--cyan)}}
   #codec-speaker{margin-top:10px;color:var(--cyan);font-size:15px;letter-spacing:1px;min-height:18px;}
   #codec-dialogue{min-height:60px;font-size:15px;line-height:1.5;color:var(--green);}
-  #codec-freq-input{flex:1;background:#000;border:1px solid var(--green-dark);color:var(--green);padding:6px;font-family:'VT323',monospace;font-size:16px;}
-  #codec-call-btn{background:var(--cyan);color:#000;border:none;padding:6px 16px;cursor:pointer;font-family:'VT323',monospace;font-size:16px;}
-  #codec-call-btn:hover{background:#4fd6ff;}
-  #codec-hint{margin-top:8px;font-size:11px;color:var(--green-dark);}
+  #codec-hint{margin-top:8px;font-size:11px;color:var(--green-dark);text-align:center;}
+  .codec-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}
+  .codec-keypad button{
+    background:rgba(0,170,255,0.08);border:1px solid var(--cyan);color:var(--cyan);
+    padding:12px;cursor:pointer;font-family:'VT323',monospace;font-size:18px;font-weight:bold;
+  }
+  .codec-keypad button:hover{background:var(--cyan);color:#000}
+  .codec-keypad button:active{background:#4fd6ff;color:#000}
+  .codec-keypad .codec-key-clr{border-color:var(--red);color:var(--red)}
+  .codec-keypad .codec-key-clr:hover{background:var(--red);color:#fff}
+  .codec-keypad .codec-key-call{background:var(--cyan);color:#000}
+  .codec-keypad .codec-key-call:hover{background:#4fd6ff}
+  #codec-history-label{font-size:10px;color:var(--green-dark);letter-spacing:2px;margin-bottom:6px}
+  #codec-history{display:flex;flex-direction:column;gap:4px;max-height:110px;overflow-y:auto}
+  .codec-history-item{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:5px 8px;font-size:13px;cursor:pointer;
+    background:rgba(0,170,255,0.05);border:1px solid var(--green-dark);color:var(--cyan);
+    transition:background .15s,border-color .15s;
+  }
+  .codec-history-item:hover{background:rgba(0,170,255,0.15);border-color:var(--cyan)}
+  .codec-history-item .codec-history-speaker{font-size:11px;color:var(--green-dark)}
+  .codec-history-empty{font-size:12px;color:var(--green-dark);text-align:center;padding:8px;font-style:italic}
 
   /* ═══ PINCODE.EXE ═══ */
   #pincode-popup{
@@ -699,6 +718,9 @@
   .pin-btn:hover{background:var(--green);color:#000;}
   .pin-btn:active{background:var(--cyan);color:#000;}
   .pin-btn.wide{grid-column:span 2;}
+  .pin-btn:disabled{opacity:.25;cursor:not-allowed;background:rgba(0,0,0,.3) !important;color:var(--green-dark) !important}
+  #pin-attempts{text-align:center;font-size:12px;color:var(--green-dark);letter-spacing:1px;margin-top:8px}
+  #pin-attempts.low{color:var(--red);animation:blink 1s infinite}
 
   /* ═══ SIDEBAR BUTTONS ═══ */
   #fab-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
@@ -836,6 +858,21 @@
     color:var(--green-dim);font-size:13px;
     min-height:22px;
   }
+  #decode-hexrow{
+    font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;
+    color:var(--green-dark);background:rgba(0,0,0,.4);border:1px solid var(--green-ghost);
+    padding:4px 8px;margin-top:6px;line-height:1.6;white-space:nowrap;overflow-x:auto;
+  }
+  #decode-hex-target{color:var(--green-dim)}
+  #decode-hex-input{color:var(--cyan)}
+  #decode-assist-row{display:flex;align-items:center;justify-content:center;gap:10px;padding:4px 15px 10px;}
+  #decode-assist-btn{
+    background:rgba(0,170,255,0.1);border:1px solid var(--cyan);color:var(--cyan);
+    padding:5px 12px;cursor:pointer;font-family:'VT323',monospace;font-size:13px;
+  }
+  #decode-assist-btn:hover{background:var(--cyan);color:#000}
+  #decode-assist-btn:disabled{opacity:.35;cursor:not-allowed;background:transparent}
+  #decode-assist-count{font-size:11px;color:var(--green-dark);}
   .decode-override{
     display:flex;align-items:center;gap:6px;
     padding:6px 15px 12px;
@@ -920,7 +957,7 @@
     position:fixed;
     left:50px;
     top:100px;
-    width:520px;
+    width:580px;
     background:rgba(0,20,10,0.98);
     border:2px solid var(--green);
     box-shadow:0 0 30px rgba(0,255,65,0.5),inset 0 0 20px rgba(0,0,0,0.8);
@@ -1522,9 +1559,14 @@
   #codec-freq-big{color:var(--amber-crt);text-shadow:0 0 10px rgba(255,176,0,.7)}
   #codec-blink{color:var(--amber-crt)}
   #codec-speaker{color:var(--brass)}
-  #codec-freq-input{border-color:var(--brass-dim)}
-  #codec-call-btn{background:var(--brass);color:#1a1000}
-  #codec-call-btn:hover{background:var(--amber-crt)}
+  #codec-popup .codec-keypad button{background:rgba(201,164,92,0.1);border-color:var(--brass);color:var(--amber-crt)}
+  #codec-popup .codec-keypad button:hover{background:var(--amber-crt);color:#1a1000}
+  #codec-popup .codec-keypad .codec-key-clr{border-color:var(--red);color:var(--red)}
+  #codec-popup .codec-keypad .codec-key-clr:hover{background:var(--red);color:#fff}
+  #codec-popup .codec-keypad .codec-key-call{background:var(--brass);color:#1a1000}
+  #codec-popup .codec-keypad .codec-key-call:hover{background:var(--amber-crt)}
+  #codec-popup .codec-history-item{border-color:var(--brass-dim);color:var(--amber-crt);background:rgba(201,164,92,0.06)}
+  #codec-popup .codec-history-item:hover{background:rgba(201,164,92,0.16);border-color:var(--brass)}
 </style>
 </head>
 <body>
@@ -1763,12 +1805,27 @@
       <div id="codec-blink">●</div>
     </div>
     <div id="codec-speaker"></div>
-    <div id="codec-dialogue">Enter a frequency and press CALL.</div>
-    <div style="display:flex;gap:6px;margin-top:12px;">
-      <input type="text" id="codec-freq-input" placeholder="141.80" onkeydown="if(event.key==='Enter')codecCall()">
-      <button id="codec-call-btn" onclick="codecCall()">CALL</button>
+    <div id="codec-dialogue">Dial a frequency and press CALL.</div>
+
+    <div class="codec-keypad">
+      <button onclick="codecDigit('1')">1</button>
+      <button onclick="codecDigit('2')">2</button>
+      <button onclick="codecDigit('3')">3</button>
+      <button onclick="codecDigit('4')">4</button>
+      <button onclick="codecDigit('5')">5</button>
+      <button onclick="codecDigit('6')">6</button>
+      <button onclick="codecDigit('7')">7</button>
+      <button onclick="codecDigit('8')">8</button>
+      <button onclick="codecDigit('9')">9</button>
+      <button class="codec-key-clr" onclick="codecClearDial()">CLR</button>
+      <button onclick="codecDigit('0')">0</button>
+      <button class="codec-key-call" onclick="codecCall()">CALL</button>
     </div>
-    <div id="codec-hint">tune in a frequency, format XXX.XX</div>
+    <div id="codec-hint">dial 5 digits, format XXX.XX</div>
+
+    <div class="sidebar-divider" style="margin:12px 0 8px;"></div>
+    <div id="codec-history-label">RECENT CALLS</div>
+    <div id="codec-history"></div>
   </div>
 </div>
 
@@ -1778,6 +1835,7 @@
     <span>🔐 SECURE.EXE</span>
     <span class="popup-close" onclick="document.getElementById('pincode-popup').classList.remove('show');resetPin()">✕</span>
   </div>
+  <div id="pin-attempts">ATTEMPTS: <span id="pin-attempts-count">3</span>/3</div>
   <div id="pin-display">----</div>
   <div class="pin-keypad">
     <button class="pin-btn" onclick="pinPress(1)">1</button>
@@ -1823,10 +1881,15 @@
       CLICK BARS TO MATCH TARGET PATTERN
     </div>
     <div id="decode-waveform" class="decode-waveform"></div>
+    <div id="decode-hexrow">HEX: <span id="decode-hex-target"></span><br>IN&nbsp;&nbsp;: <span id="decode-hex-input"></span></div>
     <div class="decode-corruption">
       <div id="decode-corruption-fill" class="decode-corruption-fill"></div>
     </div>
     <div id="decode-status" class="decode-status"></div>
+    <div id="decode-assist-row">
+      <button id="decode-assist-btn" onclick="decodeAssist()">⚡ AUTO-ALIGN</button>
+      <span id="decode-assist-count">2 uses left</span>
+    </div>
   </div>
   <div class="decode-override">
     <label>OVERRIDE://</label>
@@ -1887,10 +1950,10 @@
     <span>🎛️ SCANNER.EXE</span>
     <span class="popup-close" onclick="document.getElementById('scanner-popup').classList.remove('show');stopScanner()">✕</span>
   </div>
-  <div style="padding:15px;max-width:400px;">
+  <div style="padding:15px;max-width:460px;">
 
-    <!-- Control Knobs -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;">
+    <!-- Control Knobs + live signal meter -->
+    <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:15px;margin-bottom:15px;">
       <!-- Frequency Knob -->
       <div style="text-align:center;">
         <div style="color:var(--green-dark);font-size:10px;margin-bottom:8px;font-family:monospace;">FREQUENCY</div>
@@ -1912,6 +1975,25 @@
         <div id="amplitude-value" style="color:var(--green);font-size:14px;margin-top:6px;font-family:monospace;">50</div>
         <input type="number" id="amplitude-input" value="50" min="0" max="100" step="1" style="width:80px;margin-top:6px;background:#000;border:1px solid var(--green-dark);color:var(--green);padding:4px;font-family:monospace;font-size:12px;text-align:center;" onchange="setAmplitudeFromInput()" onkeypress="if(event.key==='Enter') setAmplitudeFromInput()">
       </div>
+
+      <!-- Live Signal Meter -->
+      <div style="text-align:center;">
+        <div style="color:var(--green-dark);font-size:10px;margin-bottom:8px;font-family:monospace;">SIGNAL</div>
+        <div id="signal-meter-track" style="width:26px;height:90px;margin:0 auto;background:#000;border:3px solid var(--green-dark);position:relative;overflow:hidden;">
+          <div id="signal-meter-fill" style="position:absolute;bottom:0;left:0;width:100%;height:0%;background:var(--green-dark);transition:height .1s linear,background .1s linear;"></div>
+          <div style="position:absolute;top:25%;left:0;width:100%;border-top:1px dashed rgba(255,255,255,.15);"></div>
+          <div style="position:absolute;top:50%;left:0;width:100%;border-top:1px dashed rgba(255,255,255,.15);"></div>
+          <div style="position:absolute;top:75%;left:0;width:100%;border-top:1px dashed rgba(255,255,255,.15);"></div>
+        </div>
+        <div id="signal-meter-pct" style="color:var(--green);font-size:14px;margin-top:6px;font-family:monospace;">0%</div>
+        <div style="width:80px;height:1px;"></div>
+      </div>
+    </div>
+
+    <!-- Auto-Scan -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:15px;">
+      <button id="autoscan-btn" onclick="toggleAutoScan()" style="flex:1;background:rgba(0,255,65,0.1);border:1px solid var(--green);color:var(--green);padding:8px;cursor:pointer;font-family:'VT323',monospace;font-size:14px;">▶ AUTO-SCAN</button>
+      <div id="autoscan-hint" style="font-size:10px;color:var(--green-dark);font-family:monospace;flex:1.4;">sweeps frequency automatically — dial amplitude yourself</div>
     </div>
 
     <!-- Spectrum Display -->
@@ -3053,7 +3135,7 @@ scan:(a)=>{
   cowlevel:()=>{printLine('');printLine('       (__)','dim');printLine('       (oo)','dim');printLine(' /------\\/','dim');printLine('/ |    ||','dim');printLine('*  /\\---/\\','dim');printLine('   ~~   ~~','dim');printLine('THERE IS NO COW LEVEL','warning');addSecret('COW_LEVEL')},
   allyourbase:()=>{playSFX('glitch_heavy',0.3);flashScreen('red');printLine('');printLine('HOW ARE YOU GENTLEMEN !!','error');printLine('ALL YOUR BASE ARE BELONG TO US','error');printLine('someone set up us the bomb.','ghost');addSecret('AYBABTU')},
   cake:()=>{playSFX('glitch_corrupt',0.3);flashScreen('red');printLine('');printLine('THE CAKE IS A LIE','error');printLine('THE CAKE IS A LIE','error');printLine('THE CAKE IS A LIE','error');addSecret('CAKE_LIE')},
-  codec:()=>{document.getElementById('codec-popup').classList.add('show');WindowRegistry.discover('codec-popup');codecOpen();printLine('Opening CODEC.EXE...','dim');document.getElementById('codec-freq-input').value='141.80';setTimeout(()=>codecCall(),400)},
+  codec:()=>{document.getElementById('codec-popup').classList.add('show');WindowRegistry.discover('codec-popup');codecOpen();printLine('Opening CODEC.EXE...','dim');codecDialBuffer='14180';codecUpdateDialDisplay();setTimeout(()=>codecCall(),400)},
   sora:()=>{printLine('');printLine('"I\'ve been having these weird thoughts lately."','dim');setTimeout(()=>{printLine('"Like, is any of this for real, or not?"','dim');addSecret('SORA')},1200)},
   keyblade:()=>{materializeIcon('🗝️','var(--green)');playSFX('scanner_lock',0.4);printLine('');printLine('A KEYBLADE MATERIALIZES IN YOUR HAND.','warning');printLine('there is nothing left here to unlock. put it away.','ghost');addSecret('KEYBLADE')},
   xehanort:()=>{printLine('');printLine('ANAGRAM ENGINE ENGAGED...','dim');const l=printLine('','warning');scrambleReveal(l,'XEHANORT',500);setTimeout(()=>{scrambleReveal(l,'ANSEM',600);setTimeout(()=>{printLine('...contains ANSEM, XEMNAS, and about eleven other guys.','ghost');printLine('nobody in this organization uses their real name.','ghost');addSecret('ORGANIZATION_XIII')},900)},700)},
@@ -3745,6 +3827,7 @@ function stopScanner() {
     clearInterval(scannerState.animInterval);
     scannerState.animInterval = null;
   }
+  if(typeof stopAutoScan === 'function') stopAutoScan();
 }
 
 function tuneToFrequency(freq) {
@@ -4186,6 +4269,15 @@ function drawNoiseVisualization() {
     document.getElementById('signal-clarity-text').textContent = clarityPercent + '%';
     document.getElementById('signal-clarity-text').style.color = clarityColor;
   }
+
+  // Live signal-strength meter — updates every frame, independent of PING
+  const meterFill = document.getElementById('signal-meter-fill');
+  const meterPct = document.getElementById('signal-meter-pct');
+  if(meterFill && meterPct) {
+    meterFill.style.height = clarityPercent + '%';
+    meterFill.style.background = isClosestLocked ? '#ffff00' : clarityColor;
+    meterPct.textContent = (isClosestLocked && closestProximity > 0.3) ? 'LOCK' : clarityPercent + '%';
+  }
 }
 
 // ═══ KNOB CONTROLS ═══
@@ -4364,6 +4456,40 @@ function toggleWindow(windowId) {
     if(windowId === 'donut-popup' && !donutState.anim) { donutUpdateStatus(); donutRender(); }
   }
   WindowRegistry.updateIndicators();
+}
+
+// ═══ AUTO-SCAN — sweeps frequency automatically, auto-pings when close ═══
+let autoScanInterval = null;
+function toggleAutoScan() {
+  if(autoScanInterval) { stopAutoScan(); return; }
+  const btn = document.getElementById('autoscan-btn');
+  btn.textContent = '■ STOP SCAN';
+  btn.style.background = 'var(--green)';
+  btn.style.color = '#000';
+  playSFX('ui_click', 0.4);
+  autoScanInterval = setInterval(() => {
+    scannerState.frequency += 0.25;
+    if(scannerState.frequency > 120) scannerState.frequency = 80;
+    document.getElementById('frequency-value').textContent = scannerState.frequency.toFixed(1) + ' MHz';
+    document.getElementById('frequency-input').value = scannerState.frequency.toFixed(1);
+    const angle = ((scannerState.frequency - 80) / 40) * 360;
+    document.getElementById('frequency-indicator').style.transform = `translateX(-50%) rotate(${angle}deg)`;
+
+    // closestSignalProximity is refreshed every frame by drawNoiseVisualization()
+    if(scannerState.closestSignalProximity > 0.6 && !scannerState.isPinging) {
+      stopAutoScan();
+      sendPing();
+    }
+  }, 90);
+}
+function stopAutoScan() {
+  if(autoScanInterval) { clearInterval(autoScanInterval); autoScanInterval = null; }
+  const btn = document.getElementById('autoscan-btn');
+  if(btn) {
+    btn.textContent = '▶ AUTO-SCAN';
+    btn.style.background = 'rgba(0,255,65,0.1)';
+    btn.style.color = 'var(--green)';
+  }
 }
 
 function sendPing() {
@@ -4806,6 +4932,7 @@ const decodeState={
   corruptionTimer:null,
   corruptionPct:0,
   solved:false,
+  assistUses:2,
   BAR_COUNT:12,
   MAX_LEVEL:4,
   CORRUPTION_DURATION:45000
@@ -4880,6 +5007,7 @@ function decodeStartGame(code){
   decodeState.inputLevels=new Array(decodeState.BAR_COUNT).fill(0)
   decodeState.solved=false
   decodeState.corruptionPct=0
+  decodeState.assistUses=2
   document.getElementById('decode-list').style.display='none'
   document.getElementById('decode-game').classList.add('active')
   document.getElementById('decode-signal-label').textContent=`${signal.name} ${signal.freq} MHz`
@@ -4888,6 +5016,8 @@ function decodeStartGame(code){
   document.getElementById('decode-status').textContent='Align the waveform to decrypt the signal.'
   document.getElementById('decode-status').style.color='var(--green-dim)'
   decodeRenderBars()
+  decodeUpdateHexRow()
+  decodeUpdateAssistButton()
   decodeStartCorruption()
 }
 
@@ -4907,18 +5037,19 @@ function decodeRenderBars(){
   container.innerHTML=html
 }
 
-function decodeClickBar(index){
-  if(decodeState.solved)return
-  playSFX('ui_click',0.2)
-  decodeState.inputLevels[index]=(decodeState.inputLevels[index]+1)%(decodeState.MAX_LEVEL+1)
-  const barH=120
-  const inputH=(decodeState.inputLevels[index]/decodeState.MAX_LEVEL)*barH
-  const matched=decodeState.inputLevels[index]===decodeState.targetPattern[index]
-  const barEl=document.getElementById(`decode-bar-${index}`)
-  if(barEl){
-    barEl.style.height=Math.max(2,inputH)+'px'
-    barEl.className='decode-bar-input'+(matched?' matched':'')
-  }
+// Live hex readout — same 0-4 bar levels, spread across the byte range for a
+// proper hex-dump look (0,1,2,3,4 -> 00,33,66,99,CC)
+function decodeUpdateHexRow(){
+  const targetEl=document.getElementById('decode-hex-target')
+  const inputEl=document.getElementById('decode-hex-input')
+  if(!targetEl||!inputEl)return
+  const toHex=v=>(v*51).toString(16).toUpperCase().padStart(2,'0')
+  targetEl.textContent=decodeState.targetPattern.map(toHex).join(' ')
+  inputEl.textContent=decodeState.inputLevels.map(toHex).join(' ')
+}
+
+// Shared by manual clicks and the assist button
+function decodeUpdateProgress(){
   const matchCount=decodeState.inputLevels.filter((v,i)=>v===decodeState.targetPattern[i]).length
   const matchPct=Math.round((matchCount/decodeState.BAR_COUNT)*100)
   document.getElementById('decode-match').textContent=matchPct+'%'
@@ -4932,7 +5063,49 @@ function decodeClickBar(index){
     document.getElementById('decode-status').textContent='Near match! Fine-tune remaining bars.'
     document.getElementById('decode-status').style.color='var(--green)'
   }
+  decodeUpdateHexRow()
   if(matchPct===100)decodeSuccess()
+  return matchPct
+}
+
+function decodeClickBar(index){
+  if(decodeState.solved)return
+  playSFX('ui_click',0.2)
+  decodeState.inputLevels[index]=(decodeState.inputLevels[index]+1)%(decodeState.MAX_LEVEL+1)
+  const barH=120
+  const inputH=(decodeState.inputLevels[index]/decodeState.MAX_LEVEL)*barH
+  const matched=decodeState.inputLevels[index]===decodeState.targetPattern[index]
+  const barEl=document.getElementById(`decode-bar-${index}`)
+  if(barEl){
+    barEl.style.height=Math.max(2,inputH)+'px'
+    barEl.className='decode-bar-input'+(matched?' matched':'')
+  }
+  decodeUpdateProgress()
+}
+
+// Limited-use assist: fixes one random incorrect bar
+function decodeAssist(){
+  if(decodeState.solved||decodeState.assistUses<=0)return
+  const wrong=[]
+  for(let i=0;i<decodeState.BAR_COUNT;i++){
+    if(decodeState.inputLevels[i]!==decodeState.targetPattern[i])wrong.push(i)
+  }
+  if(wrong.length===0)return
+  const idx=wrong[Math.floor(Math.random()*wrong.length)]
+  decodeState.inputLevels[idx]=decodeState.targetPattern[idx]
+  decodeState.assistUses--
+  playSFX('scanner_lock',0.4)
+  decodeRenderBars()
+  decodeUpdateProgress()
+  decodeUpdateAssistButton()
+}
+
+function decodeUpdateAssistButton(){
+  const btn=document.getElementById('decode-assist-btn')
+  const count=document.getElementById('decode-assist-count')
+  if(!btn||!count)return
+  btn.disabled=decodeState.assistUses<=0
+  count.textContent=decodeState.assistUses+(decodeState.assistUses===1?' use left':' uses left')
 }
 
 function decodeStartCorruption(){
@@ -4966,6 +5139,7 @@ function decodeCorrupt(){
     decodeState.targetPattern[idx]=newVal
   })
   decodeRenderBars()
+  decodeUpdateHexRow()
   const matchCount=decodeState.inputLevels.filter((v,i)=>v===decodeState.targetPattern[i]).length
   const matchPct=Math.round((matchCount/decodeState.BAR_COUNT)*100)
   document.getElementById('decode-match').textContent=matchPct+'%'
@@ -5367,7 +5541,13 @@ const pinSecrets = {
   }
 };
 
+let pinAttempts = 3;
+const PIN_MAX_ATTEMPTS = 3;
+let pinLockoutSeconds = 0;
+let pinLockoutTimer = null;
+
 function pinPress(num) {
+  if (pinLockoutSeconds > 0) return;
   if (pinValue.length < CONFIG.pinLength) {
     pinValue += num;
     playSFX('ui_click',0.3);
@@ -5376,6 +5556,7 @@ function pinPress(num) {
 }
 
 function pinClear() {
+  if (pinLockoutSeconds > 0) return;
   pinValue = '';
   updatePinDisplay();
   document.getElementById('pin-display').classList.remove('error', 'success');
@@ -5386,7 +5567,13 @@ function resetPin() {
   pinValue = '';
   document.getElementById('pin-display').textContent = '----';
   document.getElementById('pin-display').classList.remove('error', 'success');
-  document.getElementById('pin-hint').textContent = 'Enter 4-digit code';
+  // Reflect an in-progress lockout instead of blindly overwriting it —
+  // the countdown keeps running even while the popup is closed.
+  document.getElementById('pin-hint').textContent = pinLockoutSeconds > 0
+    ? `LOCKED OUT — retry in ${pinLockoutSeconds}s`
+    : 'Enter 4-digit code';
+  updatePinAttemptsDisplay();
+  setPinKeypadDisabled(pinLockoutSeconds > 0);
 }
 
 function updatePinDisplay() {
@@ -5399,19 +5586,56 @@ function updatePinDisplay() {
   display.textContent = displayText;
 }
 
+function updatePinAttemptsDisplay() {
+  const el = document.getElementById('pin-attempts-count');
+  const row = document.getElementById('pin-attempts');
+  if (el) el.textContent = Math.max(0, pinAttempts);
+  if (row) row.classList.toggle('low', pinAttempts <= 1);
+}
+
+function setPinKeypadDisabled(disabled) {
+  document.querySelectorAll('#pincode-popup .pin-btn').forEach(btn => { btn.disabled = disabled; });
+}
+
+function startPinLockout() {
+  pinLockoutSeconds = 10;
+  setPinKeypadDisabled(true);
+  playSFX('glitch_heavy', 0.3);
+  document.getElementById('pin-hint').textContent = `LOCKED OUT — retry in ${pinLockoutSeconds}s`;
+  if (pinLockoutTimer) clearInterval(pinLockoutTimer);
+  pinLockoutTimer = setInterval(() => {
+    pinLockoutSeconds--;
+    const hint = document.getElementById('pin-hint');
+    if (pinLockoutSeconds > 0) {
+      if (hint) hint.textContent = `LOCKED OUT — retry in ${pinLockoutSeconds}s`;
+    } else {
+      clearInterval(pinLockoutTimer);
+      pinLockoutTimer = null;
+      pinAttempts = PIN_MAX_ATTEMPTS;
+      updatePinAttemptsDisplay();
+      setPinKeypadDisabled(false);
+      if (hint) hint.textContent = 'Enter 4-digit code';
+      playSFX('scanner_lock', 0.3);
+    }
+  }, 1000);
+}
+
 function pinSubmit() {
+  if (pinLockoutSeconds > 0) return;
   if (pinValue.length !== CONFIG.pinLength) return;
-  
+
   const display = document.getElementById('pin-display');
   const hint = document.getElementById('pin-hint');
-  
+
   if (pinSecrets[pinValue]) {
     // Correct code!
     playSFX('retro_movie',0.5);
     display.classList.add('success');
     display.textContent = pinValue;
     hint.textContent = 'ACCESS GRANTED';
-    
+    pinAttempts = PIN_MAX_ATTEMPTS;
+    updatePinAttemptsDisplay();
+
     setTimeout(() => {
       pinSecrets[pinValue].action();
       if(!state.progression.pinsEntered.includes(pinValue)){state.progression.pinsEntered.push(pinValue);checkProgression()}
@@ -5424,9 +5648,12 @@ function pinSubmit() {
     display.classList.add('error');
     display.textContent = 'XXXX';
     hint.textContent = 'ACCESS DENIED';
-    
+    pinAttempts--;
+    updatePinAttemptsDisplay();
+
     setTimeout(() => {
       pinClear();
+      if (pinAttempts <= 0) startPinLockout();
     }, 1000);
   }
 }
@@ -5457,16 +5684,40 @@ const CODEC_FREQUENCIES = {
   ]}
 };
 
+let codecDialBuffer = '';
+let codecHistory = []; // {freq, speaker} most-recent-first, session only
+
 function codecOpen() {
+  codecDialBuffer = '';
   document.getElementById('codec-freq-big').textContent = '---.--';
   document.getElementById('codec-speaker').textContent = '';
-  document.getElementById('codec-dialogue').textContent = 'Enter a frequency and press CALL.';
+  document.getElementById('codec-dialogue').textContent = 'Dial a frequency and press CALL.';
   document.getElementById('codec-box').classList.remove('connecting');
+  codecRenderHistory();
 }
 
 function codecClose() {
   document.getElementById('codec-popup').classList.remove('show');
   document.getElementById('codec-box').classList.remove('connecting');
+}
+
+function codecDigit(d) {
+  if (codecDialBuffer.length >= 5) return; // XXX.XX = 5 digits total
+  codecDialBuffer += d;
+  codecUpdateDialDisplay();
+  playSFX('ui_click', 0.3);
+}
+
+function codecClearDial() {
+  codecDialBuffer = '';
+  codecUpdateDialDisplay();
+  playSFX('ui_click', 0.2);
+}
+
+function codecUpdateDialDisplay() {
+  const raw = codecDialBuffer;
+  const formatted = raw.length > 3 ? raw.slice(0, 3) + '.' + raw.slice(3) : raw;
+  document.getElementById('codec-freq-big').textContent = formatted || '---.--';
 }
 
 function codecTypeLines(lines) {
@@ -5481,10 +5732,38 @@ function codecTypeLines(lines) {
   })();
 }
 
+function codecAddToHistory(freq, speaker) {
+  codecHistory = codecHistory.filter(h => h.freq !== freq);
+  codecHistory.unshift({ freq, speaker });
+  if (codecHistory.length > 5) codecHistory.pop();
+  codecRenderHistory();
+}
+
+function codecRenderHistory() {
+  const el = document.getElementById('codec-history');
+  if (!el) return;
+  if (codecHistory.length === 0) {
+    el.innerHTML = '<div class="codec-history-empty">no recent calls</div>';
+    return;
+  }
+  el.innerHTML = codecHistory.map(h =>
+    `<div class="codec-history-item" onclick="codecRedial('${h.freq}')">${h.freq}<span class="codec-history-speaker">${h.speaker}</span></div>`
+  ).join('');
+}
+
+function codecRedial(freq) {
+  codecDialBuffer = freq.replace('.', '');
+  codecUpdateDialDisplay();
+  codecCall();
+}
+
 function codecCall() {
-  const input = document.getElementById('codec-freq-input');
-  const freq = input.value.trim();
-  if (!freq) return;
+  if (codecDialBuffer.length < 5) {
+    document.getElementById('codec-dialogue').textContent = 'DIAL 5 DIGITS FIRST (XXX.XX)';
+    playSFX('glitch_error', 0.2);
+    return;
+  }
+  const freq = codecDialBuffer.slice(0, 3) + '.' + codecDialBuffer.slice(3);
   const box = document.getElementById('codec-box');
   const freqBig = document.getElementById('codec-freq-big');
   const speakerEl = document.getElementById('codec-speaker');
@@ -5506,17 +5785,20 @@ function codecCall() {
       speakerEl.textContent = entry.speaker + ':';
       codecTypeLines(entry.lines);
       addSecret(entry.secret);
+      codecAddToHistory(freq, entry.speaker);
     } else if (Math.random() < 0.12) {
       // rare Psycho Mantis-style gag on a random wrong number
       playSFX('scanner_lock', 0.3);
       speakerEl.textContent = '???';
       codecTypeLines(["...you like puzzle games, don't you?", "I can tell. put the terminal down for a second."]);
       addSecret('CODEC_MANTIS');
+      codecAddToHistory(freq, '???');
     } else {
       speakerEl.textContent = '';
       dialogueEl.textContent = '...NO SIGNAL...';
       playSFX('glitch_error', 0.3);
     }
+    codecDialBuffer = '';
   }, 900);
 }
 
