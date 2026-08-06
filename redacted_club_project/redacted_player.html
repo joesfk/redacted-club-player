@@ -2455,7 +2455,7 @@ const CONFIG={
     // Secret Track - decodes from the anomalous VOID signal (115.3 MHz)
     {id:'RC-007',title:'██████ ██',file_mp3:'GG.mp3',file_wav:'GG.wav',visible:false,locked:true,unlockCode:'VOID'},
   ],
-  secrets:{codesFound:[],totalCodes:10,masterCode:'OMNISCIENT'}
+  secrets:{codesFound:[],totalCodes:10,masterCode:'REDACTED'}
 };
 
 // ═══ SOUND EFFECTS SYSTEM ═══
@@ -3086,7 +3086,7 @@ scan:(a)=>{
       setTimeout(()=>{overlay.classList.remove('show','fadeout')},500);
     },8000);
   },
-  source:()=>{printLine('');printLine('// you found this','ghost');printLine('// the frequencies hold the keys','ghost');printLine('// 97.7 and 108.0','ghost');printLine('// OMNISCIENT is the word that opens ██████████','error');printLine('');addSecret('SOURCE')},
+  source:()=>{printLine('');printLine('// you found this','ghost');printLine('// the frequencies hold the keys','ghost');printLine('// 97.7 and 108.0','ghost');printLine('// REDACTED is the word that opens ██████████','error');printLine('// (say it properly: decode redacted)','ghost');printLine('');addSecret('SOURCE')},
   whoami:()=>{printLine('');printSlow('QUERY: IDENTITY','dim',40);setTimeout(()=>{printLine('...','dim');setTimeout(()=>{printLine('UNAUTHORIZED','error')},600)},400)},
   secrets:()=>{if(CONFIG.secrets.codesFound.length===0)printLine('Nothing found yet.','dim');else{printLine(`[${Math.min(CONFIG.secrets.codesFound.length,CONFIG.secrets.totalCodes)}/${CONFIG.secrets.totalCodes}] discoveries:` ,'dim');CONFIG.secrets.codesFound.forEach(s=>printLine(`  ■ ${s}`,'ghost'))}printLine('')},
   ping:()=>{printLine('PING ████████.███ ...','dim');setTimeout(()=>printLine(`seq=1 ttl=██ time=${Math.floor(Math.random()*999)}ms`,'dim'),200);setTimeout(()=>printLine(`seq=2 ttl=██ time=${Math.floor(Math.random()*999)}ms`,'dim'),500);setTimeout(()=>{printLine('SIGNAL LOST','error')},900)},
@@ -3238,7 +3238,7 @@ function setVolume(v){audio.volume=v/100}
 function toggleFormat(){CONFIG.format=CONFIG.format==='mp3'?'wav':'mp3';if(state.currentTrack>=0&&state.isPlaying){const ct=audio.currentTime;const t=CONFIG.tracks[state.currentTrack];audio.src=CONFIG.audioPath+(CONFIG.format==='mp3'?t.file_mp3:t.file_wav);audio.currentTime=ct;audio.play()}printLine(`Format: ${CONFIG.format.toUpperCase()}`,'dim')}
 
 // ═══ SECRETS ═══
-function unlockTrack(id){const t=CONFIG.tracks.find(x=>x.id===id);if(!t||state.discovered.has(id)){printLine('already decrypted','dim');return}playSFX('glitch_corrupt',0.5);state.discovered.add(id);localStorage.setItem(CONFIG.storage.discovered,JSON.stringify([...state.discovered]));addSecret(`UNLOCK_${id}`);printLine('');printLine('DECRYPTION KEY ACCEPTED','warning');setTimeout(()=>{printLine(`  ${id} :: ${t.title}`,'');printLine('')},400);if(document.getElementById('player-popup').classList.contains('show')){renderPlayerTracks()}state.progression.tracksUnlocked=state.discovered.size;checkProgression()}
+function unlockTrack(id){const t=CONFIG.tracks.find(x=>x.id===id);if(!t||state.discovered.has(id)){printLine('already decrypted','dim');return}playSFX('glitch_corrupt',0.5);state.discovered.add(id);localStorage.setItem(CONFIG.storage.discovered,JSON.stringify([...state.discovered]));addSecret(`UNLOCK_${id}`);printLine('');printLine('DECRYPTION KEY ACCEPTED','warning');setTimeout(()=>{printLine(`  ${id} :: ${t.title}`,'');printLine('');const lockedCount=scannerState.lockedSignals.length;const totalSignals=SIGNAL_FREQUENCIES.length;if(lockedCount<totalSignals){printLine(`${lockedCount}/${totalSignals} signals locked. Reopen SCANNER.EXE — there's at least one more frequency out there.`,'ghost')}else if(state.discovered.size<CONFIG.tracks.length){printLine('All 3 signals are locked. Check DECODE.EXE — one may still be waiting to be cracked.','ghost')}},400);if(document.getElementById('player-popup').classList.contains('show')){renderPlayerTracks()}state.progression.tracksUnlocked=state.discovered.size;checkProgression()}
 function addSecret(id){if(!CONFIG.secrets.codesFound.includes(id)){CONFIG.secrets.codesFound.push(id);localStorage.setItem(CONFIG.storage.secrets,JSON.stringify(CONFIG.secrets.codesFound));localStorage.setItem(CONFIG.storage.discovered,JSON.stringify([...state.discovered]));playSFX('retro_movie',0.4);unlockGalleryImage(id);const c=document.getElementById('conn-status');c.textContent=`■ ${Math.min(CONFIG.secrets.codesFound.length,CONFIG.secrets.totalCodes)}`;c.style.color='var(--amber)';setTimeout(()=>{c.style.color='';c.textContent='■'},2000);updateSidebarStatus();if(CONFIG.secrets.codesFound.length===CONFIG.secrets.totalCodes){setTimeout(()=>{playSFX('glitch_heavy',0.4);printLine('');printLine('████████████████████████████████████','error');setTimeout(()=>{printLine('  TRANSMISSION COMPLETE','error');printLine('  ALL SIGNALS RECOVERED','error');printLine('████████████████████████████████████','error');revealHeader();updateSidebarStatus()},500)},800)}}}
 
 // ═══ PROGRESSION ═══
@@ -3257,7 +3257,11 @@ const MILESTONE_REWARDS={
       printLine('[ INTERCEPTED FRAGMENT ]','warning');
       printLine('...more signals hide in the noise...','ghost');
       printLine('...and the old access codes still work...','ghost');
-      printLine('Type "pincode" if you find one.','dim');
+      printLine('','');
+      printLine('Type "decode" to crack the signal you just locked.','dim');
+      printLine('Type "pincode" if you find a 4-digit access code.','dim');
+      printLine('Type "files" — system.log, frequencies.log, and access.log all have new entries.','dim');
+      printLine('SCANNER.EXE can be reopened for another frequency. There\'s more than one.','dim');
     },3000)
   },
   DEEP_SCAN:()=>{
@@ -3268,6 +3272,8 @@ const MILESTONE_REWARDS={
       printLine('Expedite decryption of remaining signals.','dim');
       printLine('','');
       printLine('New file detected: transmission.log','ghost');
+      printLine('frequencies.log has also been updated — worth a second look.','ghost');
+      printLine('Type "read transmission.log" or "files" to check.','dim');
     },2000)
   },
   FULL_INTERCEPT:()=>{
